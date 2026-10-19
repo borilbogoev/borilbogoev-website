@@ -1,10 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
-import { JsonLd } from "@/components/json-ld";
-import { SiteFooter } from "@/components/site-footer";
-import { SiteHeader } from "@/components/site-header";
 import { site } from "@/content/site";
-import { indexable, personLd, websiteLd } from "@/lib/seo";
+import { indexable } from "@/lib/seo";
 import "./globals.css";
 
 // Brand fonts. Inter carries the whole site; JetBrains Mono is for rare data labels, so it is not preloaded.
@@ -31,15 +28,7 @@ export const viewport: Viewport = { width: "device-width", initialScale: 1, them
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" data-scroll-behavior="smooth" className={`${inter.variable} ${mono.variable}`}>
-      <body>
-        <a href="#main" className="skip-link">
-          Skip to content
-        </a>
-        <SiteHeader />
-        <main id="main">{children}</main>
-        <SiteFooter />
-        <JsonLd data={[personLd(), websiteLd()]} />
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

@@ -14,13 +14,17 @@
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.2.0",
+    "@vercel/blob": "^2.8.2",
+    "arctic": "^3.7.0",
     "drizzle-orm": "^0.45.4",
+    "jose": "^6.2.12",
     "next": "16.4.0",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "zod": "^4.0.0"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.10",
     "@tailwindcss/turbopack": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

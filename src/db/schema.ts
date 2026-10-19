@@ -19,3 +19,7 @@ export const inquiries = pgTable(
 );
 
 export type Inquiry = typeof inquiries.$inferSelect;
+
+// Modules keep their own tables next to their code; they are listed here so drizzle-kit and getDb() see them.
+export * from "@/modules/auth/schema";
+export * from "@/modules/forms/schema";
