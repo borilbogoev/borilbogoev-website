@@ -58,7 +58,22 @@ export type Offer = {
   notHeading: string;
   notItems: string[];
   faq: Faq[];
-  inquiry: { heading: string; intro: string; planLabel: string };
+  inquiry: { heading: string; intro: string; /** Number of the BB Forms inquiry form (Forms > Share). */ formId: number };
+  /** The next live event, shown above the facts in the hero. */
+  upcoming?: {
+    label: string;
+    title: string;
+    /** ISO date of the event, used for the <time> element. */
+    iso: string;
+    day: string;
+    month: string;
+    year: string;
+    weekday: string;
+    time: string;
+    zone: string;
+    signupUrl: string;
+    signupLabel: string;
+  };
   /** For the home page ladder. */
   card: { summary: string; from: string };
   /** The schema.org type used for the structured data. */

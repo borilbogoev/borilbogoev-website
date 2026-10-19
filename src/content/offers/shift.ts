@@ -97,8 +97,8 @@ export const shift: Offer = {
   inquiry: {
     heading: "Send an inquiry",
     intro: "Tell me which process, department or organization you want to shift. I reply personally with a scope and next steps.",
-    planLabel: "Scope",
+    formId: 10,
   },
-  card: { summary: "Productized AI transformation of one process, one department or your organization. Fixed scope, timeframe and price.", from: "From 19,999 AED" },
+  card: { summary: "Rapid AI transformation of one process, one department or your organization. Fixed scope, timeframe and price.", from: "From 19,999 AED" },
   serviceType: "AI transformation and process automation",
 };
