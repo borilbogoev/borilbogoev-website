@@ -73,7 +73,7 @@ export function OfferPage({ offer }: { offer: Offer }) {
               </p>
             ))}
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <a href="#inquiry" className={`bb-btn ${offer.upcoming ? "bb-btn-outline" : "bb-btn-primary"}`}>
+              <a href="#inquiry" className={`bb-btn ${offer.upcoming ? "bb-btn-outline border-brand" : "bb-btn-primary"}`}>
                 Send an Inquiry
               </a>
               <a href="#plans" className="bb-btn bb-btn-outline">
@@ -183,7 +183,7 @@ export function OfferPage({ offer }: { offer: Offer }) {
       </Section>
 
       {/* Inquiry */}
-      <Section id="inquiry" eyebrow="Inquiry" heading={offer.inquiry.heading} intro={offer.inquiry.intro}>
+      <Section id="inquiry">
         <div className="mx-auto max-w-[760px]">
           <FormEmbed id={offer.inquiry.formId} theme="light" />
         </div>

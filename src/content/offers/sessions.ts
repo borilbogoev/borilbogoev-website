@@ -8,13 +8,13 @@ export const sessions: Offer = {
   metaDescription:
     "A monthly live AI workshop for executives and business owners. One practical topic, a live demonstration and Q&A with Boril Bogoev, Ph.D. Free, Premium and VIP tiers.",
   headline: "You do not need another course. You need one problem solved.",
-  tagline: "Monthly fast-paced workshop on a specific practical topic and problem. Every Thursday, 12 PM to 2 PM.",
+  tagline: "Monthly fast-paced workshop on a specific practical topic and problem. Thursdays, 12 PM to 2 PM.",
   lead: [
     "Each Session takes one practical topic and works it live. I present, demonstrate on screen and answer your questions. You leave with the method and, on Premium and VIP, the assets to use it the next day.",
   ],
   facts: [
     { label: "Format", value: "Live webinar, about 1 hour" },
-    { label: "When", value: "Every Thursday, 12 PM to 2 PM" },
+    { label: "When", value: "Thursdays, 12 PM to 2 PM" },
     { label: "Price", value: "0 to 999 AED" },
   ],
   problem:
