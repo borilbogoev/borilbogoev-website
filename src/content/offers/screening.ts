@@ -87,7 +87,7 @@ export const screening: Offer = {
   inquiry: {
     heading: "Send an inquiry",
     intro: "Tell me about your business and which tier you want. I reply personally with how to begin.",
-    planLabel: "Tier",
+    formId: 8,
   },
   card: { summary: "An audit of your business for AI opportunity, ending in an analysis, a report and an action plan.", from: "From 0 AED" },
   serviceType: "AI opportunity audit",

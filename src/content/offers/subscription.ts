@@ -41,11 +41,11 @@ export const subscription: Offer = {
   ],
   plans: {
     heading: "Choose your tier",
-    intro: "All tiers include the same work. The tier sets the hours of my time each month.",
+    intro: "All tiers include the same work. The tier sets my commitment: 10, 20 or 40 hours of my time each month.",
     plans: [
-      { id: "standard", name: "Standard", price: "3,999 AED", priceNote: "per month" },
-      { id: "premium", name: "Premium", price: "7,999 AED", priceNote: "per month" },
-      { id: "vip", name: "VIP", price: "15,999 AED", priceNote: "per month" },
+      { id: "standard", name: "Standard", sub: "10 hours per month", price: "3,999 AED", priceNote: "per month" },
+      { id: "premium", name: "Premium", sub: "20 hours per month", price: "7,999 AED", priceNote: "per month" },
+      { id: "vip", name: "VIP", sub: "40 hours per month", price: "15,999 AED", priceNote: "per month" },
     ],
     rows: [],
     included: {
@@ -73,7 +73,7 @@ export const subscription: Offer = {
     "Not unlimited. The tier sets the hours.",
   ],
   faq: [
-    { q: "How do I choose a tier?", a: "Choose by how much work you want done each month. Standard for steady support. VIP for active development." },
+    { q: "How do I choose a tier?", a: "Choose by how much work you want done each month. Standard (10 hours) for steady support, Premium (20 hours) for regular development, VIP (40 hours) for active development." },
     { q: "What do I get each period?", a: "A plan for the next period and a report on the last one, weekly or monthly." },
     { q: "Who does the work?", a: "I do. I consult, plan, build, deploy and fix." },
     { q: "Do I need the Sprint or the Shift first?", a: "No. The Subscription works alongside both." },
@@ -82,7 +82,7 @@ export const subscription: Offer = {
   inquiry: {
     heading: "Send an inquiry",
     intro: "Tell me what you want to keep improving. I reply personally with a tier and next steps.",
-    planLabel: "Tier",
+    formId: 11,
   },
   card: { summary: "Ongoing consulting, building and fixing on retainer. You pay for my hours; the tier sets how many.", from: "From 3,999 AED per month" },
   serviceType: "AI consulting retainer",

@@ -81,7 +81,7 @@ export const sprint: Offer = {
   inquiry: {
     heading: "Send an inquiry",
     intro: "Tell me who you are and what you want to achieve. I reply personally with the next cohort date or a plan for your team.",
-    planLabel: "Format",
+    formId: 9,
   },
   card: { summary: "One week of hands-on training on your own work. Join a Cohort or book a Custom Sprint for your team.", from: "From 1,999 AED" },
   serviceType: "AI training program",

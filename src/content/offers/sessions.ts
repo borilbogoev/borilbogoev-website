@@ -8,13 +8,13 @@ export const sessions: Offer = {
   metaDescription:
     "A monthly live AI workshop for executives and business owners. One practical topic, a live demonstration and Q&A with Boril Bogoev, Ph.D. Free, Premium and VIP tiers.",
   headline: "You do not need another course. You need one problem solved.",
-  tagline: "Monthly fast-paced workshop on a specific practical topic and problem. Every Thursday, 12 PM to 2 PM.",
+  tagline: "Monthly fast-paced workshop on a specific practical topic and problem. Thursdays, 12 PM to 2 PM.",
   lead: [
     "Each Session takes one practical topic and works it live. I present, demonstrate on screen and answer your questions. You leave with the method and, on Premium and VIP, the assets to use it the next day.",
   ],
   facts: [
     { label: "Format", value: "Live webinar, about 1 hour" },
-    { label: "When", value: "Every Thursday, 12 PM to 2 PM" },
+    { label: "When", value: "Thursdays, 12 PM to 2 PM" },
     { label: "Price", value: "0 to 999 AED" },
   ],
   problem:
@@ -75,10 +75,23 @@ export const sessions: Offer = {
     { q: "What comes after the Sessions?", a: "The Sprint. One week, hands-on, on your own work." },
     { q: "How do I join?", a: "Send an inquiry below. I reply personally with the next date and next steps." },
   ],
+  upcoming: {
+    label: "Next Session",
+    title: "The 3 Headaches Busy Parents Can Kill with AI Tonight.",
+    iso: "2026-10-29T12:00:00+04:00",
+    day: "29",
+    month: "October",
+    year: "2026",
+    weekday: "Thursday",
+    time: "12 PM",
+    zone: "Gulf Standard Time (Dubai)",
+    signupUrl: "https://borilbogoev.com/s/you-and-ai",
+    signupLabel: "Sign up",
+  },
   inquiry: {
     heading: "Send an inquiry",
     intro: "Tell me who you are and which tier you want. I reply personally with the next Session date.",
-    planLabel: "Tier",
+    formId: 7,
   },
   card: { summary: "A monthly live workshop. One practical problem, worked on screen, with Q&A.", from: "From 0 AED" },
   serviceType: "AI workshop",

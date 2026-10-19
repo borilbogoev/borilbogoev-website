@@ -31,7 +31,7 @@ export const resumeHero = {
 export const stats = [
   { value: "20", label: "Years of experience" },
   { value: "100", label: "Brands worked with" },
-  { value: "250", label: "Websites built" },
+  { value: "350", label: "Web apps built" },
   { value: "10k", label: "Professionals trained" },
 ];
 
