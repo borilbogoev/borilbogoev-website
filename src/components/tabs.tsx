@@ -22,12 +22,17 @@ export function Tabs({
 }) {
   const [active, setActive] = useState(0);
   const buttons = useRef<(HTMLButtonElement | null)[]>([]);
+  const list = useRef<HTMLDivElement>(null);
 
   const select = (index: number, focus = false) => {
     setActive(index);
     const el = buttons.current[index];
     if (focus) el?.focus();
-    el?.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
+    // Centre the tab inside its own strip. Never scrollIntoView: it would also scroll the page.
+    const strip = list.current;
+    if (el && strip && strip.scrollWidth > strip.clientWidth) {
+      strip.scrollTo({ left: el.offsetLeft - (strip.clientWidth - el.offsetWidth) / 2, behavior: "smooth" });
+    }
   };
 
   const onKeyDown = (e: KeyboardEvent, index: number) => {
@@ -42,14 +47,14 @@ export function Tabs({
     select(next, true);
   };
 
-  const list =
+  const listClass =
     variant === "underline"
       ? "flex overflow-x-auto border-b-2 border-line [scrollbar-width:none] [&::-webkit-scrollbar]:hidden -mx-5 px-5 sm:mx-0 sm:px-0"
       : "flex flex-wrap gap-2.5";
 
   return (
     <div>
-      <div role="tablist" aria-label={label} className={`${list} mb-8`}>
+      <div ref={list} role="tablist" aria-label={label} className={`${listClass} mb-8`}>
         {tabs.map((tab, i) => {
           const on = i === active;
           const cls =

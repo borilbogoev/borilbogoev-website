@@ -30,7 +30,7 @@ export const viewport: Viewport = { width: "device-width", initialScale: 1, them
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${mono.variable}`}>
+    <html lang="en" data-scroll-behavior="smooth" className={`${inter.variable} ${mono.variable}`}>
       <body>
         <a href="#main" className="skip-link">
           Skip to content

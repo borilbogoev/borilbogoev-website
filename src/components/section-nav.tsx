@@ -21,10 +21,12 @@ export function SectionNav({ items }: { items: { id: string; label: string }[] }
     return () => io.disconnect();
   }, [items]);
 
-  // Keep the current pill in view on phones.
+  // Keep the current pill centred in the strip on phones. Scroll the strip itself, never the page.
   useEffect(() => {
-    const el = strip.current?.querySelector<HTMLElement>(`[data-id="${active}"]`);
-    el?.scrollIntoView({ inline: "center", block: "nearest" });
+    const list = strip.current;
+    const el = list?.querySelector<HTMLElement>(`[data-id="${active}"]`);
+    if (!list || !el || list.scrollWidth <= list.clientWidth) return;
+    list.scrollTo({ left: el.offsetLeft - (list.clientWidth - el.offsetWidth) / 2, behavior: "smooth" });
   }, [active]);
 
   return (
