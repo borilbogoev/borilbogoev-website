@@ -1,0 +1,68 @@
+# AI Agent Instructions: borilbogoev.com website
+
+This repository is Boril Bogoev's official website. Use these instructions when working through Claude Code, Codex or another AI coding assistant.
+
+## Project basics
+
+- Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4
+- Postgres on Neon with Drizzle ORM, used only for form submissions so far
+- Deployed on Vercel project `borilbogoev-website`, repo `borilbogoev/borilbogoev-website`
+- Production branch: `main`. Production domain: https://borilbogoev.com (switched to this app at launch)
+- Brand source of truth: the BORILBOGOEV design system (tokens in `src/app/globals.css` use its names)
+
+## This is NOT the Next.js you know
+
+Next 16 has breaking changes. Read the relevant guide in `node_modules/next/dist/docs/` before writing framework code, and heed deprecation notices.
+
+## Deployment rule
+
+`main` deploys to production. Never push to `main` or merge a PR without Boril's explicit approval.
+
+1. `git switch -c feature/short-description`
+2. Make the change, run `npm run lint` and `npm run build`
+3. Commit, push the branch, open a PR (Vercel builds a preview URL for it)
+4. Wait for approval before merging
+
+## Where things live
+
+| To change | Edit |
+|---|---|
+| Offer pages (Sessions, Screening, Sprint, Shift, Subscription): copy, prices, tables, FAQ | `src/content/offers/<slug>.ts` |
+| The resume on /about | `src/content/resume.ts` |
+| Home page copy | `src/content/home.ts` |
+| Navigation, contact links, bio, site name | `src/content/site.ts` |
+| Page layout of every offer | `src/components/offer-page.tsx` |
+| Colours, type scale, buttons | `src/app/globals.css` |
+
+Content files are typed (`src/content/types.ts`). Editing content never needs a component change.
+
+## Adding a page or module
+
+1. Content in `src/content/...`, route in `src/app/<slug>/page.tsx`.
+2. Metadata with `pageMetadata()` from `src/lib/seo.ts` (title, description, canonical, Open Graph).
+3. Structured data with `<JsonLd>` (see `src/lib/seo.ts` for builders).
+4. Add it to `src/app/sitemap.ts`, to `nav` in `src/content/site.ts` if it belongs in the menu, and to `src/lib/markdown.ts` so `/llms.txt` and `/llms-full.txt` know about it.
+5. Keep it static: no `cookies()`, `headers()` or per-request data in a public page.
+
+## Performance rules (target: LCP under 1 second)
+
+- Pages are statically prerendered. Do not make a public page dynamic.
+- Client components only for real interaction (menu, tabs, plan switcher, form). Content stays in server components.
+- Images: add the original to `assets-src/`, extend `scripts/optimize-images.mjs`, run `npm run images`. Serve pre-compressed webp from `/public/brand` with explicit width and height.
+- No new dependency without a reason. No third-party scripts.
+- Check with Lighthouse (mobile) before merging anything that adds weight.
+
+## Brand rules (from the design system)
+
+- White page, ink text, one red accent. No gradients, glows, second accent colour or emoji.
+- Every section: eyebrow (UPPERCASE, red) then a sentence-case heading. One red primary button per view.
+- Copy: short declarative sentences, no hype words, no exclamation marks, no long dashes (use a comma, colon or "to"), figures with a tilde where approximate.
+- Outline icons, 24px grid, 2px stroke (`src/components/icons.tsx`).
+
+## Secrets
+
+Never commit `.env*`, `.vercel/`, `Credentials/` or `Backups/`. Never print secret values.
+
+## After changes, report
+
+Files changed, what changed, checks run and results, whether a deployment was triggered, risks or follow-ups.
