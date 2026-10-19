@@ -2,6 +2,7 @@ import Link from "next/link";
 import { logout } from "@/modules/auth/actions";
 import { requireUser } from "@/modules/auth/current";
 import { can, ROLE_LABELS } from "@/modules/auth/roles";
+import { adminCore, adminModules } from "@/modules/registry";
 import { AdminProviders } from "@/modules/forms/admin/providers";
 import { getGlobalSettings } from "@/modules/forms/lib/settings-store";
 import { AdminNav } from "./nav";
@@ -17,7 +18,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
           <Link className="bbfa-logo" href="/admin" aria-label="Admin home">
             B<i>*</i>
           </Link>
-          <AdminNav showUsers={can(user.role, "users.manage")} showSettings={can(user.role, "forms.settings")} />
+          <AdminNav items={[...adminModules, ...adminCore].filter((m) => can(user.role, m.permission)).map((m) => ({ href: m.href, label: m.label }))} />
           <div className="bbfa-bar__user">
             <span>
               <strong>{user.name || user.email}</strong> · {ROLE_LABELS[user.role]}

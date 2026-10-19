@@ -23,7 +23,12 @@ export default async function FormsPage({ searchParams }: { searchParams: Promis
       <PageHeader
         eyebrow="Form builder"
         title={<>Forms<span className="bbfa-dot">.</span></>}
-        actions={canWrite ? <Link className="bbfa-btn" href="/admin/forms/new">+ New form</Link> : null}
+        actions={
+          <>
+            {can(user.role, "forms.settings") ? <Link className="bbfa-btn bbfa-btn--ghost" href="/admin/forms/settings">Settings</Link> : null}
+            {canWrite ? <Link className="bbfa-btn" href="/admin/forms/new">+ New form</Link> : null}
+          </>
+        }
       />
       <section className="bbfa-band">
         <div><strong>{forms.length}</strong><span>Forms</span></div>
