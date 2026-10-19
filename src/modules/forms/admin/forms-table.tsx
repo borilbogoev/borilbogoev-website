@@ -67,7 +67,7 @@ export function FormsTable({ rows, canWrite, canDelete }: { rows: FormRow[]; can
             return (
               <tr key={r.id}>
                 <td>
-                  <Link className="bbfa-forms__title" href={`${base}/build`}>
+                  <Link className="bbfa-forms__title" href={`${base}/builder`}>
                     {r.title}
                   </Link>
                   <div className="bbfa-sub">
@@ -91,7 +91,7 @@ export function FormsTable({ rows, canWrite, canDelete }: { rows: FormRow[]; can
                   <StatusPill status={r.status} />
                 </td>
                 <td className="bbfa-row-actions">
-                  <Link href={`${base}/build`}>{canWrite ? "Build" : "View"}</Link>
+                  <Link href={`${base}/builder`}>{canWrite ? "Build" : "View"}</Link>
                   <Link href={`${base}/dashboard`}>Dashboard</Link>
                   {canWrite ? (
                     <a href="#" onClick={(e) => (e.preventDefault(), void duplicate(r.id))}>

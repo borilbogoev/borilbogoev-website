@@ -16,7 +16,7 @@ export default async function FormLayout({ children, params }: { children: React
   if (!form) notFound();
   const count = await countResponses(form.id);
   const tabs = [
-    { key: "build", label: "Build" },
+    { key: "builder", label: "Build" },
     { key: "settings", label: "Settings" },
     ...(can(user.role, "forms.view") ? [{ key: "responses", label: "Responses" }, { key: "dashboard", label: "Dashboard" }] : []),
     { key: "share", label: "Share" },

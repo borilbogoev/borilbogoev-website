@@ -19,7 +19,7 @@ export function NewFormEditor({ templates }: { templates: Template[] }) {
     setBusy(true);
     try {
       const res = await api<{ id: number }>("forms", { method: "POST", body: { title, template } });
-      router.push(`/admin/forms/${res.id}/build`);
+      router.push(`/admin/forms/${res.id}/builder`);
     } catch (e) {
       toast(e instanceof ApiError ? e.message : "Could not create the form", "error");
       setBusy(false);
