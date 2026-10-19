@@ -5,7 +5,7 @@ This repository is Boril Bogoev's official website. Use these instructions when 
 ## Project basics
 
 - Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4
-- Postgres on Neon with Drizzle ORM, used only for form submissions so far
+- Postgres on Neon with Drizzle ORM: inquiry form, admin users, and the Forms module
 - Deployed on Vercel project `borilbogoev-website`, repo `borilbogoev/borilbogoev-website`
 - Production branch: `main`. Production domain: https://borilbogoev.com (switched to this app at launch)
 - Brand source of truth: the BORILBOGOEV design system (tokens in `src/app/globals.css` use its names)
@@ -43,6 +43,18 @@ Content files are typed (`src/content/types.ts`). Editing content never needs a 
 3. Structured data with `<JsonLd>` (see `src/lib/seo.ts` for builders).
 4. Add it to `src/app/sitemap.ts`, to `nav` in `src/content/site.ts` if it belongs in the menu, and to `src/lib/markdown.ts` so `/llms.txt` and `/llms-full.txt` know about it.
 5. Keep it static: no `cookies()`, `headers()` or per-request data in a public page.
+
+## Modules
+
+Modules live in `src/modules/<name>` with their own schema, logic, components and admin UI. Their tables are listed in `src/db/schema.ts`.
+
+- `src/modules/auth`: admin users and roles (owner, admin, editor, contributor, viewer), signed session cookie, Google sign-in. `src/proxy.ts` gates only `/admin/*` and `/api/admin/*`; every page and route handler re-checks the role against the database (`requireUser`, `guarded`). Add permissions in `roles.ts`.
+- `src/modules/forms`: BB Forms, migrated from the BB Forms WP plugin (tables `bbforms_*`). Admin at `/admin/forms`, public API at `/api/forms/*`, own page at `/s/<slug>`.
+  - Put a form on any page: `import { FormEmbed } from "@/modules/forms"`, then `<FormEmbed id={1} />` (inline) or `<FormEmbed id={1} display="modal" label="Join" />` (button + dialog). The form loads client-side from `/api/forms/<id>/definition`, so pages stay static.
+  - Block types, settings and validation are defined once in `lib/blocks.ts` and `lib/settings.ts`.
+  - One-off WordPress import: `npx tsx scripts/import-wordpress.ts --dir <exports> --dry-run|--apply`. Do not re-run with `--force` once the new site has its own responses.
+- Route groups: `(site)` has the header and footer, `(standalone)` (form pages) and `admin` do not.
+- Public pages must not call `cookies()` or `headers()`. Form pages are static shells.
 
 ## Performance rules (target: LCP under 1 second)
 

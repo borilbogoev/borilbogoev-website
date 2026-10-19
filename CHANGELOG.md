@@ -2,6 +2,18 @@
 
 All notable changes to this project. Versions follow [Semantic Versioning](https://semver.org).
 
+## [0.2.0] - Unreleased
+
+### Added
+- Forms module (BB Forms, migrated from BB Forms WP): block builder, conversational and classic modes, conditional logic, responses inbox with CSV export, per-form dashboard, notifications, autoresponder, signed webhooks, file uploads (Vercel Blob), GDPR tools and retention.
+- Embed anywhere: `<FormEmbed id display="inline|modal">`, plus a standalone page per form at `/s/<slug>`. The two shared webinar links keep working.
+- Admin area at `/admin` with users and roles (owner, admin, editor, contributor, viewer), password and Google sign-in.
+- `scripts/import-wordpress.ts`: verified import of the WordPress exports (2 forms, 55 responses, 649 answers).
+- Tables `users` and `bbforms_*` (migration `0001_forms_module`).
+
+### Changed
+- Header and footer moved from the root layout to the `(site)` route group so form pages and the admin can be chrome-free. URLs are unchanged.
+
 ## [0.1.0] - 2026-10-19
 
 First version.
