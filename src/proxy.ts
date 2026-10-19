@@ -11,8 +11,6 @@ export async function proxy(request: NextRequest) {
   const isPublic = PUBLIC_ADMIN_PATHS.some((p) => pathname === p || pathname.startsWith(p));
   const session = await verifySessionToken(request.cookies.get(SESSION_COOKIE)?.value);
 
-  if (session && pathname === "/admin/login") return NextResponse.redirect(new URL("/admin", request.url));
-
   if (!session && !isPublic) {
     if (pathname.startsWith("/api/")) return Response.json({ error: "Please sign in again." }, { status: 401 });
     const url = new URL("/admin/login", request.url);
