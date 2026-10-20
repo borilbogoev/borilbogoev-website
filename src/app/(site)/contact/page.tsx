@@ -21,7 +21,7 @@ const options = [
 export default function ContactPage() {
   return (
     <>
-      <section className="section pb-6 pt-12 md:pb-10 md:pt-20">
+      <section className="section hero-soft pb-6 pt-12 md:pb-10 md:pt-20">
         <div className="container-bb">
           <p className="eyebrow">Contact</p>
           <h1 className="t-display-lg mt-3">
@@ -31,9 +31,9 @@ export default function ContactPage() {
         </div>
       </section>
       <Section id="inquiry" className="!pt-6 md:!pt-8">
-        <div className="grid items-start gap-10 lg:grid-cols-[1fr_280px] lg:gap-16">
+        <div className="grid gap-10">
           <InquiryForm topic="contact" optionsLabel="What is this about?" options={options} messageLabel="Your message" />
-          <aside className="t-body-sm text-muted">
+          <div className="t-body-sm text-muted">
             <p className="label mb-2">Elsewhere</p>
             <p className="m-0">
               <a className="font-semibold text-ink underline decoration-brand underline-offset-4" href={site.linkedin} target="_blank" rel="noopener">
@@ -44,7 +44,7 @@ export default function ContactPage() {
                 The Streamliner
               </a>
             </p>
-          </aside>
+          </div>
         </div>
       </Section>
       <JsonLd

@@ -37,7 +37,7 @@ const AiBrand = () => (
 export default function AboutPage() {
   return (
     <>
-      <section id="top" className="section pb-12 pt-12 md:pb-20 md:pt-20">
+      <section id="top" className="section hero-soft pb-12 pt-12 md:pb-20 md:pt-20">
         <div className="container-bb grid items-center gap-12 lg:grid-cols-[1fr_auto] lg:gap-16">
           <div>
             <p className="badge label">{resumeHero.badge}</p>

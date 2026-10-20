@@ -78,6 +78,10 @@ export const sessions: Offer = {
   upcoming: {
     label: "Next Session",
     title: "The 3 Headaches Busy Parents Can Kill with AI Tonight.",
+    subtitle: "One live Session. Three everyday problems, solved on screen.",
+    text: "I work the problems live and you follow along. Bring your own questions for the Q&A.",
+    bullets: ["Live demonstration, not slides", "A method you can reuse the same evening", "Q&A with Boril at the end"],
+    secondary: { label: "Send an Inquiry", href: "#inquiry" },
     iso: "2026-10-29T12:00:00+04:00",
     day: "29",
     month: "October",

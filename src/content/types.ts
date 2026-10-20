@@ -59,10 +59,16 @@ export type Offer = {
   notItems: string[];
   faq: Faq[];
   inquiry: { heading: string; intro: string; /** Number of the BB Forms inquiry form (Forms > Share). */ formId: number };
-  /** The next live event, shown above the facts in the hero. */
+  /** The next live event: a strong feature hero shown above the default hero. */
   upcoming?: {
     label: string;
     title: string;
+    subtitle?: string;
+    text?: string;
+    bullets?: string[];
+    /** Optional picture (pre-compressed webp in /public/brand). Without it the date block fills the space. */
+    image?: { src: string; width: number; height: number; alt: string };
+    secondary?: { label: string; href: string };
     /** ISO date of the event, used for the <time> element. */
     iso: string;
     day: string;

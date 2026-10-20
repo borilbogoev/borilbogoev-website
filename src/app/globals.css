@@ -15,6 +15,7 @@
   --on-brand: #ffffff;
   --surface: #ffffff;
   --surface-alt: #f7f7f7;
+  --surface-hero: #efefef;
   --surface-inverse: #1a1a1a;
   --on-inverse: #ffffff;
   --on-inverse-muted: rgba(255, 255, 255, 0.55);
@@ -217,6 +218,11 @@ body {
   .section-alt {
     background: var(--surface-alt);
   }
+  /* Default page hero: soft grey band with a hairline, quieter than a feature hero. */
+  .hero-soft {
+    background: var(--surface-hero);
+    border-bottom: 1px solid var(--line);
+  }
   .section-head {
     margin-bottom: 32px;
   }
@@ -277,6 +283,15 @@ body {
   }
   .bb-btn-outline:hover {
     border-color: var(--line-strong);
+    transform: translateY(-1px);
+  }
+  .bb-btn-inverse {
+    background: transparent;
+    color: var(--on-inverse);
+    border-color: rgba(255, 255, 255, 0.35);
+  }
+  .bb-btn-inverse:hover {
+    border-color: var(--on-inverse);
     transform: translateY(-1px);
   }
   .bb-btn[disabled] {
