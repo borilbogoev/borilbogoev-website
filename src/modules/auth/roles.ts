@@ -13,10 +13,10 @@ export const ROLE_LABELS: Record<Role, string> = {
 
 export const ROLE_HELP: Record<Role, string> = {
   owner: "Everything, including other admins and the owner account.",
-  admin: "Everything in Forms and Landing Pages, and manages editors, contributors and viewers.",
-  editor: "Builds and edits forms and landing pages, manages responses.",
+  admin: "Everything in Forms, Landing Pages and Presentations, and manages editors, contributors and viewers.",
+  editor: "Builds and edits forms, landing pages and presentations, manages responses.",
   contributor: "Reads responses, adds and edits records, exports CSV.",
-  viewer: "Read-only access to forms, landing pages, responses and dashboards.",
+  viewer: "Read-only access to forms, landing pages, presentations, responses and dashboards.",
 };
 
 export const PERMISSIONS = [
@@ -31,13 +31,16 @@ export const PERMISSIONS = [
   "landing.view", // landing pages list, builder (read-only), dashboards
   "landing.write", // create, edit, duplicate, publish and unpublish landing pages
   "landing.delete",
+  "presentations.view", // presentations list, builder (read-only), dashboards, Present view
+  "presentations.write", // create, edit, duplicate, activate and deactivate presentations, manage categories
+  "presentations.delete",
 ] as const;
 export type Permission = (typeof PERMISSIONS)[number];
 
-const viewer: Permission[] = ["forms.view", "landing.view"];
+const viewer: Permission[] = ["forms.view", "landing.view", "presentations.view"];
 const contributor: Permission[] = [...viewer, "responses.write", "responses.export"];
-const editor: Permission[] = [...contributor, "forms.write", "responses.delete", "landing.write"];
-const admin: Permission[] = [...editor, "forms.delete", "forms.settings", "landing.delete", "users.manage"];
+const editor: Permission[] = [...contributor, "forms.write", "responses.delete", "landing.write", "presentations.write"];
+const admin: Permission[] = [...editor, "forms.delete", "forms.settings", "landing.delete", "presentations.delete", "users.manage"];
 
 const GRANTS: Record<Role, readonly Permission[]> = {
   viewer,

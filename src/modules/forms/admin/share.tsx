@@ -3,9 +3,9 @@
 import { formPath } from "../lib/paths";
 import { CopyCode } from "./ui";
 
-type Props = { formId: number; slug: string; siteUrl: string; landingPages?: { id: number; title: string; slug: string }[] };
+type Props = { formId: number; slug: string; siteUrl: string; landingPages?: { id: number; title: string; slug: string }[]; presentations?: { id: number; title: string; slug: string }[] };
 
-export function SharePanel({ formId, slug, siteUrl, landingPages = [] }: Props) {
+export function SharePanel({ formId, slug, siteUrl, landingPages = [], presentations = [] }: Props) {
   const page = slug ? `${siteUrl}${formPath(slug)}` : "";
   const codes: [string, string, string][] = [
     ["Form page", page || "Set a page address in Settings > General to give this form its own page.", page],
@@ -43,6 +43,20 @@ export function SharePanel({ formId, slug, siteUrl, landingPages = [] }: Props) 
             </ul>
           ) : (
             <p className="bbfa-muted">No landing page embeds this form yet. Add a Form block in the Landing pages builder.</p>
+          )}
+        </div>
+        <div className="bbfa-card">
+          <div className="bbfa-eyebrow">Presentations</div>
+          {presentations.length ? (
+            <ul style={{ margin: 0, paddingLeft: 18 }}>
+              {presentations.map((p) => (
+                <li key={p.id}>
+                  <a href={`/admin/presentations/${p.id}/builder`}>{p.title}</a> <span className="bbfa-muted">/p/{p.slug}</span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="bbfa-muted">No presentation embeds this form yet. Add a Form element to a slide in the Presentations builder.</p>
           )}
         </div>
         <div className="bbfa-card">

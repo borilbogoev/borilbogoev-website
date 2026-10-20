@@ -24,3 +24,4 @@ export type Inquiry = typeof inquiries.$inferSelect;
 export * from "@/modules/auth/schema";
 export * from "@/modules/forms/schema";
 export * from "@/modules/landing/schema";
+export * from "@/modules/presentations/schema";
