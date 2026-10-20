@@ -10,41 +10,117 @@ import { PlanCards, PlanTable } from "./plans";
 import { StickyCta } from "./sticky-cta";
 import { Section } from "./ui";
 
-/** The next live event: a dark card with the date, title, time and one red sign-up button. */
-function UpcomingEvent({ event }: { event: NonNullable<Offer["upcoming"]> }) {
+/** "12 PM" becomes "12:00 PM"; any other format is shown as written. */
+function clock(time: string) {
+  const m = /^(\d{1,2})(?::(\d{2}))?\s*(AM|PM)$/i.exec(time.trim());
+  return m ? `${m[1]}:${m[2] ?? "00"} ${m[3].toUpperCase()}` : time;
+}
+
+/** A large six-spoke asterisk, the brand's graphic device, drawn in outline. */
+function AsteriskMark() {
   return (
-    <section
-      aria-label={event.label}
-      className="relative overflow-hidden rounded-[14px] p-6 md:p-7"
-      style={{ background: "var(--surface-inverse)", color: "var(--on-inverse)", boxShadow: "var(--shadow)" }}
-    >
-      <span aria-hidden className="absolute inset-x-0 top-0 h-1" style={{ background: "var(--brand)" }} />
-      <p className="label" style={{ color: "var(--on-inverse-accent)", letterSpacing: "0.14em", textTransform: "uppercase" }}>
-        {event.label}
-      </p>
-      <time dateTime={event.iso} className="mt-4 flex items-end gap-3">
-        <span className="t-stat leading-none" style={{ fontSize: "clamp(56px, 8vw, 72px)" }}>
-          {event.day}
-        </span>
-        <span className="pb-1.5 leading-tight">
-          <span className="block text-[17px] font-bold">
-            {event.month} {event.year}
-          </span>
-          <span className="block text-[14px]" style={{ color: "var(--on-inverse-muted)" }}>
-            {event.weekday}
-          </span>
-        </span>
-      </time>
-      <h2 className="mt-5 text-[20px] font-extrabold leading-[1.25] tracking-tight">{event.title}</h2>
-      <p className="mt-4 border-t pt-4 text-[15px] font-semibold leading-snug" style={{ borderColor: "var(--on-inverse-line)" }}>
-        {event.time}
-        <span className="block font-normal" style={{ color: "var(--on-inverse-muted)" }}>
-          {event.zone}
-        </span>
-      </p>
-      <a href={event.signupUrl} className="bb-btn bb-btn-primary mt-6 w-full">
-        {event.signupLabel}
-      </a>
+    <svg aria-hidden viewBox="-50 -50 100 100" className="pointer-events-none absolute -bottom-16 -right-12 h-[300px] w-[300px] md:-bottom-24 md:-right-16 md:h-[420px] md:w-[420px]" fill="none" stroke="var(--on-inverse-line)" strokeWidth="9" strokeLinecap="round">
+      <path d="M0 -42V42M-36.4 -21L36.4 21M-36.4 21L36.4 -21" />
+    </svg>
+  );
+}
+
+/**
+ * Feature hero for the next live event: a dark card on a white band, above the default hero.
+ * Brand: one dark ground, one red primary button, a red full stop and bullet dots, mono for the time.
+ * Reusable for any urgent or featured announcement.
+ */
+function UpcomingEvent({ event }: { event: NonNullable<Offer["upcoming"]> }) {
+  const title = event.title.replace(/\.$/, "");
+  return (
+    <section aria-label={event.label} className="w-full border-b border-line bg-surface pb-10 pt-8 md:pb-14 md:pt-12">
+      <div className="container-bb">
+        <div
+          className="relative grid overflow-hidden rounded-[14px] md:grid-cols-[minmax(0,320px)_1fr]"
+          style={{ background: "var(--surface-inverse)", color: "var(--on-inverse)", boxShadow: "var(--shadow)" }}
+        >
+          <AsteriskMark />
+
+          {/* Date and time frame */}
+          <time
+            dateTime={event.iso}
+            className="relative flex flex-col justify-center gap-6 border-b p-6 md:border-b-0 md:border-r md:p-9"
+            style={{ borderColor: "var(--on-inverse-line)" }}
+          >
+            <span className="flex items-end gap-5 md:block">
+              <span className="block font-extrabold leading-[0.85] tracking-[-0.03em]" style={{ fontSize: "clamp(88px, 14vw, 132px)" }}>
+                {event.day}
+                <span className="text-brand">.</span>
+              </span>
+              <span className="block pb-1 md:mt-5 md:pb-0">
+                <span className="block text-[13px] font-bold uppercase leading-[1.4] tracking-[0.14em]" style={{ color: "var(--on-inverse-accent)" }}>
+                  {event.weekday}
+                </span>
+                <span className="mt-1 block text-[20px] font-bold leading-[1.3]">
+                  {event.month} {event.year}
+                </span>
+              </span>
+            </span>
+            <span className="block border-t pt-5" style={{ borderColor: "var(--on-inverse-line)" }}>
+              <span className="block font-mono text-[26px] font-medium leading-none">{clock(event.time)}</span>
+              <span className="mt-2 block font-mono text-[11px] font-medium uppercase tracking-[0.04em]" style={{ color: "var(--on-inverse-muted)" }}>
+                {event.zone}
+              </span>
+            </span>
+          </time>
+
+          {/* Announcement */}
+          <div className="relative p-6 md:p-9 lg:p-11">
+            {event.image && (
+              <img
+                src={event.image.src}
+                width={event.image.width}
+                height={event.image.height}
+                alt={event.image.alt}
+                className="mb-6 h-auto w-full rounded-[8px]"
+                decoding="async"
+              />
+            )}
+            <p className="m-0 text-[13px] font-bold uppercase leading-[1.4] tracking-[0.14em]" style={{ color: "var(--on-inverse-accent)" }}>
+              {event.label}
+            </p>
+            <h2 className="mt-3 max-w-[22ch] font-extrabold leading-[1.15] tracking-[-0.02em]" style={{ fontSize: "clamp(28px, 3.5vw, 44px)" }}>
+              {title}
+              <span className="text-brand">.</span>
+            </h2>
+            {event.subtitle && (
+              <p className="mt-4 max-w-[40ch] font-light leading-[1.3] tracking-[-0.01em]" style={{ fontSize: "clamp(18px, 2vw, 22px)", color: "var(--on-inverse-muted)" }}>
+                {event.subtitle}
+              </p>
+            )}
+            {event.text && (
+              <p className="mt-5 max-w-[52ch] text-[16px] leading-[1.65]" style={{ color: "var(--on-inverse)" }}>
+                {event.text}
+              </p>
+            )}
+            {event.bullets && event.bullets.length > 0 && (
+              <ul className="m-0 mt-5 grid list-none gap-2.5 p-0">
+                {event.bullets.map((b) => (
+                  <li key={b} className="flex items-center gap-3 text-[14px] leading-[1.6]">
+                    <span aria-hidden className="h-1.5 w-1.5 shrink-0 rounded-full bg-brand" />
+                    {b}
+                  </li>
+                ))}
+              </ul>
+            )}
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <a href={event.signupUrl} className="bb-btn bb-btn-primary">
+                {event.signupLabel}
+              </a>
+              {event.secondary && (
+                <a href={event.secondary.href} className="bb-btn bb-btn-inverse">
+                  {event.secondary.label}
+                </a>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
   );
 }
@@ -57,9 +133,11 @@ export function OfferPage({ offer }: { offer: Offer }) {
 
   return (
     <>
-      {/* Hero */}
-      <section id="offer-hero" className="section pb-12 pt-12 md:pb-20 md:pt-20">
-        <div className="container-bb grid gap-10 lg:grid-cols-[1fr_340px] lg:gap-16">
+      {offer.upcoming && <UpcomingEvent event={offer.upcoming} />}
+
+      {/* Default hero */}
+      <section id="offer-hero" className={`section hero-soft pb-12 pt-12 md:pb-20 md:pt-20`}>
+        <div className="container-bb">
           <div>
             <p className="eyebrow">{offer.eyebrow}</p>
             <h1 className="t-display-lg mt-3 max-w-[20ch]">
@@ -81,27 +159,24 @@ export function OfferPage({ offer }: { offer: Offer }) {
               </a>
             </div>
           </div>
-          <aside className="grid content-start gap-5 self-start">
-            {offer.upcoming && <UpcomingEvent event={offer.upcoming} />}
-            <dl className="card card-raised m-0 grid content-start gap-5">
-              {offer.facts.map((f) => (
-                <div key={f.label}>
-                  <dt className="label text-muted">{f.label}</dt>
-                  <dd className="m-0 mt-1 text-[17px] font-bold leading-snug">{f.value}</dd>
-                </div>
-              ))}
-            </dl>
-          </aside>
+          <dl className="m-0 mt-10 grid gap-5 border-t border-line pt-6 sm:grid-cols-3">
+            {offer.facts.map((f) => (
+              <div key={f.label}>
+                <dt className="label text-muted">{f.label}</dt>
+                <dd className="m-0 mt-1 text-[17px] font-bold leading-snug">{f.value}</dd>
+              </div>
+            ))}
+          </dl>
         </div>
       </section>
 
       {/* Problem */}
-      <Section alt eyebrow="Problem" heading="The problem">
+      <Section eyebrow="Problem" heading="The problem">
         <p className="max-w-[62ch] text-[18px] font-medium leading-[1.7] md:text-[20px]">{offer.problem}</p>
       </Section>
 
       {/* Audience */}
-      <Section eyebrow="Audience" heading="Who it is for">
+      <Section alt eyebrow="Audience" heading="Who it is for">
         <ul className="m-0 grid list-none gap-4 p-0 md:grid-cols-3 md:gap-6">
           {offer.audience.map((line) => (
             <li key={line} className="card flex flex-col gap-4">
@@ -115,7 +190,7 @@ export function OfferPage({ offer }: { offer: Offer }) {
       </Section>
 
       {/* What you get */}
-      <Section alt eyebrow="Outcome" heading="What you get">
+      <Section eyebrow="Outcome" heading="What you get">
         <ul className="m-0 grid list-none gap-3 p-0 md:grid-cols-2 md:gap-4">
           {offer.gets.map((line) => (
             <li key={line} className="flex items-start gap-3 rounded-[14px] border border-line bg-surface p-4">
@@ -129,7 +204,7 @@ export function OfferPage({ offer }: { offer: Offer }) {
       </Section>
 
       {/* How it works */}
-      <Section eyebrow="Process" heading="How it works">
+      <Section alt eyebrow="Process" heading="How it works">
         <ol className="m-0 grid list-none gap-4 p-0 sm:grid-cols-2 md:gap-6 lg:grid-cols-[repeat(var(--steps),1fr)]" style={{ ["--steps" as string]: offer.steps.length >= 5 ? 3 : offer.steps.length }}>
           {offer.steps.map((step, i) => (
             <li key={step.title} className="card">
@@ -142,7 +217,7 @@ export function OfferPage({ offer }: { offer: Offer }) {
       </Section>
 
       {/* Plans */}
-      <Section id="plans" alt eyebrow="Pricing" heading={plans.heading} intro={plans.intro}>
+      <Section id="plans" eyebrow="Pricing" heading={plans.heading} intro={plans.intro}>
         {plans.rows.length > 0 ? <PlanTable plans={plans.plans} rows={plans.rows} label={plans.heading} /> : <PlanCards plans={plans.plans} />}
         {plans.included && (
           <div className="mt-10">

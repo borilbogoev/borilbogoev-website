@@ -22,7 +22,7 @@ export const metadata = {
 export default function HomePage() {
   return (
     <>
-      <section className="section pb-14 pt-12 md:pb-24 md:pt-20">
+      <section className="section hero-soft pb-14 pt-12 md:pb-24 md:pt-20">
         <div className="container-bb grid items-center gap-12 lg:grid-cols-[1fr_auto] lg:gap-16">
           <div>
             <p className="badge label">{home.badge}</p>
