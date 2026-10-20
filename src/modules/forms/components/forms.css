@@ -202,7 +202,7 @@
 .bbf fieldset{border:0;margin:0;padding:0}
 .bbf button{font-family:var(--bbf-font)}
 
-/* Page shells: standalone page (/s/<slug>) and modal dialog. */
+/* Page shells: standalone page (/f/<slug>) and modal dialog. */
 .bbf-page-shell{min-height:100vh;box-sizing:border-box;padding:48px 16px}
 .bbf-page-shell.is-light{background:#F6F6F6}
 .bbf-page-shell.is-dark{background:#111}

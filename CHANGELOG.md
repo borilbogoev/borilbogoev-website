@@ -11,7 +11,16 @@ All notable changes to this project. Versions follow [Semantic Versioning](https
 - `scripts/import-wordpress.ts`: verified import of the WordPress exports (2 forms, 55 responses, 649 answers).
 - Tables `users` and `bbforms_*` (migration `0001_forms_module`).
 
+- Landing Pages module: build pages at `/l/<name>` with the same three-pane builder as Forms (31 blocks: heroes, calls to action, buttons, form, quote, numbers, grid, gallery, carousel, video, audio, pricing, testimonials, guarantee, P.S., FAQ and more), page settings, preview at desktop, tablet and phone widths, version history, brand check, and a dashboard (views, unique views, sessions, clicks, click-through rate, averages, timelines, pies, clicks per button). Tables `landing_*` (migration `0002_landing_pages`).
+- `scripts/landing.ts` (`npm run landing`): create, validate, publish and measure landing pages from the terminal. Guide in `docs/landing-pages.md`.
+- Forms on their own page now live at `/f/<slug>`. The two webinar forms keep `/s/<slug>`; any other `/s/<slug>` redirects to `/f/<slug>`.
+- A form's Share tab lists the landing pages that embed it.
+
 ### Changed
+- Shared builder controls moved to `modules/forms/admin/controls.tsx` (Forms builder behaves as before); block settings gained `url`, `items` and `form` controls.
+- Admin colours now use the design system values (red #C72C2C, ink #1A1A1A).
+- Sitemap lists published landing pages that allow search engines.
+- `sharp` moved to dependencies (landing images are resized at upload).
 - Header and footer moved from the root layout to the `(site)` route group so form pages and the admin can be chrome-free. URLs are unchanged.
 
 ## [0.1.0] - 2026-10-19

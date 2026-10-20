@@ -10,7 +10,7 @@ export const bbformsForms = pgTable(
     id: serial("id").primaryKey(),
     title: text("title").notNull().default(""),
     status: text("status").notNull().default("active"), // active | draft | closed
-    slug: text("slug"), // public page at /s/<slug>; null: embed only
+    slug: text("slug"), // public page at /f/<slug> (/s/<slug> for the two legacy webinar forms); null: embed only
     settings: jsonb("settings").notNull().default(sql`'{}'::jsonb`),
     lastSeq: integer("last_seq").notNull().default(0), // per-form response counter
     authorId: uuid("author_id").references(() => users.id, { onDelete: "set null" }),

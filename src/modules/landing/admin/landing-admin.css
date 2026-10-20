@@ -1,0 +1,52 @@
+/* Landing Pages: admin additions. Everything else comes from the shared admin.css of the Forms module. */
+.bbfa-brandcheck{display:inline-flex;align-items:center;gap:8px;margin-top:12px;padding:6px 12px;border-radius:999px;border:1px solid var(--bbfa-line2);background:#fff;font:600 12px var(--bbfa-font);color:var(--bbfa-muted);cursor:default}
+button.bbfa-brandcheck{cursor:pointer}
+.bbfa-brandcheck .bbfa-i{width:14px;height:14px}
+.bbfa-brandcheck.has-warn{border-color:var(--bbfa-soft-line);background:var(--bbfa-soft);color:var(--bbfa-accent)}
+.bbfa-issues{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:2px}
+.bbfa-issues li button{display:block;width:100%;text-align:left;padding:7px 10px;border:0;border-radius:8px;background:transparent;font:500 12.5px/1.45 var(--bbfa-font);color:var(--bbfa-ink);cursor:pointer}
+.bbfa-issues li button:hover:not(:disabled){background:var(--bbfa-bg)}
+.bbfa-issues li button:disabled{cursor:default;color:var(--bbfa-muted)}
+.bbfa-issues li.is-warn button::before{content:"";display:inline-block;width:6px;height:6px;margin-right:8px;border-radius:50%;background:var(--bbfa-accent);vertical-align:middle}
+.bbfa-issues li:not(.is-warn) button::before{content:"";display:inline-block;width:6px;height:6px;margin-right:8px;border-radius:50%;background:var(--bbfa-faint);vertical-align:middle}
+.bbfa-lp-body{display:flex;gap:14px;align-items:center}
+.bbfa-lp-thumb{flex:none;width:72px;height:48px;object-fit:cover;border-radius:8px;border:1px solid var(--bbfa-line);background:var(--bbfa-bg)}
+.bbfa-inspector__desc{margin:0;padding:12px 20px 0;color:var(--bbfa-muted);font-size:12.5px;line-height:1.5}
+.bbfa-layout{border-top:1px solid var(--bbfa-line);padding-top:12px;display:flex;flex-direction:column;gap:14px}
+.bbfa-layout summary{cursor:pointer;font:700 11px var(--bbfa-font);letter-spacing:.12em;text-transform:uppercase;color:var(--bbfa-muted);margin-bottom:12px}
+
+/* list */
+.bbfa-url{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;color:var(--bbfa-muted)}
+.bbfa-pill--published{background:#E9F7EE;color:#1C8C4E}
+.bbfa-pill--archived{background:var(--bbfa-soft);color:var(--bbfa-accent)}
+
+/* dashboard */
+.bbfa-pies{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-bottom:18px}
+@media (max-width:1280px){.bbfa-pies{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:760px){.bbfa-pies{grid-template-columns:1fr}}
+.bbfa-donut{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.bbfa-donut svg{flex:none}
+.bbfa-donut ul{list-style:none;margin:0;padding:0;flex:1 1 150px;min-width:0;display:flex;flex-direction:column;gap:7px;font-size:13px}
+.bbfa-donut li{display:flex;align-items:center;gap:8px;min-width:0}
+.bbfa-donut li i{flex:none;width:10px;height:10px;border-radius:3px}
+.bbfa-donut li span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bbfa-donut li strong{font-weight:700;font-size:13px}
+.bbfa-donut li em{font-style:normal;color:var(--bbfa-faint);font-size:12px;min-width:38px;text-align:right}
+.bbfa-donut__total{font:800 22px var(--bbfa-font);letter-spacing:-.02em;fill:var(--bbfa-ink)}
+.bbfa-donut__cap{font:700 9px var(--bbfa-font);letter-spacing:.12em;text-transform:uppercase;fill:var(--bbfa-faint)}
+.bbfa-kpi-sub{display:block;margin-top:2px}
+.bbfa-cardrow{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:20px}
+.bbfa-table td.is-trunc{max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* settings */
+.bbfa-rev{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.bbfa-rev li{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--bbfa-line);font-size:13px}
+.bbfa-rev li:last-child{border-bottom:0}
+.bbfa-rev li span{flex:1;min-width:0}
+.bbfa-rev li em{font-style:normal;color:var(--bbfa-faint);font-size:12px}
+
+/* preview */
+.bbfa-devices{display:flex;gap:6px;align-items:center}
+.bbfa-previewbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
+.bbfa-frame-wrap{display:flex;justify-content:center;background:var(--bbfa-bg);border:1px solid var(--bbfa-line);border-radius:calc(var(--bbfa-r) + 4px);padding:20px;overflow:auto}
+.bbfa-frame{border:1px solid var(--bbfa-line2);border-radius:12px;background:#fff;box-shadow:var(--bbfa-shadow);width:100%;height:calc(100vh - 220px);min-height:520px;transition:width .2s}

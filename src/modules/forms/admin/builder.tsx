@@ -4,7 +4,10 @@ import { useCallback, useEffect, useMemo, useRef, useState, type DragEvent } fro
 import { BLOCK_TYPES, GROUPS, LOGIC_OP_LABELS, blockDefaults, isBlockType, isInput, type Block, type BlockType, type Control, type LogicOp, type Settings } from "../lib/blocks";
 import { cleanKey } from "../lib/sanitize";
 import { FORM_STATUSES } from "../lib/settings";
+import { ControlField, type ControlCtx } from "./controls";
 import { api, ApiError, Icon, useConfirm, useToast } from "./ui";
+
+const FORMS_CTX: ControlCtx = { uploadUrl: "/api/admin/forms/media" };
 
 type EditBlock = Block & { uid: number; auto: boolean };
 
@@ -19,7 +22,8 @@ type Props = {
 
 const clone = <T,>(o: T): T => JSON.parse(JSON.stringify(o));
 
-let uidCounter = 0;
+// Blocks loaded with the page get 1..n, so the server HTML and the browser agree (no hydration mismatch). Later ones count up from 10000.
+let uidCounter = 10000;
 const nextUid = () => ++uidCounter;
 
 /** Program names for blocks of the form: contact sub-fields and input blocks. */
@@ -46,10 +50,11 @@ export function Builder({ formId, initialTitle, initialStatus, initialBlocks, ac
   const toast = useToast();
   const confirm = useConfirm();
   const prep = (b: Block): EditBlock => ({ ...b, uid: nextUid(), auto: false });
+  const prepInitial = (b: Block, i: number): EditBlock => ({ ...b, uid: i + 1, auto: false });
 
   const [title, setTitle] = useState(initialTitle);
   const [status, setStatus] = useState(initialStatus);
-  const [blocks, setBlocks] = useState<EditBlock[]>(() => initialBlocks.map(prep));
+  const [blocks, setBlocks] = useState<EditBlock[]>(() => initialBlocks.map(prepInitial));
   const [sel, setSel] = useState<number | null>(null);
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -618,82 +623,17 @@ function Inspector({ block, blocks, readOnly, onChange }: { block: EditBlock; bl
 
 function ControlView({ control: c, block: b, blocks, set, onChange }: { control: Control; block: EditBlock; blocks: EditBlock[]; set: (k: string, v: unknown) => void; onChange: (fn: (b: EditBlock) => EditBlock) => void }) {
   const s = b.settings;
-  if (c.show_if && !s[c.show_if]) return null;
-  const v = s[c.key];
-
   switch (c.type) {
-    case "text":
-      return (
-        <div className="bbfa-ctl">
-          <label className="bbfa-label">{c.label}</label>
-          <input type="text" value={v === undefined ? "" : String(v)} onChange={(e) => set(c.key, e.target.value)} />
-        </div>
-      );
-    case "textarea":
-    case "markdown":
-      return (
-        <div className="bbfa-ctl">
-          <label className="bbfa-label">{c.label}</label>
-          <textarea rows={c.type === "markdown" ? 6 : 3} value={String(v ?? "")} onChange={(e) => set(c.key, e.target.value)} />
-          {c.type === "markdown" || /Markdown/.test(c.label) ? (
-            <small>
-              <b>**bold**</b> · <i>*italic*</i> · [link](https://) · - list · # heading
-            </small>
-          ) : null}
-        </div>
-      );
-    case "number":
-      return (
-        <div className="bbfa-ctl">
-          <label className="bbfa-label">{c.label}</label>
-          <input type="number" value={v as number} min={c.min} max={c.max} onChange={(e) => set(c.key, e.target.value === "" ? "" : Number(e.target.value))} />
-        </div>
-      );
-    case "select":
-      return (
-        <div className="bbfa-ctl">
-          <label className="bbfa-label">{c.label}</label>
-          <select value={String(v)} onChange={(e) => set(c.key, e.target.value)}>
-            {Object.entries(c.choices ?? {}).map(([k, l]) => (
-              <option key={k} value={k}>
-                {l}
-              </option>
-            ))}
-          </select>
-        </div>
-      );
-    case "toggle":
-      return (
-        <div className="bbfa-ctl">
-          <label className="bbfa-toggle">
-            <input type="checkbox" checked={!!v} onChange={(e) => set(c.key, e.target.checked ? 1 : 0)} />
-            <span className="bbfa-toggle__ui" />
-            <span className="bbfa-label">{c.label}</span>
-          </label>
-        </div>
-      );
-    case "color":
-      return (
-        <div className="bbfa-ctl">
-          <label className="bbfa-label">{c.label}</label>
-          <div className="bbfa-color">
-            <input type="color" value={/^#[0-9a-f]{6}$/i.test(String(v)) ? String(v) : "#E6E6E6"} onChange={(e) => set(c.key, e.target.value.toUpperCase())} />
-            <input type="text" value={String(v ?? "")} maxLength={7} onChange={(e) => set(c.key, e.target.value)} />
-          </div>
-        </div>
-      );
     case "field_key":
       return <FieldKeyControl label={c.label} block={b} blocks={blocks} onChange={onChange} />;
-    case "options":
-      return <OptionsControl label={c.label} options={(v as string[]) ?? []} onChange={(o) => set(c.key, o)} />;
-    case "image":
-      return <ImageControl label={c.label} value={(v as { id: number; url: string }) ?? { id: 0, url: "" }} onChange={(img) => set(c.key, img)} />;
     case "contact_fields":
-      return <ContactFieldsControl label={c.label} fields={(v ?? s.fields) as Settings} onChange={(f) => set("fields", f)} />;
+      return <ContactFieldsControl label={c.label} fields={(s[c.key] ?? s.fields) as Settings} onChange={(f) => set("fields", f)} />;
     case "logic":
       return <LogicControl block={b} blocks={blocks} onChange={(l) => set("logic", l)} />;
+    default:
+      // Every other control is shared with the other block builders (controls.tsx).
+      return <ControlField control={c} settings={s} set={set} ctx={FORMS_CTX} />;
   }
-  return null;
 }
 
 function FieldKeyControl({ label, block, blocks, onChange }: { label: string; block: EditBlock; blocks: EditBlock[]; onChange: (fn: (b: EditBlock) => EditBlock) => void }) {
@@ -733,126 +673,6 @@ function FieldKeyControl({ label, block, blocks, onChange }: { label: string; bl
       </div>
       <small>Used for database mapping, CSV columns, webhooks and merge tags.</small>
       {clash ? <small className="bbfa-warn">This name is already used. It will be suffixed on save.</small> : null}
-    </div>
-  );
-}
-
-function OptionsControl({ label, options, onChange }: { label: string; options: string[]; onChange: (o: string[]) => void }) {
-  const [bulk, setBulk] = useState<string | null>(null);
-  const refs = useRef<(HTMLInputElement | null)[]>([]);
-  const focusNext = useRef<number | null>(null);
-  useEffect(() => {
-    if (focusNext.current !== null) {
-      refs.current[focusNext.current]?.focus();
-      focusNext.current = null;
-    }
-  });
-  const setAt = (i: number, val: string) => onChange(options.map((o, k) => (k === i ? val : o)));
-  return (
-    <div className="bbfa-ctl">
-      <label className="bbfa-label">{label}</label>
-      {bulk === null ? (
-        <div className="bbfa-opts">
-          {options.map((o, i) => (
-            <div className="bbfa-opt" key={i}>
-              <b>{String.fromCharCode(65 + (i % 26))}</b>
-              <input
-                ref={(el) => {
-                  refs.current[i] = el;
-                }}
-                type="text"
-                value={o}
-                onChange={(e) => setAt(i, e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    const next = [...options];
-                    next.splice(i + 1, 0, "");
-                    focusNext.current = i + 1;
-                    onChange(next);
-                  }
-                }}
-              />
-              <button
-                type="button"
-                title="Up"
-                disabled={!i}
-                onClick={() => {
-                  const next = [...options];
-                  [next[i - 1], next[i]] = [next[i], next[i - 1]];
-                  onChange(next);
-                }}
-              >
-                <Icon name="up" />
-              </button>
-              <button type="button" title="Remove" onClick={() => onChange(options.filter((_, k) => k !== i))}>
-                <Icon name="close" />
-              </button>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <textarea className="bbfa-bulk" rows={6} value={bulk} placeholder="One option per line" onChange={(e) => setBulk(e.target.value)} />
-      )}
-      <div className="bbfa-inline">
-        {bulk === null ? (
-          <button type="button" className="bbfa-mini" onClick={() => onChange([...options, `Option ${String.fromCharCode(65 + (options.length % 26))}`])}>
-            <Icon name="plus" /> Add option
-          </button>
-        ) : null}
-        <button
-          type="button"
-          className="bbfa-mini is-ghost"
-          onClick={() => {
-            if (bulk === null) setBulk(options.join("\n"));
-            else {
-              onChange(bulk.split("\n").map((x) => x.trim()).filter(Boolean));
-              setBulk(null);
-            }
-          }}
-        >
-          {bulk === null ? "Bulk edit" : "Apply"}
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function ImageControl({ label, value, onChange }: { label: string; value: { id: number; url: string }; onChange: (v: { id: number; url: string }) => void }) {
-  const toast = useToast();
-  const [busy, setBusy] = useState(false);
-  const file = useRef<HTMLInputElement>(null);
-  const upload = async (f: File) => {
-    setBusy(true);
-    try {
-      const fd = new FormData();
-      fd.append("file", f);
-      const res = await fetch("/api/admin/forms/media", { method: "POST", body: fd });
-      const json = (await res.json().catch(() => ({}))) as { url?: string; error?: string };
-      if (!res.ok || !json.url) throw new Error(json.error ?? "Upload failed");
-      onChange({ id: 0, url: json.url });
-    } catch (e) {
-      toast(e instanceof Error ? e.message : "Upload failed", "error");
-    } finally {
-      setBusy(false);
-    }
-  };
-  return (
-    <div className="bbfa-ctl bbfa-ctl--image">
-      <label className="bbfa-label">{label}</label>
-      <div className="bbfa-img-prev">{value.url ? <img src={value.url} alt="" /> : <span>No image</span>}</div>
-      <div className="bbfa-inline">
-        <input ref={file} type="file" accept="image/jpeg,image/png,image/webp,image/gif" hidden onChange={(e) => e.target.files?.[0] && upload(e.target.files[0])} />
-        <button type="button" className="bbfa-mini" disabled={busy} onClick={() => file.current?.click()}>
-          {busy ? "Uploading..." : value.url ? "Replace image" : "Upload image"}
-        </button>
-        {value.url ? (
-          <button type="button" className="bbfa-mini is-ghost" onClick={() => onChange({ id: 0, url: "" })}>
-            Remove
-          </button>
-        ) : null}
-      </div>
-      <input type="url" value={value.url} placeholder="https://... or upload" onChange={(e) => onChange({ id: 0, url: e.target.value })} />
     </div>
   );
 }
