@@ -23,14 +23,14 @@ export type Interval = "day" | "week" | "month";
 
 type Bucketed = { key: string; n: number; d?: number | null };
 
-function addDays(day: string, n: number): string {
+export function addDays(day: string, n: number): string {
   const d = new Date(`${day}T00:00:00Z`);
   d.setUTCDate(d.getUTCDate() + n);
   return d.toISOString().slice(0, 10);
 }
 
 /** Bucket start dates between two days, matching the SQL bucket expressions. */
-function buckets(from: string, to: string, interval: Interval): string[] {
+export function buckets(from: string, to: string, interval: Interval): string[] {
   const out: string[] = [];
   let t = new Date(`${from}T00:00:00Z`);
   const end = new Date(`${to}T00:00:00Z`);
@@ -47,7 +47,7 @@ function buckets(from: string, to: string, interval: Interval): string[] {
 }
 
 /** Start date of the bucket (day, ISO week or month) that a date or timestamp expression falls in. */
-const bucketSql = (expr: SQL, interval: Interval) =>
+export const bucketSql = (expr: SQL, interval: Interval) =>
   interval === "day" ? sql`to_char((${expr})::date, 'YYYY-MM-DD')` : sql`to_char(date_trunc(${interval}, (${expr})::date)::date, 'YYYY-MM-DD')`;
 
 export type ChartItem = { label: string; n: number; pct: number };

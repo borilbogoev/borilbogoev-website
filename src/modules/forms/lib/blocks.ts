@@ -1,6 +1,6 @@
 // Block type registry. One schema drives the builder UI, rendering, validation, response columns and charts.
 // Ported from class-bbf-blocks.php of the BB Forms WP plugin.
-import { cleanHexColor, cleanKey, cleanMultiline, cleanText, cleanUrl, toBool } from "./sanitize";
+import { cleanHexColor, cleanKey, cleanLink, cleanMultiline, cleanText, cleanUrl, toBool } from "./sanitize";
 
 /** Block settings are schema-driven JSON: the shape depends on the block type. */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -42,7 +42,10 @@ export type ControlType =
   | "options"
   | "image"
   | "contact_fields"
-  | "logic";
+  | "logic"
+  | "url" // a link: site path, #anchor, http(s), mailto or tel (Landing Pages)
+  | "items" // a repeating group of sub-controls, e.g. the cards of a grid (Landing Pages)
+  | "form"; // pick one of the forms of this module (Landing Pages)
 
 export type Control = {
   key: string;
@@ -53,6 +56,9 @@ export type Control = {
   min?: number;
   max?: number;
   show_if?: string;
+  help?: string; // small hint under the control
+  fields?: Control[]; // items: the controls of one entry
+  item_label?: string; // items: key of the sub-control that titles each entry in the builder
 };
 
 export type BlockGroup = "content" | "questions" | "choice" | "data" | "layout";
@@ -396,16 +402,18 @@ function clone<T>(v: T): T {
   return v === undefined ? v : (JSON.parse(JSON.stringify(v)) as T);
 }
 
-/** Default settings of a block type. */
-export function blockDefaults(type: BlockType): Settings {
+/** Default settings of a list of controls. Shared by Forms blocks and the blocks of other modules (Landing Pages). */
+export function defaultsFor(controls: Control[]): Settings {
   const out: Settings = {};
-  for (const c of BLOCK_TYPES[type].controls) {
+  for (const c of controls) {
     if (c.type === "contact_fields") {
       const f: Settings = {};
       for (const [k, cf] of Object.entries(CONTACT_FIELDS)) f[k] = { enabled: cf[1], required: cf[2], label: cf[0], key: k };
       out.fields = f;
     } else if (c.type === "logic") {
       out.logic = defaultLogic();
+    } else if (c.type === "items") {
+      out[c.key] = clone(c.default ?? []);
     } else if (c.default !== undefined) {
       out[c.key] = clone(c.default);
     }
@@ -413,25 +421,34 @@ export function blockDefaults(type: BlockType): Settings {
   return out;
 }
 
-/** Saved settings laid over the defaults (a deep merge, so new settings appear on old blocks). */
-export function withDefaults(type: BlockType, saved: unknown): Settings {
-  const merge = (base: Settings, over: Settings): Settings => {
-    const out: Settings = { ...base };
+/** Default settings of a block type. */
+export function blockDefaults(type: BlockType): Settings {
+  return defaultsFor(BLOCK_TYPES[type].controls);
+}
+
+/** Saved settings laid over the defaults (a deep merge, so new settings appear on old blocks). Items lists are kept as saved. */
+export function mergeDefaults(base: Settings, saved: unknown): Settings {
+  const merge = (b0: Settings, over: Settings): Settings => {
+    const out: Settings = { ...b0 };
     for (const [k, v] of Object.entries(over)) {
-      const b = base[k];
+      const b = b0[k];
       out[k] = b && v && typeof b === "object" && typeof v === "object" && !Array.isArray(b) && !Array.isArray(v) ? merge(b, v as Settings) : v;
     }
     return out;
   };
-  return merge(blockDefaults(type), saved && typeof saved === "object" ? (saved as Settings) : {});
+  return merge(base, saved && typeof saved === "object" ? (saved as Settings) : {});
 }
 
-/** Sanitize block settings against the type's schema. */
-export function sanitizeBlockSettings(type: BlockType, input: unknown): Settings {
-  const out = blockDefaults(type);
+export function withDefaults(type: BlockType, saved: unknown): Settings {
+  return mergeDefaults(blockDefaults(type), saved);
+}
+
+/** Sanitize settings against a list of controls. */
+export function sanitizeFor(controls: Control[], input: unknown): Settings {
+  const out = defaultsFor(controls);
   if (!input || typeof input !== "object") return out;
   const s = input as Settings;
-  for (const c of BLOCK_TYPES[type].controls) {
+  for (const c of controls) {
     const k = c.key;
     if (c.type === "field_key" || !(k in s)) continue;
     const v = s[k];
@@ -462,7 +479,21 @@ export function sanitizeBlockSettings(type: BlockType, input: unknown): Settings
         break;
       case "image": {
         const img = (v ?? {}) as Settings;
-        out[k] = { id: 0, url: cleanUrl(img.url) };
+        const value: Settings = { id: 0, url: cleanUrl(img.url) };
+        // Pictures uploaded through Landing Pages carry their size and the widths of the stored copies.
+        const w = Math.round(Number(img.width));
+        const h = Math.round(Number(img.height));
+        if (value.url && w > 0 && w < 20000 && h > 0 && h < 20000) {
+          value.width = w;
+          value.height = h;
+          if (Array.isArray(img.variants)) {
+            value.variants = img.variants
+              .map((x: Settings) => ({ w: Math.round(Number(x?.w)), url: cleanUrl(x?.url) }))
+              .filter((x: { w: number; url: string }) => x.url && x.w > 0 && x.w < 8000)
+              .slice(0, 6);
+          }
+        }
+        out[k] = value;
         break;
       }
       case "contact_fields": {
@@ -489,11 +520,33 @@ export function sanitizeBlockSettings(type: BlockType, input: unknown): Settings
         } satisfies Logic;
         break;
       }
+      case "url":
+        out[k] = cleanLink(v);
+        break;
+      case "form": {
+        const n = Math.trunc(Number(v));
+        out[k] = Number.isFinite(n) && n > 0 ? n : 0;
+        break;
+      }
+      case "items": {
+        const max = c.max ?? 24;
+        const sub = c.fields ?? [];
+        out[k] = (Array.isArray(v) ? v : [])
+          .filter((it) => it && typeof it === "object")
+          .slice(0, max)
+          .map((it) => sanitizeFor(sub, it));
+        break;
+      }
       default:
         out[k] = k === "link" ? cleanUrl(v) : cleanText(v);
     }
   }
   return out;
+}
+
+/** Sanitize block settings against the type's schema. */
+export function sanitizeBlockSettings(type: BlockType, input: unknown): Settings {
+  return sanitizeFor(BLOCK_TYPES[type].controls, input);
 }
 
 export type Field = {

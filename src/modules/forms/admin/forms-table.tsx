@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { formPath } from "../lib/paths";
 import { api, CopyCode, fmtNum, useConfirm, useFormatters, useToast } from "./ui";
 
 export type FormRow = { id: number; title: string; status: string; slug: string | null; updatedAt: string; responses: number; unread: number; lastResponse: string | null; views: number };
@@ -72,7 +73,7 @@ export function FormsTable({ rows, canWrite, canDelete }: { rows: FormRow[]; can
                   </Link>
                   <div className="bbfa-sub">
                     #{r.id} · updated {f.ago(r.updatedAt)}
-                    {r.slug ? ` · /s/${r.slug}` : ""}
+                    {r.slug ? ` · ${formPath(r.slug)}` : ""}
                   </div>
                 </td>
                 <td>

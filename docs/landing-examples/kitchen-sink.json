@@ -1,0 +1,601 @@
+{
+  "title": "Kitchen sink (every block)",
+  "slug": "kitchen-sink",
+  "status": "draft",
+  "settings": {
+    "seo_title": "Every landing block",
+    "seo_description": "A reference page that shows each block of the landing page builder.",
+    "chrome": "minimal",
+    "sticky_label": "Reserve My Seat",
+    "sticky_url": "#form",
+    "indexable": 0
+  },
+  "blocks": [
+    {
+      "type": "hero_image",
+      "settings": {
+        "badge": "Live · Thursdays",
+        "eyebrow": "Free Webinar",
+        "headline": "Run your week with a system, not willpower",
+        "accent_dot": 1,
+        "subtitle": "For busy parents who want AI to carry the repeat work.",
+        "text": "A **45 minute** session. You leave with one working routine.",
+        "bullets": [
+          "Three tools you already own",
+          "One routine you can reuse",
+          "A checklist for the week"
+        ],
+        "cta_label": "Reserve My Seat",
+        "cta_url": "#form",
+        "secondary_label": "See The Agenda",
+        "secondary_url": "#agenda",
+        "note": "Free · Replay included",
+        "image": {
+          "id": 0,
+          "url": "/brand/portrait-640.webp",
+          "width": 640,
+          "height": 640
+        },
+        "image_alt": "Portrait of Boril Bogoev",
+        "image_style": "portrait"
+      }
+    },
+    {
+      "type": "logos",
+      "settings": {
+        "label": "As seen in",
+        "items": [
+          {
+            "name": "AIUGMENTIC"
+          },
+          {
+            "name": "The Streamliner"
+          },
+          {
+            "name": "Dubai AI Week"
+          }
+        ]
+      }
+    },
+    {
+      "type": "features",
+      "settings": {
+        "anchor": "agenda",
+        "eyebrow": "What you will learn",
+        "heading": "Three things you take away",
+        "items": [
+          {
+            "icon": "spark",
+            "title": "Find the repeat work",
+            "text": "Spot the tasks a system can carry."
+          },
+          {
+            "icon": "workflow",
+            "title": "Build one routine",
+            "text": "Connect the tools you already use."
+          },
+          {
+            "icon": "chart",
+            "title": "Measure the gain",
+            "text": "Know what changed, in hours."
+          }
+        ]
+      }
+    },
+    {
+      "type": "stats",
+      "settings": {
+        "eyebrow": "Results",
+        "heading": "The numbers",
+        "items": [
+          {
+            "prefix": "~",
+            "value": "40",
+            "suffix": "%",
+            "label": "Reduction in manual workload"
+          },
+          {
+            "value": "20",
+            "suffix": "+",
+            "label": "Years of experience"
+          },
+          {
+            "value": "3",
+            "suffix": "x",
+            "label": "Faster weekly reporting"
+          }
+        ]
+      }
+    },
+    {
+      "type": "video",
+      "settings": {
+        "eyebrow": "Watch",
+        "heading": "A two minute overview",
+        "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        "title": "Overview",
+        "caption": "The session in two minutes."
+      }
+    },
+    {
+      "type": "steps",
+      "settings": {
+        "eyebrow": "Process",
+        "heading": "How it works",
+        "items": [
+          {
+            "title": "Register",
+            "text": "Pick your seat. A calendar invite arrives."
+          },
+          {
+            "title": "Attend live",
+            "text": "45 minutes, with time for questions."
+          },
+          {
+            "title": "Use the replay",
+            "text": "The recording and the checklist follow by email."
+          }
+        ]
+      }
+    },
+    {
+      "type": "cards",
+      "settings": {
+        "eyebrow": "Programs",
+        "heading": "Where to go next",
+        "items": [
+          {
+            "image": {
+              "id": 0,
+              "url": "/brand/portrait-320.webp",
+              "width": 320,
+              "height": 320
+            },
+            "image_alt": "Illustration",
+            "title": "Sessions",
+            "text": "One hour, one decision, one next step.",
+            "link_label": "Read More",
+            "link_url": "/sessions"
+          },
+          {
+            "image": {
+              "id": 0,
+              "url": "/brand/portrait-320.webp",
+              "width": 320,
+              "height": 320
+            },
+            "image_alt": "Illustration",
+            "title": "Screening",
+            "text": "A short audit of your operations.",
+            "link_label": "Read More",
+            "link_url": "/screening"
+          },
+          {
+            "image": {
+              "id": 0,
+              "url": "/brand/portrait-320.webp",
+              "width": 320,
+              "height": 320
+            },
+            "image_alt": "Illustration",
+            "title": "Sprint",
+            "text": "Two weeks to a working automation.",
+            "link_label": "Read More",
+            "link_url": "/sprint"
+          }
+        ]
+      }
+    },
+    {
+      "type": "quote",
+      "settings": {
+        "quote": "Systems always win. Willpower runs out by Thursday.",
+        "author": "Boril Bogoev, Ph.D.",
+        "role": "Head of AI and Automation",
+        "style": "statement"
+      }
+    },
+    {
+      "type": "compare",
+      "settings": {
+        "eyebrow": "Difference",
+        "heading": "Before and after",
+        "left_title": "Without a system",
+        "left_items": [
+          "Manual reporting every Friday",
+          "Five tools that do not talk",
+          "Answers live in your head"
+        ],
+        "right_title": "With a system",
+        "right_items": [
+          "Reports build themselves",
+          "One flow across the tools",
+          "Answers live in the system"
+        ]
+      }
+    },
+    {
+      "type": "list",
+      "settings": {
+        "eyebrow": "Included",
+        "heading": "What is inside",
+        "items": [
+          "Live session, 45 minutes",
+          "Replay for 30 days",
+          "The weekly routine checklist",
+          "Templates for the three tools",
+          "Email support for a week"
+        ]
+      }
+    },
+    {
+      "type": "testimonials",
+      "settings": {
+        "eyebrow": "Clients",
+        "heading": "What they say",
+        "items": [
+          {
+            "quote": "We cut the weekly report from a day to an hour.",
+            "name": "Amira K.",
+            "role": "COO, logistics company",
+            "result": "~85% less time"
+          },
+          {
+            "quote": "Clear, calm and practical. I used it the same afternoon.",
+            "name": "Daniel R.",
+            "role": "Founder, studio"
+          },
+          {
+            "quote": "The checklist alone was worth the hour.",
+            "name": "Maria T.",
+            "role": "Operations lead"
+          }
+        ]
+      }
+    },
+    {
+      "type": "gallery",
+      "settings": {
+        "eyebrow": "Gallery",
+        "heading": "From past sessions",
+        "items": [
+          {
+            "image": {
+              "id": 0,
+              "url": "/brand/portrait-640.webp",
+              "width": 640,
+              "height": 640
+            },
+            "alt": "Session photo",
+            "caption": "Dubai, 2026"
+          },
+          {
+            "image": {
+              "id": 0,
+              "url": "/brand/portrait-640.webp",
+              "width": 640,
+              "height": 640
+            },
+            "alt": "Session photo",
+            "caption": "Online, 2026"
+          },
+          {
+            "image": {
+              "id": 0,
+              "url": "/brand/portrait-640.webp",
+              "width": 640,
+              "height": 640
+            },
+            "alt": "Session photo",
+            "caption": "Sofia, 2025"
+          }
+        ],
+        "columns": "3",
+        "ratio": "4:3"
+      }
+    },
+    {
+      "type": "carousel",
+      "settings": {
+        "eyebrow": "Slides",
+        "heading": "Three slides",
+        "per_view": "1",
+        "items": [
+          {
+            "image": {
+              "id": 0,
+              "url": "/brand/portrait-640.webp",
+              "width": 640,
+              "height": 640
+            },
+            "alt": "Slide",
+            "title": "First slide",
+            "text": "One sentence about it.",
+            "link_label": "Read More",
+            "link_url": "/sessions"
+          },
+          {
+            "image": {
+              "id": 0,
+              "url": "/brand/portrait-640.webp",
+              "width": 640,
+              "height": 640
+            },
+            "alt": "Slide",
+            "title": "Second slide",
+            "text": "One sentence about it."
+          },
+          {
+            "image": {
+              "id": 0,
+              "url": "/brand/portrait-640.webp",
+              "width": 640,
+              "height": 640
+            },
+            "alt": "Slide",
+            "title": "Third slide",
+            "text": "One sentence about it."
+          }
+        ]
+      }
+    },
+    {
+      "type": "audio",
+      "settings": {
+        "eyebrow": "Listen",
+        "heading": "A short audio brief",
+        "url": "https://example.com/brief.mp3",
+        "title": "The five minute brief",
+        "description": "The idea of the session, in audio.",
+        "transcript": "This is the transcript of the audio. **Facts first.**"
+      }
+    },
+    {
+      "type": "pricing",
+      "settings": {
+        "anchor": "pricing",
+        "eyebrow": "Pricing",
+        "heading": "Choose your plan",
+        "items": [
+          {
+            "name": "Replay",
+            "price": "$29",
+            "period": "one-time",
+            "description": "Watch when it suits you.",
+            "features": "Recording for 30 days\nThe checklist",
+            "button_label": "Get The Replay",
+            "button_url": "#form"
+          },
+          {
+            "name": "Live",
+            "price": "$49",
+            "period": "one-time",
+            "badge": "Most chosen",
+            "description": "Attend and ask questions.",
+            "features": "Live session\nRecording for 30 days\nThe checklist\nQ&A",
+            "button_label": "Reserve My Seat",
+            "button_url": "#form",
+            "highlight": 1
+          },
+          {
+            "name": "Team",
+            "price": "$199",
+            "period": "up to 10 seats",
+            "description": "For a small team.",
+            "features": "Everything in Live\nTeam templates\nA follow-up call",
+            "button_label": "Book For My Team",
+            "button_url": "#form"
+          }
+        ],
+        "footnote": "Prices in USD."
+      }
+    },
+    {
+      "type": "bonuses",
+      "settings": {
+        "eyebrow": "Bonuses",
+        "heading": "Included with it",
+        "items": [
+          {
+            "title": "The routine checklist",
+            "text": "One page, printable.",
+            "value": "$19"
+          },
+          {
+            "title": "Template pack",
+            "text": "Three templates for the tools.",
+            "value": "$39"
+          }
+        ],
+        "total": "Total value: $58"
+      }
+    },
+    {
+      "type": "guarantee",
+      "settings": {
+        "eyebrow": "Guarantee",
+        "heading": "You risk nothing",
+        "badge": "30 days",
+        "text": "If the session does not give you one routine you can use, write to me within 30 days and I refund the full price.",
+        "points": [
+          "No forms to fill",
+          "Refund within 5 working days"
+        ]
+      }
+    },
+    {
+      "type": "countdown",
+      "settings": {
+        "label": "The webinar starts in",
+        "target": "2027-01-15T18:00:00+04:00",
+        "done_text": "The webinar has started."
+      }
+    },
+    {
+      "type": "bio",
+      "settings": {
+        "eyebrow": "Your host",
+        "name": "Boril Bogoev, Ph.D.",
+        "role": "Head of AI and Automation",
+        "text": "I design and build AI-powered business operating systems. I teach what I build for clients.",
+        "credentials": [
+          "PhD in Automated Digital Business Models",
+          "Founder of AIUGMENTIC",
+          "20+ years in marketing and automation"
+        ],
+        "image": {
+          "id": 0,
+          "url": "/brand/portrait-640.webp",
+          "width": 640,
+          "height": 640
+        },
+        "image_alt": "Portrait of Boril Bogoev",
+        "link_label": "More About Me",
+        "link_url": "/about",
+        "image_side": "left"
+      }
+    },
+    {
+      "type": "faq",
+      "settings": {
+        "eyebrow": "FAQ",
+        "heading": "Questions",
+        "items": [
+          {
+            "q": "Is there a replay?",
+            "a": "Yes. Everyone who registers receives the recording."
+          },
+          {
+            "q": "What does it cost?",
+            "a": "The webinar is free. The replay pack is $29."
+          }
+        ]
+      }
+    },
+    {
+      "type": "buttons",
+      "settings": {
+        "items": [
+          {
+            "label": "Primary",
+            "url": "#form",
+            "style": "primary",
+            "size": "md"
+          },
+          {
+            "label": "Dark",
+            "url": "#form",
+            "style": "dark"
+          },
+          {
+            "label": "Outline",
+            "url": "#form",
+            "style": "outline"
+          },
+          {
+            "label": "Soft red",
+            "url": "#form",
+            "style": "tint",
+            "icon": "arrow"
+          },
+          {
+            "label": "Text link",
+            "url": "/sessions",
+            "style": "link",
+            "icon": "arrow"
+          }
+        ],
+        "align": "center"
+      }
+    },
+    {
+      "type": "form",
+      "settings": {
+        "eyebrow": "Registration",
+        "heading": "Reserve your seat",
+        "form_id": 1,
+        "display": "inline"
+      }
+    },
+    {
+      "type": "cta",
+      "settings": {
+        "length": "short",
+        "heading": "Ready to start",
+        "text": "Seats are limited to 100.",
+        "cta_label": "Reserve My Seat",
+        "cta_url": "#form",
+        "bg": "alt"
+      }
+    },
+    {
+      "type": "cta",
+      "settings": {
+        "length": "long",
+        "eyebrow": "Next Step",
+        "heading": "Ready to start.",
+        "text": "One hour now saves a day every week.",
+        "bullets": [
+          "Free to attend",
+          "Replay included"
+        ],
+        "cta_label": "Reserve My Seat",
+        "cta_url": "#form",
+        "secondary_label": "Ask A Question",
+        "secondary_url": "mailto:hello@borilbogoev.com",
+        "align": "center"
+      }
+    },
+    {
+      "type": "ps",
+      "settings": {
+        "label": "P.S.",
+        "text": "The next session is the last before the summer break. Seats are limited to 100.",
+        "cta_label": "Reserve My Seat",
+        "cta_url": "#form"
+      }
+    },
+    {
+      "type": "divider",
+      "settings": {
+        "style": "accent"
+      }
+    },
+    {
+      "type": "heading",
+      "settings": {
+        "eyebrow": "Plain title",
+        "text": "A title block from the Forms module",
+        "level": "h2",
+        "accent_dot": 1
+      }
+    },
+    {
+      "type": "text",
+      "settings": {
+        "content": "Text block, shared with Forms. **Bold**, *italic*, and a [link](/about).\n\n- One\n- Two"
+      }
+    },
+    {
+      "type": "image",
+      "settings": {
+        "image": {
+          "id": 0,
+          "url": "/brand/portrait-640.webp",
+          "width": 640,
+          "height": 640
+        },
+        "alt": "Portrait",
+        "caption": "Image block, shared with Forms",
+        "width": 40,
+        "align": "center"
+      }
+    },
+    {
+      "type": "spacer",
+      "settings": {
+        "height": 24
+      }
+    }
+  ]
+}

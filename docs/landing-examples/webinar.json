@@ -1,0 +1,104 @@
+{
+  "title": "AI webinar for busy parents",
+  "slug": "ai-webinar-busy-parents",
+  "status": "draft",
+  "settings": {
+    "seo_title": "AI webinar for busy parents",
+    "seo_description": "A free 45 minute webinar: build one AI routine that gives you back an hour a day.",
+    "chrome": "minimal",
+    "sticky_label": "Reserve My Seat",
+    "sticky_url": "#form"
+  },
+  "blocks": [
+    {
+      "type": "hero_image",
+      "settings": {
+        "eyebrow": "Free Webinar",
+        "headline": "Get an hour of your day back with one AI routine",
+        "accent_dot": 1,
+        "subtitle": "For parents who run a household and a job at the same time.",
+        "cta_label": "Reserve My Seat",
+        "cta_url": "#form",
+        "note": "Free · 45 minutes · Replay included",
+        "image": {
+          "id": 0,
+          "url": "/brand/portrait-640.webp",
+          "width": 640,
+          "height": 640
+        },
+        "image_alt": "Portrait of Boril Bogoev",
+        "image_style": "portrait"
+      }
+    },
+    {
+      "type": "features",
+      "settings": {
+        "eyebrow": "What you will learn",
+        "heading": "Three things you take away",
+        "items": [
+          {
+            "icon": "clock",
+            "title": "Find the hour",
+            "text": "Spot the tasks AI can carry in your week."
+          },
+          {
+            "icon": "workflow",
+            "title": "Build one routine",
+            "text": "Set it up live, with tools you already have."
+          },
+          {
+            "icon": "check",
+            "title": "Keep it running",
+            "text": "A checklist so the routine survives a busy week."
+          }
+        ]
+      }
+    },
+    {
+      "type": "bio",
+      "settings": {
+        "eyebrow": "Your host",
+        "name": "Boril Bogoev, Ph.D.",
+        "role": "Head of AI and Automation",
+        "text": "I design and build AI-powered business operating systems. I teach what I build for clients.",
+        "credentials": [
+          "PhD in Automated Digital Business Models",
+          "Founder of AIUGMENTIC"
+        ],
+        "image": {
+          "id": 0,
+          "url": "/brand/portrait-640.webp",
+          "width": 640,
+          "height": 640
+        },
+        "image_alt": "Portrait of Boril Bogoev"
+      }
+    },
+    {
+      "type": "form",
+      "settings": {
+        "eyebrow": "Registration",
+        "heading": "Reserve your seat",
+        "form_id": 1,
+        "display": "inline"
+      }
+    },
+    {
+      "type": "faq",
+      "settings": {
+        "eyebrow": "FAQ",
+        "heading": "Questions",
+        "items": [
+          {
+            "q": "Is there a replay?",
+            "a": "Yes. Everyone who registers receives the recording."
+          },
+          {
+            "q": "What does it cost?",
+            "a": "Nothing. The webinar is free."
+          }
+        ]
+      }
+    }
+  ]
+}

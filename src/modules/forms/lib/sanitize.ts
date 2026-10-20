@@ -62,6 +62,15 @@ export function cleanUrl(v: unknown, allowRelative = true): string {
   }
 }
 
+/** A link a page author may use: site path, #anchor, http(s), mailto or tel. Anything else (javascript:, data:) becomes empty. */
+export function cleanLink(v: unknown): string {
+  const s = cleanText(v, 2000);
+  if (!s) return "";
+  if (/^#[A-Za-z][\w-]{0,79}$/.test(s)) return s;
+  if (/^(mailto|tel):[^\s<>"]{3,200}$/i.test(s)) return s;
+  return cleanUrl(s);
+}
+
 /** A website typed by a visitor: adds https:// when the scheme is missing. */
 export function cleanWebsite(v: unknown): string {
   const s = cleanText(v, 2000);
@@ -82,7 +91,7 @@ export function cleanKey(v: unknown): string {
   return k.slice(0, 100);
 }
 
-/** URL slug for /s/<slug>. */
+/** URL slug for a form page (/f/<slug>) or a landing page (/l/<slug>). */
 export function cleanSlug(v: unknown): string {
   return String(v ?? "")
     .normalize("NFD")

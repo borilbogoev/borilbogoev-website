@@ -1,7 +1,7 @@
 /* BB Forms: admin UI (ported from BB Forms WP admin.css). Aligned with borilbogoev.com (black / white / signal red, Inter, pills). */
 .bbfa-screen{
-	--bbfa-accent:#D62B2B;--bbfa-accent-d:#B91F1F;--bbfa-ink:#111;--bbfa-muted:#6B6B6B;--bbfa-faint:#9A9A9A;--bbfa-line:#ECECEC;--bbfa-line2:#E2E2E2;
-	--bbfa-bg:#F7F7F7;--bbfa-card:#fff;--bbfa-dark:#1C1C1C;--bbfa-soft:#FDEEEE;--bbfa-soft-line:#F5CACA;--bbfa-r:16px;
+	--bbfa-accent:#C72C2C;--bbfa-accent-d:#A82424;--bbfa-ink:#1A1A1A;--bbfa-muted:#6B6B6B;--bbfa-faint:#9A9A9A;--bbfa-line:#ECECEC;--bbfa-line2:#E2E2E2;
+	--bbfa-bg:#F7F7F7;--bbfa-card:#fff;--bbfa-dark:#1A1A1A;--bbfa-soft:#FBEDED;--bbfa-soft-line:#F0C9C9;--bbfa-r:16px;
 	--bbfa-font:var(--font-inter),Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--bbfa-shadow:0 1px 2px rgba(0,0,0,.04),0 8px 28px -12px rgba(0,0,0,.10)
 }
 .bbfa{font-family:var(--bbfa-font);color:var(--bbfa-ink);padding:0 32px;max-width:1680px;-webkit-font-smoothing:antialiased;font-size:14px}
@@ -480,3 +480,22 @@ svg .bbfa-gl.is-base{stroke:#DADADA}
 .bbfa-login .bbfa-logo{display:flex}
 .bbfa-bar a.bbfa-logo{background:var(--bbfa-ink);color:#fff!important;padding:0}
 .bbfa-bar a.bbfa-logo:hover{background:var(--bbfa-ink)}
+
+/* repeating groups of controls (items): shared by every block builder */
+.bbfa-ctl--items>.bbfa-label{display:flex;align-items:center;gap:8px}
+.bbfa-count-sm{font-style:normal;font-size:11px;font-weight:700;background:var(--bbfa-bg);border:1px solid var(--bbfa-line);border-radius:999px;padding:0 7px;color:var(--bbfa-muted)}
+.bbfa-items{display:flex;flex-direction:column;gap:6px;margin-bottom:8px}
+.bbfa-item{border:1px solid var(--bbfa-line2);border-radius:12px;background:#fff;overflow:hidden}
+.bbfa-item.is-open{border-color:var(--bbfa-ink)}
+.bbfa-item__head{display:flex;align-items:center;gap:2px;padding-right:6px;background:#FAFAFA}
+.bbfa-item.is-open .bbfa-item__head{border-bottom:1px solid var(--bbfa-line)}
+.bbfa-item__title{flex:1;min-width:0;display:flex;align-items:center;gap:10px;padding:9px 10px;border:0;background:transparent;cursor:pointer;font:600 12.5px var(--bbfa-font);color:var(--bbfa-ink);text-align:left}
+.bbfa-item__title b{flex:none;width:22px;height:22px;border-radius:7px;border:1px solid var(--bbfa-line2);background:#fff;display:grid;place-items:center;font-size:11px;color:var(--bbfa-muted)}
+.bbfa-item__title span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bbfa-item__title .bbfa-i{width:14px;height:14px;color:var(--bbfa-faint)}
+.bbfa-item__tools{display:flex;gap:0}
+.bbfa-item__tools button{width:26px;height:26px;border-radius:50%;border:0;background:transparent;cursor:pointer;color:var(--bbfa-faint);display:grid;place-items:center}
+.bbfa-item__tools button:hover:not(:disabled){background:var(--bbfa-bg);color:var(--bbfa-ink)}
+.bbfa-item__tools button:disabled{opacity:.2;cursor:default}
+.bbfa-item__tools .bbfa-i{width:13px;height:13px}
+.bbfa-item__body{padding:14px 12px 4px;display:flex;flex-direction:column;gap:14px}

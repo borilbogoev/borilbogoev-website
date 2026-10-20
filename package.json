@@ -10,7 +10,8 @@
     "images": "node scripts/optimize-images.mjs",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "landing": "tsx scripts/landing.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.2.0",
@@ -21,6 +22,7 @@
     "next": "16.4.0",
     "react": "19.3.0",
     "react-dom": "19.3.0",
+    "sharp": "^0.35.5",
     "zod": "^4.0.0"
   },
   "devDependencies": {
@@ -32,7 +34,6 @@
     "drizzle-kit": "^0.31.11",
     "eslint": "^9",
     "eslint-config-next": "16.4.0",
-    "sharp": "^0.35.5",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

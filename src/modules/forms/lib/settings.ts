@@ -7,7 +7,7 @@ import { cleanEmailList, cleanHexColor, cleanKey, cleanMultiline, cleanText, cle
 
 export type FormSettings = {
   description: string;
-  page_title: string; // <title> of the /s/<slug> page; empty uses the form name
+  page_title: string; // <title> of the form's own page; empty uses the form name
   mode: "" | "classic" | "conversational";
   theme: "" | "light" | "dark";
   accent: string;

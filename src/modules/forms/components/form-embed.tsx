@@ -137,7 +137,7 @@ export function FormEmbed({ id, display = "inline", label, buttonClassName, them
   return display === "modal" ? <Modal id={id} label={label} buttonClassName={buttonClassName} theme={theme} layout={layout} /> : <Inline id={id} theme={theme} layout={layout} />;
 }
 
-/** The standalone page of a form (/s/<slug>): the form on a clean background, loaded at once. */
+/** The standalone page of a form (/f/<slug>): the form on a clean background, loaded at once. */
 export function FormPage({ id, theme }: { id: number; theme: "light" | "dark" }) {
   const load = useForm(id, true);
   const t = load.status === "ready" ? load.form.theme : theme;

@@ -2,6 +2,7 @@ import { revalidatePath } from "next/cache";
 import { guarded, json } from "@/modules/auth/guard";
 import { deleteForm, getBlocks, getForm, saveBlocks, updateForm, type BlockInput } from "@/modules/forms/lib/forms";
 import { fieldsOf } from "@/modules/forms/lib/blocks";
+import { formPath } from "@/modules/forms/lib/paths";
 
 export const runtime = "nodejs";
 type Ctx = { params: Promise<{ id: string }> };
@@ -33,7 +34,7 @@ export async function PUT(request: Request, ctx: Ctx) {
     if (Array.isArray(body.blocks)) await saveBlocks(id, body.blocks);
 
     const after = await getForm(id);
-    for (const slug of new Set([before.slug, after?.slug])) if (slug) revalidatePath(`/s/${slug}`);
+    for (const slug of new Set([before.slug, after?.slug])) if (slug) revalidatePath(formPath(slug));
     return json((await payload(id)) ?? {}, 200);
   });
 }
@@ -43,7 +44,7 @@ export async function DELETE(request: Request, ctx: Ctx) {
     const id = Number((await ctx.params).id);
     const form = await getForm(id);
     await deleteForm(id);
-    if (form?.slug) revalidatePath(`/s/${form.slug}`);
+    if (form?.slug) revalidatePath(formPath(form.slug));
     return json({ deleted: true }, 200);
   });
 }

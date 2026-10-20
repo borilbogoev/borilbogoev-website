@@ -188,6 +188,153 @@ const PATHS: Record<string, ReactNode> = {
       <path d="M3 13h5l1 3h6l1-3h5" />
     </>
   ),
+  /* Landing Pages blocks */
+  hero: (
+    <>
+      <rect x="3" y="4" width="18" height="16" rx="2" />
+      <path d="M7 10h10M7 14h6" />
+    </>
+  ),
+  heroimg: (
+    <>
+      <rect x="3" y="4" width="18" height="16" rx="2" />
+      <path d="M6 9h6M6 13h4" />
+      <rect x="14" y="8" width="4" height="8" rx="1" />
+    </>
+  ),
+  cta: (
+    <>
+      <rect x="3" y="8" width="18" height="8" rx="4" />
+      <path d="M9 12h6M13 10l2 2-2 2" />
+    </>
+  ),
+  buttons: (
+    <>
+      <rect x="2" y="5" width="9" height="5" rx="2.5" />
+      <rect x="13" y="5" width="9" height="5" rx="2.5" />
+      <rect x="6" y="14" width="12" height="5" rx="2.5" />
+    </>
+  ),
+  form: (
+    <>
+      <rect x="4" y="3" width="16" height="18" rx="2" />
+      <path d="M8 8h8M8 12h8M8 16h4" />
+    </>
+  ),
+  quote: <path d="M7 7h4v5a4 4 0 0 1-4 4M14 7h4v5a4 4 0 0 1-4 4" />,
+  numbers: <path d="M5 20V12M10 20V6M15 20v-6M20 20V9M3 20h18" />,
+  grid: (
+    <>
+      <rect x="3" y="3" width="8" height="8" rx="2" />
+      <rect x="13" y="3" width="8" height="8" rx="2" />
+      <rect x="3" y="13" width="8" height="8" rx="2" />
+      <rect x="13" y="13" width="8" height="8" rx="2" />
+    </>
+  ),
+  gallery: (
+    <>
+      <rect x="3" y="4" width="12" height="10" rx="2" />
+      <path d="M18 8h3v10H9v-2" />
+      <circle cx="7" cy="8" r="1.5" />
+    </>
+  ),
+  video: (
+    <>
+      <rect x="3" y="5" width="18" height="14" rx="3" />
+      <path d="M10 9.5v5l4.5-2.5z" />
+    </>
+  ),
+  audio: <path d="M4 10v4M8 7v10M12 4v16M16 8v8M20 10v4" />,
+  pricing: (
+    <>
+      <rect x="3" y="4" width="18" height="16" rx="2" />
+      <path d="M3 9h18M8 14h3M8 17h6" />
+    </>
+  ),
+  testimonial: (
+    <>
+      <path d="M4 5h16v11H9l-5 4z" />
+      <path d="M8 9h8M8 12h5" />
+    </>
+  ),
+  shield: (
+    <>
+      <path d="M12 3l8 3v6c0 4.5-3.2 8-8 9-4.8-1-8-4.5-8-9V6z" />
+      <path d="M8.5 12l2.5 2.5 4.5-5" />
+    </>
+  ),
+  ps: <path d="M6 20V5h6a3.5 3.5 0 0 1 0 7H6M16 14.5a2.2 2.2 0 0 1 4 .2c0 2.2-4 2.4-4 4.8h4" />,
+  carousel: (
+    <>
+      <rect x="6" y="5" width="12" height="14" rx="2" />
+      <path d="M3 9v6M21 9v6" />
+    </>
+  ),
+  faq: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M9.5 9.5a2.5 2.5 0 1 1 3.6 2.2c-.7.4-1.1.9-1.1 1.8M12 17h.01" />
+    </>
+  ),
+  steps: (
+    <>
+      <circle cx="6" cy="6" r="2.5" />
+      <circle cx="18" cy="12" r="2.5" />
+      <circle cx="6" cy="18" r="2.5" />
+      <path d="M8 7.5l8 3M16 13.5l-8 3" />
+    </>
+  ),
+  list: <path d="M4 7l1.5 1.5L8 6M4 13l1.5 1.5L8 12M4 19l1.5 1.5L8 18M11 7h9M11 13h9M11 19h9" />,
+  compare: (
+    <>
+      <rect x="3" y="4" width="8" height="16" rx="2" />
+      <rect x="13" y="4" width="8" height="16" rx="2" />
+      <path d="M6 9h2M16 9h2M16 13h2" />
+    </>
+  ),
+  gift: (
+    <>
+      <rect x="3" y="8" width="18" height="4" rx="1" />
+      <path d="M5 12v8h14v-8M12 8v12M12 8c-3 0-4-1.5-3.5-3S11.5 5 12 8zM12 8c3 0 4-1.5 3.5-3S12.5 5 12 8z" />
+    </>
+  ),
+  bio: (
+    <>
+      <circle cx="9" cy="8" r="3.5" />
+      <path d="M3 20a6 6 0 0 1 12 0M16 8h5M16 12h5" />
+    </>
+  ),
+  logos: (
+    <>
+      <rect x="3" y="7" width="5" height="10" rx="1.5" />
+      <rect x="9.5" y="7" width="5" height="10" rx="1.5" />
+      <rect x="16" y="7" width="5" height="10" rx="1.5" />
+    </>
+  ),
+  timer: (
+    <>
+      <circle cx="12" cy="13" r="8" />
+      <path d="M12 9v4l2.5 2M9 2h6" />
+    </>
+  ),
+  embed: <path d="M8 7l-5 5 5 5M16 7l5 5-5 5M14 4l-4 16" />,
+  features: (
+    <>
+      <circle cx="6" cy="6" r="2.5" />
+      <circle cx="18" cy="6" r="2.5" />
+      <circle cx="6" cy="18" r="2.5" />
+      <circle cx="18" cy="18" r="2.5" />
+    </>
+  ),
+  chart: <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" />,
+  pie: (
+    <>
+      <path d="M12 3a9 9 0 1 0 9 9h-9z" />
+      <path d="M15 3.5A9 9 0 0 1 20.5 9H15z" />
+    </>
+  ),
+  cursor: <path d="M6 3l12 6-5 2-2 5z" />,
+  external: <path d="M7 17L17 7M8 7h9v9" />,
 };
 
 export function Icon({ name }: { name: string }) {

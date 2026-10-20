@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { formPath } from "../lib/paths";
 import { cleanSlug } from "../lib/sanitize";
 import type { FormSettings } from "../lib/settings";
 import { api, ApiError, Card, ColorField, SelectField, TextArea, TextField, Toggle, useCopy, useToast } from "./ui";
@@ -62,7 +63,7 @@ export function FormSettingsEditor({ formId, title: t0, status: st0, slug: sl0, 
     }
   };
 
-  const pageUrl = slug ? `${siteUrl}/s/${cleanSlug(slug)}` : "";
+  const pageUrl = slug ? `${siteUrl}${formPath(cleanSlug(slug))}` : "";
 
   return (
     <div className="bbfa-settings" ref={root}>

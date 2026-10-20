@@ -13,10 +13,10 @@ export const ROLE_LABELS: Record<Role, string> = {
 
 export const ROLE_HELP: Record<Role, string> = {
   owner: "Everything, including other admins and the owner account.",
-  admin: "Everything in Forms, and manages editors, contributors and viewers.",
-  editor: "Builds and edits forms, manages responses.",
+  admin: "Everything in Forms and Landing Pages, and manages editors, contributors and viewers.",
+  editor: "Builds and edits forms and landing pages, manages responses.",
   contributor: "Reads responses, adds and edits records, exports CSV.",
-  viewer: "Read-only access to forms, responses and dashboards.",
+  viewer: "Read-only access to forms, landing pages, responses and dashboards.",
 };
 
 export const PERMISSIONS = [
@@ -28,13 +28,16 @@ export const PERMISSIONS = [
   "forms.delete",
   "forms.settings", // global Forms settings
   "users.manage", // create users and change roles (an admin cannot touch admins or the owner)
+  "landing.view", // landing pages list, builder (read-only), dashboards
+  "landing.write", // create, edit, duplicate, publish and unpublish landing pages
+  "landing.delete",
 ] as const;
 export type Permission = (typeof PERMISSIONS)[number];
 
-const viewer: Permission[] = ["forms.view"];
+const viewer: Permission[] = ["forms.view", "landing.view"];
 const contributor: Permission[] = [...viewer, "responses.write", "responses.export"];
-const editor: Permission[] = [...contributor, "forms.write", "responses.delete"];
-const admin: Permission[] = [...editor, "forms.delete", "forms.settings", "users.manage"];
+const editor: Permission[] = [...contributor, "forms.write", "responses.delete", "landing.write"];
+const admin: Permission[] = [...editor, "forms.delete", "forms.settings", "landing.delete", "users.manage"];
 
 const GRANTS: Record<Role, readonly Permission[]> = {
   viewer,

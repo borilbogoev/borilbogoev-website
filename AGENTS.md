@@ -28,6 +28,7 @@ Next 16 has breaking changes. Read the relevant guide in `node_modules/next/dist
 | To change | Edit |
 |---|---|
 | Offer pages (Sessions, Screening, Sprint, Shift, Subscription): copy, prices, tables, FAQ | `src/content/offers/<slug>.ts` |
+| Landing pages (content lives in the database) | Admin > Landing pages, or `npm run landing` (see `docs/landing-pages.md`) |
 | The resume on /about | `src/content/resume.ts` |
 | Home page copy | `src/content/home.ts` |
 | Navigation, contact links, bio, site name | `src/content/site.ts` |
@@ -49,11 +50,14 @@ Content files are typed (`src/content/types.ts`). Editing content never needs a 
 Modules live in `src/modules/<name>` with their own schema, logic, components and admin UI. Their tables are listed in `src/db/schema.ts`.
 
 - `src/modules/auth`: admin users and roles (owner, admin, editor, contributor, viewer), signed session cookie, Google sign-in. `src/proxy.ts` gates only `/admin/*` and `/api/admin/*`; every page and route handler re-checks the role against the database (`requireUser`, `guarded`). Add permissions in `roles.ts`.
-- `src/modules/forms`: BB Forms, migrated from the BB Forms WP plugin (tables `bbforms_*`). Admin at `/admin/forms`, public API at `/api/forms/*`, own page at `/s/<slug>`.
+- `src/modules/forms`: BB Forms, migrated from the BB Forms WP plugin (tables `bbforms_*`). Admin at `/admin/forms`, public API at `/api/forms/*`, own page at `/f/<slug>`.
   - Put a form on any page: `import { FormEmbed } from "@/modules/forms"`, then `<FormEmbed id={1} />` (inline) or `<FormEmbed id={1} display="modal" label="Join" />` (button + dialog). The form loads client-side from `/api/forms/<id>/definition`, so pages stay static.
   - Block types, settings and validation are defined once in `lib/blocks.ts` and `lib/settings.ts`.
   - One-off WordPress import: `npx tsx scripts/import-wordpress.ts --dir <exports> --dry-run|--apply`. Do not re-run with `--force` once the new site has its own responses.
-- Route groups: `(site)` has the header and footer, `(standalone)` (form pages) and `admin` do not.
+- `src/modules/landing`: Landing Pages (tables `landing_*`). Admin at `/admin/landing`, public pages at `/l/<slug>` ("l" for landing), tracking at `/api/landing/t`. Blocks are defined once in `lib/blocks.ts` (Title, Text, Image, Divider, Spacer are the Forms definitions), rendered by server components in `components/blocks.tsx`, styled by `components/landing.css` from the brand tokens only. Builder controls are shared with Forms (`modules/forms/admin/controls.tsx`).
+  - **Create or edit a landing page from the chat with the CLI, never by clicking through the admin:** `npm run landing -- catalog | forms | validate spec.json | create spec.json [--publish] | update <id|slug> spec.json | status | stats | list | get`. Full guide, spec format and examples: `docs/landing-pages.md` and `docs/landing-examples/`. Run `validate` and fix every brand warning before `create`.
+  - Forms on their own page live at `/f/<slug>`; only the two pre-existing webinar forms keep `/s/<slug>` (`modules/forms/lib/paths.ts`).
+- Route groups: `(site)` has the header and footer, `(standalone)` (form pages), `(landing)` (landing pages, each chooses its own frame) and `admin` do not.
 - Public pages must not call `cookies()` or `headers()`. Form pages are static shells.
 
 ## Performance rules (target: LCP under 1 second)

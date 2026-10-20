@@ -3,6 +3,7 @@ import { asc, desc, eq, inArray, sql } from "drizzle-orm";
 import { schema } from "@/db";
 import { db, rowsOf } from "@/db/use";
 import { blockDefaults, isBlockType, isInput, sanitizeBlockSettings, withDefaults, type Block, type BlockType, type Settings } from "./blocks";
+import { formPath } from "./paths";
 import { cleanKey, cleanSlug, cleanText } from "./sanitize";
 import { formSettingsDefaults, sanitizeFormSettings, FORM_STATUSES, type FormSettings, type FormStatus } from "./settings";
 import { getGlobalSettings } from "./settings-store";
@@ -115,7 +116,7 @@ export async function updateForm(id: number, patch: FormPatch): Promise<UpdateRe
     const slug = patch.slug ? cleanSlug(patch.slug) : "";
     if (slug) {
       const [taken] = await db().select({ id: forms.id }).from(forms).where(eq(forms.slug, slug)).limit(1);
-      if (taken && taken.id !== id) return { ok: false, error: `The page address /s/${slug} is already used by another form.` };
+      if (taken && taken.id !== id) return { ok: false, error: `The page address ${formPath(slug)} is already used by another form.` };
       if (RESERVED_SLUGS.has(slug)) return { ok: false, error: "This page address is reserved." };
     }
     set.slug = slug || null;
