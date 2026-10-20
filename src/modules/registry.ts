@@ -9,6 +9,7 @@ export type AdminModule = { key: string; label: string; href: string; desc: stri
 export const adminModules: AdminModule[] = [
   { key: "forms", label: "Forms", href: "/admin/forms", desc: "Build forms, read responses, see how they perform.", permission: "forms.view" },
   { key: "landing", label: "Landing pages", href: "/admin/landing", desc: "Build pages at /l/<name> from blocks, publish them, see views and clicks.", permission: "landing.view" },
+  { key: "presentations", label: "Presentations", href: "/admin/presentations", desc: "Build decks at /p/<name>: slides, accordion pages, demos and videos. Present them full window.", permission: "presentations.view" },
 ];
 
 /** Admin-wide screens that are not modules. */

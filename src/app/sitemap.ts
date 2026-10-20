@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { offers } from "@/content/offers";
 import { abs } from "@/lib/seo";
 import { indexablePages } from "@/modules/landing/lib/pages";
+import { indexableDecks } from "@/modules/presentations/lib/presentations";
 
 // Update `lastModified` when a page's content changes. Add new modules here as they are built.
 const updated = new Date("2026-10-19");
@@ -19,6 +20,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const entries: MetadataRoute.Sitemap = pages.map((p) => ({ url: abs(p.path), lastModified: updated, changeFrequency: "monthly", priority: p.priority }));
   try {
     for (const l of await indexablePages()) entries.push({ url: abs(`/l/${l.slug}`), lastModified: l.updatedAt, changeFrequency: "monthly", priority: 0.6 });
+    for (const d of await indexableDecks()) entries.push({ url: abs(`/p/${d.slug}`), lastModified: d.updatedAt, changeFrequency: "monthly", priority: 0.5 });
   } catch {
     // no database (a build without DATABASE_URL): the fixed pages are enough
   }
