@@ -57,7 +57,7 @@ function offerMarkdown(o: Offer) {
     `### ${plans.heading}`,
     plans.intro,
     "",
-    ...plans.plans.map((p) => `- **${p.name}**${p.sub ? ` (${p.sub})` : ""}: ${p.price}${p.priceNote ? `, ${p.priceNote}` : ""}`),
+    ...plans.plans.map((p) => `- **${p.name}**${p.sub ? ` (${p.sub})` : ""}: ${p.oldPrice ? `~~${p.oldPrice}~~ ` : ""}${p.price}${p.priceNote ? `, ${p.priceNote}` : ""}`),
   ];
   if (plans.rows.length) {
     lines.push("");
