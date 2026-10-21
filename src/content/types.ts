@@ -8,6 +8,8 @@ export type Plan = {
   /** Small line under the name (Option 1, monthly, on demand). */
   sub?: string;
   price: string;
+  /** Previous price, shown crossed out next to the current one. */
+  oldPrice?: string;
   /** Second line under the price (per person, or the USD price). */
   priceNote?: string;
 };

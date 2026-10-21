@@ -15,7 +15,7 @@ export const sessions: Offer = {
   facts: [
     { label: "Format", value: "Live webinar, about 1 hour" },
     { label: "When", value: "Thursdays, 1 PM to 2 PM" },
-    { label: "Price", value: "0 to 999 AED" },
+    { label: "Price", value: "0 to 800 AED" },
   ],
   problem:
     "AI content is endless and mostly noise. Long courses bury the one thing you needed. You do not need more information. You need a working answer to a specific problem, then back to your day.",
@@ -29,7 +29,7 @@ export const sessions: Offer = {
     "A live demonstration, not slides alone.",
     "Q&A: questions from the chat and the ones you send in advance.",
     "The webinar deck to download.",
-    "Premium and VIP add the recording as a practical video lesson, all templates, assets and resources, guides to apply them, the foundational course \"Using AI\" and the WhatsApp community.",
+    "Premium and VIP add the recording as a practical video lesson, all templates, assets and resources, guides to apply them and access to AIxU: Dubai Chapter (WhatsApp community).",
     "VIP adds one 1-1 session of about 2 hours, in person or by video call.",
   ],
   steps: [
@@ -43,8 +43,8 @@ export const sessions: Offer = {
     intro: "Start free. Add the recording and resources with Premium, or a 1-1 session with VIP.",
     plans: [
       { id: "free", name: "Free", price: "0 AED" },
-      { id: "premium", name: "Premium", price: "499 AED" },
-      { id: "vip", name: "VIP", price: "999 AED" },
+      { id: "premium", name: "Premium", price: "300 AED", oldPrice: "499 AED" },
+      { id: "vip", name: "VIP", price: "800 AED", oldPrice: "999 AED" },
     ],
     rows: [
       { feature: "Webinar (online presentation, live) of about 1 hour", values: [true, true, true] },
@@ -54,12 +54,11 @@ export const sessions: Offer = {
       { feature: "Webinar recording as a practical video lesson", values: [false, true, true] },
       { feature: "All templates, assets and resources to download", values: [false, true, true] },
       { feature: "Guide(s) to apply the resources in real life", values: [false, true, true] },
-      { feature: "Foundational course access: \"Using AI\"", values: [false, true, true] },
-      { feature: "WhatsApp community access", values: [false, true, true] },
+      { feature: "Access to AIxU: Dubai Chapter (WhatsApp community)", values: [false, true, true] },
       { feature: "1-1 session (in person or video call) of about 2 hours", values: [false, false, true] },
     ],
     currency: "AED",
-    prices: [0, 499, 999],
+    prices: [0, 300, 800],
   },
   notHeading: "What the Sessions are not",
   notItems: [
