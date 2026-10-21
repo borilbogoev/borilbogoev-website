@@ -20,14 +20,13 @@ function Cell({ value }: { value: boolean | string }) {
   return <span className="text-[14px] font-semibold">{value}</span>;
 }
 
-/** A previous price, crossed out. Read as "was" by screen readers. */
-function OldPrice({ value }: { value: string }) {
+/** A previous price, crossed out, as a caption under the current one. */
+function OldPrice({ value, className = "" }: { value: string; className?: string }) {
   return (
-    <>
+    <p className={`t-caption text-muted ${className}`}>
       <span className="sr-only-bb">Was </span>
-      <del className="mr-2 text-[0.6em] font-semibold text-muted">{value}</del>
-      <span className="sr-only-bb">, now </span>
-    </>
+      <del>{value}</del>
+    </p>
   );
 }
 
@@ -60,10 +59,8 @@ export function PlanTable({ plans, rows, label }: { plans: Plan[]; rows: PlanRow
 
       <div className="mb-4 rounded-[14px] border border-line bg-surface-alt p-5 md:hidden" aria-live="polite">
         <p className="label text-muted">{current.sub ?? "Price"}</p>
-        <p className="t-stat mt-2">
-          {current.oldPrice && <OldPrice value={current.oldPrice} />}
-          {current.price}
-        </p>
+        <p className="t-stat mt-2">{current.price}</p>
+        {current.oldPrice && <OldPrice value={current.oldPrice} className="mt-1" />}
         {current.priceNote && <p className="t-caption mt-1 text-muted">{current.priceNote}</p>}
       </div>
 
@@ -103,12 +100,8 @@ export function PlanTable({ plans, rows, label }: { plans: Plan[]; rows: PlanRow
               </th>
               {plans.map((plan, i) => (
                 <td key={plan.id} data-col={i} className="p-5 text-center">
-                  {plan.oldPrice && (
-                    <span className="block">
-                      <OldPrice value={plan.oldPrice} />
-                    </span>
-                  )}
                   <span className="block text-[22px] font-extrabold leading-tight tracking-tight">{plan.price}</span>
+                  {plan.oldPrice && <OldPrice value={plan.oldPrice} />}
                   {plan.priceNote && <span className="t-caption block text-muted">{plan.priceNote}</span>}
                 </td>
               ))}
@@ -128,10 +121,8 @@ export function PlanCards({ plans }: { plans: Plan[] }) {
         <li key={plan.id} className="card card-raised text-center">
           <p className="t-h3">{plan.name}</p>
           {plan.sub && <p className="label mt-1 text-muted">{plan.sub}</p>}
-          <p className="t-stat mt-5">
-            {plan.oldPrice && <OldPrice value={plan.oldPrice} />}
-            {plan.price}
-          </p>
+          <p className="t-stat mt-5">{plan.price}</p>
+          {plan.oldPrice && <OldPrice value={plan.oldPrice} className="mt-2" />}
           {plan.priceNote && <p className="t-caption mt-2 text-muted">{plan.priceNote}</p>}
         </li>
       ))}
