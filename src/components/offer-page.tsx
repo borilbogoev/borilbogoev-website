@@ -109,7 +109,7 @@ function UpcomingEvent({ event }: { event: NonNullable<Offer["upcoming"]> }) {
               </ul>
             )}
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <a href={event.signupUrl} className="bb-btn bb-btn-primary">
+              <a href={event.signupUrl} target="_blank" rel="noopener noreferrer" className="bb-btn bb-btn-primary">
                 {event.signupLabel}
               </a>
               {event.secondary && (
