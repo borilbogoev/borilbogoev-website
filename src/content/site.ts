@@ -1,4 +1,5 @@
 // Site-wide settings, navigation and contact points.
+import { CLASSROOM_LISTED } from "@/modules/classroom/lib/listing";
 
 export const site = {
   name: "Boril Bogoev",
@@ -28,7 +29,7 @@ export const nav: NavItem[] = [
   { kind: "internal", label: "Sprint", href: "/sprint" },
   { kind: "internal", label: "Shift", href: "/shift" },
   { kind: "internal", label: "Subscription", href: "/subscription" },
-  { kind: "internal", label: "Classroom", href: "/classroom" },
+  ...(CLASSROOM_LISTED ? [{ kind: "internal" as const, label: "Classroom", href: "/classroom" }] : []),
   { kind: "internal", label: "About", href: "/about" },
 ];
 

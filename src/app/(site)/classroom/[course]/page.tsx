@@ -11,6 +11,7 @@ import { site } from "@/content/site";
 import { abs, breadcrumbLd, indexable } from "@/lib/seo";
 import { Cover, languageName } from "@/modules/classroom/components/catalog";
 import { CourseAction } from "@/modules/classroom/components/course-action";
+import { CLASSROOM_LISTED } from "@/modules/classroom/lib/listing";
 import { formatPrice, LEVELS } from "@/modules/classroom/lib/course-settings";
 import { getTree, listCategories } from "@/modules/classroom/lib/courses";
 import { shellCourse } from "@/modules/classroom/lib/public-data";
@@ -51,7 +52,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: { absolute: `${title} | ${site.name}` },
     description,
     alternates: { canonical: url },
-    robots: s.indexable && indexable ? { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large" } } : { index: false, follow: false },
+    robots: s.indexable && indexable && CLASSROOM_LISTED ? { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large" } } : { index: false, follow: false },
     openGraph: { type: "website", url, title, description, siteName: site.name, images: image ? [{ url: image }] : undefined },
     twitter: { card: "summary_large_image", title, description, images: image ? [image] : undefined },
   };

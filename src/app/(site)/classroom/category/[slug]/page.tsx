@@ -5,6 +5,7 @@ import { JsonLd } from "@/components/json-ld";
 import { Section } from "@/components/ui";
 import { breadcrumbLd, pageMetadata } from "@/lib/seo";
 import { CourseCard, Cover } from "@/modules/classroom/components/catalog";
+import { CLASSROOM_LISTED } from "@/modules/classroom/lib/listing";
 import { getCategoryBySlug, listActiveCourses, listCategories } from "@/modules/classroom/lib/courses";
 
 export const revalidate = 300;
@@ -25,7 +26,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const c = await load((await params).slug);
   if (!c) return { title: "Not found", robots: { index: false, follow: false } };
-  return pageMetadata({ title: `${c.name} courses`, description: c.summary || `Courses in ${c.name} by Boril Bogoev, Ph.D.`, path: `/classroom/category/${c.slug}` });
+  return { ...pageMetadata({ title: `${c.name} courses`, description: c.summary || `Courses in ${c.name} by Boril Bogoev, Ph.D.`, path: `/classroom/category/${c.slug}` }), ...(CLASSROOM_LISTED ? {} : { robots: { index: false, follow: false } }) };
 }
 
 export default async function CategoryPage({ params }: Props) {
