@@ -164,3 +164,25 @@ export async function enrolmentsOf(userId: string): Promise<Enrolment[]> {
   const rows = await db().select().from(enrolments).where(eq(enrolments.userId, userId)).orderBy(desc(enrolments.createdAt));
   return rows.map(toEnrolment);
 }
+
+export type UserHit = { id: string; name: string; email: string; role: string; enrolment: EnrolmentStatus | null };
+
+/** Registered users matching a search (name or email), newest first, with their enrolment in `courseId` if any. */
+export async function searchUsers(q: string, courseId?: number): Promise<UserHit[]> {
+  const like = `%${q.trim().replace(/[\\%_]/g, (c) => `\\${c}`)}%`;
+  const res = await db().execute(sql`
+    SELECT u.id, u.name, u.email, u.role, e.status AS enrolment
+    FROM users u LEFT JOIN classroom_enrolments e ON e.user_id = u.id AND e.course_id = ${courseId ?? 0}
+    WHERE u.status = 'active' ${q.trim() ? sql`AND (u.email ILIKE ${like} OR u.name ILIKE ${like})` : sql``}
+    ORDER BY u.created_at DESC LIMIT 50`);
+  return rowsOf<Record<string, unknown>>(res).map((r) => ({ id: String(r.id), name: String(r.name ?? ""), email: String(r.email), role: String(r.role), enrolment: r.enrolment === "pending" || r.enrolment === "revoked" || r.enrolment === "active" ? r.enrolment : null }));
+}
+
+/** Enrols several existing users at once. Returns how many were enrolled and how many were skipped (unknown or disabled). */
+export async function adminEnrolMany(userIds: string[], course: Course, opts: { note?: string; paid?: boolean } = {}): Promise<{ enrolled: number; skipped: number }> {
+  const ids = [...new Set(userIds.filter((id) => /^[0-9a-f-]{36}$/i.test(id)))].slice(0, 200);
+  if (!ids.length) return { enrolled: 0, skipped: userIds.length };
+  const found = rowsOf<{ id: string }>(await db().execute(sql`SELECT id FROM users WHERE status = 'active' AND id IN (${sql.join(ids.map((i) => sql`${i}::uuid`), sql`, `)})`));
+  for (const u of found) await adminEnrol(String(u.id), course, opts);
+  return { enrolled: found.length, skipped: userIds.length - found.length };
+}

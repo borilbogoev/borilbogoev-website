@@ -42,7 +42,7 @@ Part of the app's roles and permissions, not a separate system.
 
 On top of the role, **enrolment** decides which courses a student may open (`classroom_enrolments`): `active`, `pending` (a bank transfer not confirmed yet) or `revoked`. A lesson marked **Free preview** opens for anyone. Staff see everything.
 
-Admins add students under Classroom, Students, or in Users with the role Student. A student's progress, notes and answers survive when access is removed.
+Admins add students under Classroom, Students: **Registered users** searches everyone with an account (by name or email), you tick the people and enrol them in a course in one step (with an optional note and a Mark as paid switch); **Add a student** invites a new email address. Accounts can also be created in Users with the role Student. A student's progress, notes and answers survive when access is removed.
 
 ## Public pages stay static
 

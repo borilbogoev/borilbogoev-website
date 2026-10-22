@@ -27,9 +27,9 @@ export type EnrolRow = {
   lessons: number;
 };
 
-type Props = { rows: EnrolRow[]; courses: { id: number; title: string; access: string }[]; filters: { course: string; status: string; q: string }; canEnrol: boolean };
+type Props = { rows: EnrolRow[]; courses: { id: number; title: string; access: string }[]; filters: { course: string; status: string; q: string }; canEnrol: boolean; between?: React.ReactNode };
 
-export function StudentsManager({ rows, courses, filters, canEnrol }: Props) {
+export function StudentsManager({ rows, courses, filters, canEnrol, between }: Props) {
   const router = useRouter();
   const toast = useToast();
   const confirm = useConfirm();
@@ -187,6 +187,8 @@ export function StudentsManager({ rows, courses, filters, canEnrol }: Props) {
           <p>Students appear here when they enrol, or when you add them below. Accounts and roles live in Users.</p>
         </div>
       )}
+
+      {between}
 
       {canEnrol && courses.length ? (
         <form

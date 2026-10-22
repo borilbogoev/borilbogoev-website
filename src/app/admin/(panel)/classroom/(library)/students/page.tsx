@@ -1,6 +1,7 @@
 import { requireUser } from "@/modules/auth/current";
 import { can } from "@/modules/auth/roles";
 import { ClassroomTabs } from "@/modules/classroom/admin/library-header";
+import { EnrolUsers } from "@/modules/classroom/admin/enrol-users";
 import { StudentsManager } from "@/modules/classroom/admin/students-manager";
 import { listEnrolments } from "@/modules/classroom/lib/access";
 import { formatPrice } from "@/modules/classroom/lib/course-settings";
@@ -28,6 +29,7 @@ export default async function StudentsPage({ searchParams }: { searchParams: Pro
       <ClassroomTabs role={user.role} />
       <StudentsManager
         canEnrol={can(user.role, "classroom.enrol")}
+        between={can(user.role, "classroom.enrol") ? <EnrolUsers courses={courses.filter((c) => c.status !== "archived").map((c) => ({ id: c.id, title: c.title }))} initialCourse={course} /> : null}
         filters={{ course, status, q }}
         courses={courses.map((c) => ({ id: c.id, title: c.title, access: c.access }))}
         rows={rows.map((r) => ({

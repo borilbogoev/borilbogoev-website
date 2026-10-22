@@ -64,3 +64,12 @@
 .bbc-lessonmeta>summary{cursor:pointer;font:700 11px var(--bbfa-font);letter-spacing:.12em;text-transform:uppercase;color:var(--bbfa-muted)}
 .bbc-lessonmeta[open]>summary{margin-bottom:14px}
 .bbc-lessonmeta .bbfa-ctl input[type=text],.bbc-lessonmeta .bbfa-ctl input[type=number],.bbc-lessonmeta .bbfa-ctl select,.bbc-lessonmeta .bbfa-ctl textarea{width:100%}
+.bbc-picklist{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:4px;max-height:360px;overflow:auto}
+.bbc-pickrow{display:flex;align-items:center;gap:12px;padding:8px 10px;border:1px solid var(--bbfa-line);border-radius:10px;background:#fff;cursor:pointer}
+.bbc-pickrow:hover{border-color:var(--bbfa-ink)}
+.bbc-pickrow input{flex:none;width:18px;height:18px;accent-color:var(--bbfa-accent)}
+.bbc-pickrow span{flex:1;min-width:0;display:grid}
+.bbc-pickrow small{color:var(--bbfa-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bbc-pickrow em{font-style:normal;font-size:12px;color:var(--bbfa-muted)}
+.bbc-pickrow.is-done{opacity:.55;cursor:default}
+.bbc-pickrow--all{border-style:dashed;font-weight:600}
