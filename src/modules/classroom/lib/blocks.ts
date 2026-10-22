@@ -28,6 +28,7 @@ export type BlockType =
   | "button"
   | "checklist"
   | "question"
+  | "poll"
   | "flashcards"
   | "divider"
   | "spacer";
@@ -165,6 +166,19 @@ export const BLOCKS: Record<BlockType, BlockDef> = {
       text("placeholder", "Hint inside the box", "Write a few sentences."),
       toggle("share", "Send the answer to the instructor", 0, "The instructor reads it in the lesson discussion. Other students never see it."),
       text("model", "Model answer (shown after the student saves)", ""),
+    ],
+  },
+  poll: {
+    label: "Poll",
+    group: "learn",
+    icon: "pie",
+    desc: "A question with a few options. After voting, the student sees how the class answered. Votes are anonymous.",
+    interactive: true,
+    controls: [
+      text("question", "Question", "What is your biggest time sink?"),
+      { key: "options", type: "options", label: "Options (two to eight)", default: ["Email", "Meetings", "Reporting"] },
+      toggle("multiple", "Students may pick more than one", 0),
+      toggle("show_results", "Show the results after voting", 1),
     ],
   },
   flashcards: {

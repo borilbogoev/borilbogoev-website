@@ -43,12 +43,12 @@ export const usePlayer = () => {
 /* Shell                                                                      */
 /* -------------------------------------------------------------------------- */
 
-type LessonPayload = { reason: string; blocks: PlayerBlock[]; state: Record<number, Record<string, unknown>>; note: { body: string; updatedAt: string | null } | null; comments: CommentView[] | null };
+type LessonPayload = { reason: string; blocks: PlayerBlock[]; state: Record<number, Record<string, unknown>>; note: { body: string; updatedAt: string | null } | null; comments: CommentView[] | null; results?: Record<number, number[]> };
 
 async function fetchLesson(id: number): Promise<LessonData> {
   try {
     const res = await api<LessonPayload>(`lessons/${id}`);
-    return { status: "ok", reason: res.reason, blocks: res.blocks, state: res.state ?? {}, note: res.note, comments: res.comments };
+    return { status: "ok", reason: res.reason, blocks: res.blocks, state: res.state ?? {}, note: res.note, comments: res.comments, results: res.results ?? {} };
   } catch (e) {
     if (e instanceof ApiError && (e.status === 401 || e.status === 403)) return { status: "denied", reason: String(e.body.reason ?? "enrol"), message: e.message };
     return { status: "error", message: e instanceof Error ? e.message : "The lesson could not be loaded." };
@@ -65,7 +65,7 @@ export function PlayerShell({ course, modules, children }: { course: ShellCourse
   const [tab, setTab] = useState<"discussion" | "notes">("discussion");
   const [collapsed, setCollapsed] = useState<{ left: boolean; right: boolean }>({ left: false, right: false });
 
-  const href = useCallback((m: string, l?: string) => `/classroom/${course.slug}/${m}${l ? `/${l}` : ""}`, [course.slug]);
+  const href = useCallback((m: string, l?: string) => `${course.base}/${m}${l ? `/${l}` : ""}`, [course.base]);
   const flat: Flat[] = useMemo(() => modules.flatMap((m) => m.lessons.map((l) => ({ ...l, moduleSlug: m.slug, moduleTitle: m.title, href: href(m.slug, l.slug) }))), [modules, href]);
 
   const current = flat.find((l) => l.moduleSlug === params.module && l.slug === params.lesson) ?? null;
@@ -91,9 +91,9 @@ export function PlayerShell({ course, modules, children }: { course: ShellCourse
 
   // Opening a lesson records it, so "Continue learning" brings the student back here.
   useEffect(() => {
-    if (lessonId === null || lesson.status !== "ok" || !state.signedIn) return;
+    if (lessonId === null || lesson.status !== "ok" || !state.signedIn || course.preview) return;
     void api(`lessons/${lessonId}/progress`, { method: "POST", body: {} }).catch(() => {});
-  }, [lessonId, lesson.status, state.signedIn]);
+  }, [lessonId, lesson.status, state.signedIn, course.preview]);
 
   useEffect(() => {
     void Promise.resolve().then(() => {
@@ -124,7 +124,7 @@ export function PlayerShell({ course, modules, children }: { course: ShellCourse
   const total = flat.length;
   const done = flat.filter((l) => state.completed.includes(l.id)).length;
   const pct = total ? Math.round((done / total) * 100) : 0;
-  const here = typeof window === "undefined" ? `/classroom/${course.slug}` : window.location.pathname;
+  const here = typeof window === "undefined" ? course.base : window.location.pathname;
   const signInHref = `/classroom/sign-in?next=${encodeURIComponent(here)}`;
   const enrolled = state.staff || state.enrolment?.status === "active";
 
@@ -132,7 +132,7 @@ export function PlayerShell({ course, modules, children }: { course: ShellCourse
     <PlayerCtx.Provider value={value}>
       <div className={`cr-player${lessonId !== null ? " has-right" : ""}${left ? " is-left" : ""}${right ? " is-right" : ""}${collapsed.left ? " is-left-collapsed" : ""}${collapsed.right ? " is-right-collapsed" : ""}`}>
         <header className="cr-bar">
-          <Link className="cr-bar__back" href={`/classroom/${course.slug}`}>
+          <Link className="cr-bar__back" href={course.preview ? `/admin/classroom/${course.id}/builder` : course.base}>
             <LIcon name="left" size={18} />
             <span>{course.title}</span>
           </Link>
@@ -151,11 +151,15 @@ export function PlayerShell({ course, modules, children }: { course: ShellCourse
                 Discussion
               </button>
             ) : null}
-            {state.signedIn ? (
+            {course.preview ? (
+              <span className="cr-chip cr-chip--red" title="Staff preview: drafts are listed and nothing you do is recorded as progress">
+                Preview
+              </span>
+            ) : state.signedIn ? (
               <Link className="cr-bar__link" href="/classroom/my">
                 My courses
               </Link>
-            ) : state.loaded ? (
+            ) : state.loaded && !course.preview ? (
               <Link className="cr-bar__link" href={signInHref}>
                 Sign in
               </Link>
@@ -262,7 +266,7 @@ function Outline() {
                         {l.title}
                         {l.minutes ? <small>{l.minutes} min</small> : null}
                       </span>
-                      {locked ? <LIcon name="lock" size={14} className="cr-outline__lock" /> : l.preview && !state.staff ? <span className="cr-chip">Free</span> : null}
+                      {l.draft ? <span className="cr-chip cr-chip--red">Draft</span> : locked ? <LIcon name="lock" size={14} className="cr-outline__lock" /> : l.preview && !state.staff ? <span className="cr-chip">Free</span> : null}
                     </Link>
                   </li>
                 );
@@ -303,7 +307,7 @@ export function ModuleLessons({ moduleSlug }: { moduleSlug: string }) {
               </span>
               <span className="cr-lessonlist__meta">
                 {l.minutes ? <span className="cr-meta">{l.minutes} min</span> : null}
-                {locked ? <LIcon name="lock" size={16} /> : l.preview && !state.staff ? <span className="cr-chip">Free</span> : null}
+                {l.draft ? <span className="cr-chip cr-chip--red">Draft</span> : locked ? <LIcon name="lock" size={16} /> : l.preview && !state.staff ? <span className="cr-chip">Free</span> : null}
               </span>
             </Link>
           </li>
@@ -336,9 +340,8 @@ export function LessonBody() {
       editing: false,
       signedIn: state.signedIn,
       state: (lesson.status === "ok" ? lesson.state : {}) as BlockContext["state"],
-      save: async (blockId, data) => {
-        await api(`lessons/${lessonId}/blocks/${blockId}/state`, { method: "PUT", body: data });
-      },
+      results: lesson.status === "ok" ? lesson.results : {},
+      save: async (blockId, data) => api<{ data: Record<string, unknown>; results?: number[] }>(`lessons/${lessonId}/blocks/${blockId}/state`, { method: "PUT", body: data }),
     }),
     [lesson, state.signedIn, lessonId],
   );
@@ -351,7 +354,7 @@ export function LessonBody() {
     try {
       await api(`lessons/${lessonId}/progress`, { method: "POST", body: { done: value } });
       p.patchState({ completed: value ? [...new Set([...state.completed, lessonId])] : state.completed.filter((x) => x !== lessonId) });
-      if (goNext && value) router.push(next ? next.href : `/classroom/${course.slug}?finished=1`);
+      if (goNext && value) router.push(next ? next.href : course.preview ? `/admin/classroom/${course.id}/builder` : `${course.base}?finished=1`);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong.");
     } finally {

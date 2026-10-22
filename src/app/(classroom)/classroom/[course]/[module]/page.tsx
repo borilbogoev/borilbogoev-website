@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { site } from "@/content/site";
-import { Cover } from "@/modules/classroom/components/catalog";
-import { ModuleLessons } from "@/modules/classroom/components/player";
+import { ModuleArticle } from "@/modules/classroom/components/articles";
 import { allModuleParams, loadPublicCourse } from "@/modules/classroom/lib/public-data";
 
 export const revalidate = 300;
@@ -30,21 +29,5 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ModulePage({ params }: Props) {
   const f = await find(params);
   if (!f) notFound();
-  const { data, m, index } = f;
-  return (
-    <article className="cr-article">
-      <header className="cr-module-head">
-        <p className="cr-eyebrow">
-          Module {index + 1} of {data.modules.length}
-        </p>
-        <h1>
-          {m.title.replace(/\.$/, "")}
-          <span className="cr-dot">.</span>
-        </h1>
-        {m.summary ? <p className="cr-sub cr-sub--lg">{m.summary}</p> : null}
-        {m.image.url ? <Cover img={m.image} alt="" ratio="21 / 9" priority sizes="(min-width: 1100px) 760px, 100vw" /> : null}
-      </header>
-      <ModuleLessons moduleSlug={m.slug} />
-    </article>
-  );
+  return <ModuleArticle module={f.m} index={f.index} total={f.data.modules.length} />;
 }

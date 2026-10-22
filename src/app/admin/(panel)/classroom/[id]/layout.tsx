@@ -30,6 +30,7 @@ export default async function CourseLayout({ children, params }: { children: Rea
         tabs={[
           { key: "builder", label: "Build" },
           { key: "settings", label: "Settings" },
+          { key: "dashboard", label: "Analytics" },
         ]}
       />
       {children}

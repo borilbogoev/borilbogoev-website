@@ -58,7 +58,7 @@ const toEdit = (l: ServerLesson): EditLesson => ({
   blocks: l.blocks.map((b) => ({ uid: nextUid(), id: b.id, type: b.type, settings: b.settings })),
 });
 
-const EDITING: BlockContext = { editing: true, signedIn: false, state: {}, save: async () => {} };
+const EDITING: BlockContext = { editing: true, signedIn: false, state: {}, results: {}, save: async () => {} };
 
 export function CourseBuilder({ courseId, courseSlug, courseStatus, siteUrl, initialModules, initialLessonId, canWrite, canDelete }: Props) {
   const toast = useToast();
@@ -600,6 +600,12 @@ export function CourseBuilder({ courseId, courseSlug, courseStatus, siteUrl, ini
                   <>
                     {" "}
                     · <a href={publicUrl} target="_blank" rel="noopener noreferrer">View live ↗</a>
+                  </>
+                ) : null}
+                {lessonModule ? (
+                  <>
+                    {" "}
+                    · <a href={`/admin/preview/classroom/${courseSlug}/${lessonModule.slug}/${lesson.slug}`} target="_blank" rel="noopener noreferrer" title="The saved version in the real player, drafts included">Preview ↗</a>
                   </>
                 ) : null}{" "}
                 ·{" "}

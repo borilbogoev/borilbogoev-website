@@ -19,10 +19,13 @@ export type BlockContext = {
   signedIn: boolean;
   /** The student's saved state per block id. */
   state: Record<number, S>;
-  save: (blockId: number, data: S) => Promise<void>;
+  /** Votes per option of the polls this student has answered (only when the poll shows results). */
+  results: Record<number, number[]>;
+  /** Saves the student's state in a block. Polls answer with the results. */
+  save: (blockId: number, data: S) => Promise<{ data?: S; results?: number[] } | void>;
 };
 
-export const BlockCtx = createContext<BlockContext>({ editing: false, signedIn: false, state: {}, save: async () => {} });
+export const BlockCtx = createContext<BlockContext>({ editing: false, signedIn: false, state: {}, results: {}, save: async () => {} });
 
 const MD = (text: unknown) => ({ __html: renderMarkdown(String(text ?? "")) });
 const lines = (v: unknown) => String(v ?? "").split("\n").map((x) => x.trim()).filter(Boolean);
@@ -535,6 +538,99 @@ function QuestionBox({ id, s, ctx }: { id: number; s: S; ctx: BlockContext }) {
   );
 }
 
+function Poll({ id, s, ctx }: { id: number; s: S; ctx: BlockContext }) {
+  const options = ((s.options as string[]) ?? []).filter(Boolean).slice(0, 8);
+  const multiple = !!s.multiple;
+  const saved = (ctx.state[id]?.choice as number[] | undefined) ?? [];
+  const [choice, setChoice] = useState<number[]>(saved);
+  const [voted, setVoted] = useState(saved.length > 0);
+  const [results, setResults] = useState<number[] | undefined>(ctx.results[id]);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  if (options.length < 2) return ctx.editing ? <Placeholder>Add at least two options to the poll</Placeholder> : null;
+
+  const pick = (i: number) => setChoice((cur) => (multiple ? (cur.includes(i) ? cur.filter((x) => x !== i) : [...cur, i]) : [i]));
+  const vote = async () => {
+    if (!choice.length || ctx.editing || !ctx.signedIn) return;
+    setBusy(true);
+    setError("");
+    try {
+      const res = await ctx.save(id, { choice });
+      setResults(res?.results);
+      setVoted(true);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Your vote was not saved.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const total = (results ?? []).reduce((a, b) => a + b, 0);
+  return (
+    <div className="cr-poll">
+      <h3 className="cr-poll__q">{s.question}</h3>
+      {voted && s.show_results && results ? (
+        <>
+          <ul className="cr-poll__results">
+            {options.map((o, i) => {
+              const n = results[i] ?? 0;
+              const pct = total ? Math.round((n / total) * 100) : 0;
+              return (
+                <li key={i} className={choice.includes(i) ? "is-mine" : ""}>
+                  <div className="cr-poll__label">
+                    <span>{o}</span>
+                    <strong>
+                      {pct}% <small>({n})</small>
+                    </strong>
+                  </div>
+                  <div className="cr-poll__track">
+                    <span style={{ width: `${pct}%` }} />
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+          <p className="cr-meta">
+            {total} {total === 1 ? "vote" : "votes"} ·{" "}
+            <button type="button" className="cr-link" onClick={() => setVoted(false)}>
+              Change my vote
+            </button>
+          </p>
+        </>
+      ) : voted ? (
+        <p className="cr-meta">
+          Thank you, your vote is saved.{" "}
+          <button type="button" className="cr-link" onClick={() => setVoted(false)}>
+            Change my vote
+          </button>
+        </p>
+      ) : (
+        <>
+          <fieldset className="cr-poll__options" disabled={ctx.editing || !ctx.signedIn}>
+            <legend className="cr-sr">{s.question}</legend>
+            {options.map((o, i) => (
+              <label key={i} className={choice.includes(i) ? "is-on" : ""}>
+                <input type={multiple ? "checkbox" : "radio"} name={`poll-${id}`} checked={choice.includes(i)} onChange={() => pick(i)} />
+                <span>{o}</span>
+              </label>
+            ))}
+          </fieldset>
+          <button type="button" className="bb-btn bb-btn-dark cr-btn-sm" onClick={() => void vote()} disabled={busy || !choice.length || ctx.editing || !ctx.signedIn}>
+            {busy ? "Saving" : "Vote"}
+          </button>
+          <p className="cr-meta">{multiple ? "Pick one or more. " : ""}Votes are anonymous.</p>
+          {error ? (
+            <p role="alert" className="cr-error">
+              {error}
+            </p>
+          ) : null}
+          <SignInHint ctx={ctx} />
+        </>
+      )}
+    </div>
+  );
+}
+
 function Flashcards({ id, s, ctx }: { id: number; s: S; ctx: BlockContext }) {
   const cards = (s.items as S[]) ?? [];
   const [known, setKnown] = useState<number[]>(() => ((ctx.state[id]?.known as number[]) ?? []));
@@ -613,6 +709,7 @@ export const BlockView = memo(function BlockView({ block }: { block: PlayerBlock
     case "button": body = <ButtonBlock s={s} />; break;
     case "checklist": body = <Checklist id={id} s={s} ctx={ctx} />; break;
     case "question": body = <QuestionBox id={id} s={s} ctx={ctx} />; break;
+    case "poll": body = <Poll id={id} s={s} ctx={ctx} />; break;
     case "flashcards": body = <Flashcards id={id} s={s} ctx={ctx} />; break;
     case "divider": body = <Divider s={s} />; break;
     case "spacer": return <div style={{ height: Math.max(0, Number(s.height) || 0) }} aria-hidden="true" />;

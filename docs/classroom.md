@@ -19,8 +19,11 @@ The Classroom is the learning management module: categories, courses, modules an
 | Brand check | `lib/brand.ts` |
 | Public pages | `src/app/(site)/classroom/*` (hub, category, course, sign-in, my courses, with the site header) and `src/app/(classroom)/classroom/[course]/[module]/*` (module and lesson, in the player frame) |
 | Player | `components/player.tsx` (frame, outline, lesson), `components/discussion.tsx` (discussion, notes), `components/blocks.tsx` (every block) |
-| Admin | `/admin/classroom` (Courses, Categories, Students, Discussion, Settings), `/<id>/builder`, `/<id>/settings` |
-| API | `/api/classroom/*` (learners), `/api/admin/classroom/*` (staff) |
+| Admin | `/admin/classroom` (Courses, Dashboard, Categories, Students, Discussion, Settings), `/<id>/builder`, `settings`, `dashboard` (Analytics) |
+| Staff preview | `/admin/preview/classroom/<course>/<module>/<lesson>`: the real player, any status, drafts listed |
+| Statistics | `lib/stats.ts`, `admin/dashboard.tsx` |
+| CLI | `scripts/classroom.ts` (`npm run classroom`) |
+| API | `/api/classroom/*` (learners), `/api/admin/classroom/*` (staff), `/api/classroom/revalidate` (the CLI) |
 
 ## Access control
 
@@ -55,7 +58,57 @@ Remember this when you add a feature: personal or paid data goes through these A
 
 ## Blocks
 
-Heading, Text, Bullet list, Quote, Callout, Image, Image grid, Video, Audio, Interactive embed, Steps, Cards, Before and after, Accordion, Code or prompt (with a copy button), Table, Resources, Button, Divider, Spacer, and the learning blocks that save the student's state: **Checklist**, **Question box** (optionally sent to the instructor, who reads it under Discussion) and **Flashcards**. Define a new block once in `lib/blocks.ts` (controls), draw it in `components/blocks.tsx`. If it keeps student state, add its shape to `saveBlockState` in `lib/learn.ts`.
+Heading, Text, Bullet list, Quote, Callout, Image, Image grid, Video, Audio, Interactive embed, Steps, Cards, Before and after, Accordion, Code or prompt (with a copy button), Table, Resources, Button, Divider, Spacer, and the learning blocks that save the student's state: **Checklist**, **Question box** (optionally sent to the instructor, who reads it under Discussion), **Poll** and **Flashcards**. Define a new block once in `lib/blocks.ts` (controls), draw it in `components/blocks.tsx`. If it keeps student state, add its shape to `saveBlockState` in `lib/learn.ts`.
+
+## Poll
+
+A question with two to eight options, single or multiple choice. A student votes, then sees how the class answered (share and count per option), and can change their vote. Votes are anonymous: only counts leave the database, and results are sent only to a student who has voted. The author can switch results off. Per-poll results are in the course Analytics.
+
+## Draft preview
+
+New lessons and courses are drafts, and a draft is a 404 on the public site. Staff see them in the real player at `/admin/preview/classroom/<course>/<module>/<lesson>` (the **Preview** links in the builder and in the course tabs): the outline lists draft lessons with a Draft chip, a Preview badge sits in the top bar, the way back is the builder, and nothing you do there is recorded as progress. It shows the **saved** version, so save before you preview.
+
+## Analytics
+
+`/admin/classroom/dashboard` (all courses) and `/admin/classroom/<id>/dashboard` (one course), for 7, 30 or 90 days. Read from what students already leave behind, so there is no tracking script.
+
+- Library: students, active learners, lessons completed, new enrolments, awaiting payment, unanswered questions, confirmed payments by currency, an activity timeline and a table per course (students, active, average progress, finished).
+- Course: the same for one course, how many students opened and completed every lesson (where they stop), the biggest drop-off, question box answers and the results of every poll.
+- Only students count as learners; staff views never do. Days are UTC. "Active" means the student opened a lesson in the period. Money is the price at enrolment of enrolments an admin marked as paid.
+
+## The CLI: build a course from the chat
+
+`npm run classroom -- <command>`. Output is JSON. It runs against `DATABASE_URL` (from `.env.local`; override it in the shell to test against the local database, see `scripts/local-db/README.md`). After a change to a live course it asks the site to refresh the pages at once (`POST /api/classroom/revalidate`) when `CLASSROOM_API_TOKEN` (or `LANDING_API_TOKEN` or `CRON_SECRET`) is set; otherwise pages refresh within 5 minutes.
+
+| Command | What it does |
+|---|---|
+| `catalog [type]` | Every block type with its settings, the course fields and the choices. Start here |
+| `settings` | What is configured (bank details, Bunny.net, sign-up). Never prints a secret |
+| `validate spec.json` | Sanitises a spec, lists problems and brand warnings, writes nothing |
+| `create spec.json [--publish]` | Creates a course with its modules, lessons and blocks. A draft unless `--publish` |
+| `update <id\|slug> spec.json [--prune --yes]` | Updates from a spec. Matches modules and lessons by address, creates the new ones, keeps the rest. A block keeps its students' answers when the type at the same position is unchanged. `--prune --yes` deletes what is not in the spec |
+| `get <id\|slug> [--blocks]`, `list`, `categories` | Read |
+| `status <id\|slug> draft\|active\|inactive\|archived` | Publish or hide a course |
+| `stats [id\|slug] [--days 30]` | The dashboard numbers |
+| `students [course]`, `enrol <course> <email> [--name] [--paid] [--note]`, `confirm <enrolmentId>` | Students and bank transfers |
+| `delete <id\|slug> --yes`, `refresh` | Delete, and refresh the live pages |
+
+A spec (see `docs/classroom-examples/ai-operating-system.json`, which uses most blocks):
+
+```json
+{
+  "title": "Your first AI operating system", "slug": "first-ai-operating-system", "category": "AI for business",
+  "summary": "...", "access": "paid", "price": 800, "currency": "AED",
+  "settings": { "level": "beginner", "duration": "3 hours", "outcomes": ["..."] },
+  "modules": [ { "title": "Start with one process", "summary": "...", "lessons": [
+    { "title": "Welcome", "summary": "...", "minutes": 4, "preview": true, "blocks": [
+      { "type": "heading", "text": "One process, one system." },
+      { "type": "video", "source": "<Bunny video ID or YouTube/Vimeo link>" },
+      { "type": "poll", "question": "...", "options": ["A", "B"] } ] } ] } ]
+}
+```
+
+Rules: block settings go next to `type` (or inside `settings`); only the keys in `catalog` are kept; anything missing gets its default; order is course order. Lessons are published unless `"draft": true`; the course is a draft unless `--publish` or `"status"`. The category is created if it does not exist. Images are `{ "url": "..." }` (a site path or an https address; uploads need the admin). Run `validate` and fix every brand warning before `create`: no emoji, no "!", no long dashes, no hype words, alt text on pictures, one red button.
 
 ## Video: Bunny.net
 
@@ -75,4 +128,4 @@ The interface is English. Courses carry a `language` field (English, Bulgarian) 
 
 ## Not built yet
 
-Quizzes and graded tests (lesson, module and course level), poll block, certificates, drip release, announcements, analytics dashboard, a CLI like `npm run landing` for courses, Stripe, duplicate course, preview of draft lessons in the real player (the builder canvas shows the real lesson styles), Bunny video upload from the admin and watch-position resume.
+Quizzes and graded tests (lesson, module and course level), certificates, drip release, announcements, Stripe, duplicate course, image upload from the CLI, Bunny video upload from the admin and watch-position resume.

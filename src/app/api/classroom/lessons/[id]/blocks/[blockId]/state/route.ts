@@ -12,6 +12,6 @@ export async function PUT(request: Request, ctx: Ctx) {
     const c = await lessonContext(Number(id));
     if (!c?.access.ok) return json({ error: "Not allowed." }, 403);
     const data = await saveBlockState(user.id, c.lesson.id, Number(blockId), await request.json().catch(() => ({})));
-    return data ? json({ data }, 200) : json({ error: "This block cannot save an answer." }, 400);
+    return data ? json(data, 200) : json({ error: "This block cannot save that answer." }, 400);
   });
 }

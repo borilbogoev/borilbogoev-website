@@ -1,5 +1,5 @@
 import { json } from "@/modules/auth/guard";
-import { listComments, lessonBlockState, getNote } from "@/modules/classroom/lib/learn";
+import { listComments, lessonBlockState, lessonPollResults, getNote } from "@/modules/classroom/lib/learn";
 import { isModerator, lessonContext, playerBlocks, REASONS } from "@/modules/classroom/lib/lesson-api";
 import { getEnrolment } from "@/modules/classroom/lib/access";
 
@@ -15,14 +15,15 @@ export async function GET(_request: Request, ctx: Ctx) {
 
   const { user, course, lesson } = c;
   const base = { reason: c.access.reason, blocks: await playerBlocks(lesson) };
-  if (!user) return json({ ...base, state: {}, note: null, comments: null }, 200);
+  if (!user) return json({ ...base, state: {}, note: null, comments: null, results: {} }, 200);
 
   const moderator = isModerator(user);
   const enrolled = c.access.reason === "enrolled" || c.access.reason === "staff" || (await getEnrolment(user.id, course.id))?.status === "active";
-  const [state, note, comments] = await Promise.all([
+  const [state, note, comments, results] = await Promise.all([
     lessonBlockState(user.id, lesson.id),
     getNote(user.id, lesson.id),
     course.settings.comments && enrolled ? listComments(lesson.id, { id: user.id, moderator }) : Promise.resolve(null),
+    lessonPollResults(user.id, lesson.id),
   ]);
-  return json({ ...base, state, note, comments }, 200);
+  return json({ ...base, state, note, comments, results }, 200);
 }

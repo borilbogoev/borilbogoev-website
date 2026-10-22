@@ -17,6 +17,7 @@ All notable changes to this project. Versions follow [Semantic Versioning](https
 - A form's Share tab lists the landing pages that embed it.
 
 - Classroom module: a learning management system at `/classroom` and `/admin/classroom`. Categories, courses, modules and lessons built from blocks (text, video with Bunny.net signed links, YouTube and Vimeo, audio with transcripts, callouts, accordion, resources, checklist, question box, flashcards and the shared content blocks), a three-column player (outline, lesson, discussion and private notes), progress, free previews, enrolment (free, invitation, or paid by bank transfer confirmed in the admin), student sign-in by emailed link or Google. Students are users with the new role Student; new `classroom.*` permissions. Tables `classroom_*` (migration `0004_classroom_module`). Guide in `docs/classroom.md`.
+- Classroom: Poll block (anonymous votes, results shown after voting), staff preview of draft courses and lessons in the real player (`/admin/preview/classroom/...`), an analytics dashboard (all courses and per course: students, active learners, completion, drop-off per lesson, payments, poll results), and `npm run classroom` to create, validate, update and measure whole courses from a spec file. Guide in `docs/classroom.md`, example in `docs/classroom-examples/`.
 
 ### Changed
 - Shared builder controls moved to `modules/forms/admin/controls.tsx` (Forms builder behaves as before); block settings gained `url`, `items` and `form` controls.

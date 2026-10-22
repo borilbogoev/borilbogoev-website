@@ -13,6 +13,7 @@ import { Cover, languageName } from "@/modules/classroom/components/catalog";
 import { CourseAction } from "@/modules/classroom/components/course-action";
 import { formatPrice, LEVELS } from "@/modules/classroom/lib/course-settings";
 import { getTree, listCategories } from "@/modules/classroom/lib/courses";
+import { shellCourse } from "@/modules/classroom/lib/public-data";
 import { getCourseBySlug } from "@/modules/classroom/lib/courses";
 
 // A course at /classroom/<slug>. Static and cached like the rest of the site; saving a course refreshes it at once.
@@ -93,7 +94,7 @@ export default async function CoursePage({ params }: Props) {
               <li>{languageName(course.language)}</li>
               <li>{course.access === "invite" ? "By invitation" : priceLabel}</li>
             </ul>
-            <CourseAction course={{ id: course.id, slug: course.slug, title: course.title, access: course.access, priceLabel, comments: !!s.comments }} firstHref={firstHref} lessonHrefs={lessonHrefs} total={lessonCount} />
+            <CourseAction course={shellCourse(course)} firstHref={firstHref} lessonHrefs={lessonHrefs} total={lessonCount} />
           </div>
           <div className="cr-hero__media">
             <Cover img={course.image} alt="" priority sizes="(min-width: 1024px) 460px, 100vw" />

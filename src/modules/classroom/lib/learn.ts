@@ -231,12 +231,13 @@ export async function lessonBlockState(userId: string, lessonId: number): Promis
 const ints = (v: unknown, max: number) => [...new Set((Array.isArray(v) ? v : []).map((n) => Math.trunc(Number(n))).filter((n) => Number.isInteger(n) && n >= 0 && n < max))].slice(0, max);
 
 /** Saves the student's state in a block, shaped by the block type. Returns what was stored, or null when the block cannot hold state. */
-export async function saveBlockState(userId: string, lessonId: number, blockId: number, input: unknown): Promise<StateData | null> {
+export async function saveBlockState(userId: string, lessonId: number, blockId: number, input: unknown): Promise<{ data: StateData; results?: number[] } | null> {
   const [b] = await db().select().from(blocks).where(and(eq(blocks.id, blockId), eq(blocks.lessonId, lessonId))).limit(1);
   if (!b || !isInteractive(b.type)) return null;
   const s = (input && typeof input === "object" ? input : {}) as StateData;
-  const cfg = (b.settings ?? {}) as { items?: unknown[] };
+  const cfg = (b.settings ?? {}) as { items?: unknown[]; options?: unknown[]; multiple?: unknown; show_results?: unknown };
   const size = Array.isArray(cfg.items) ? cfg.items.length : 0;
+  const optionCount = Array.isArray(cfg.options) ? Math.min(8, cfg.options.length) : 0;
   let data: StateData = {};
   switch (b.type as BlockType) {
     case "checklist":
@@ -248,6 +249,12 @@ export async function saveBlockState(userId: string, lessonId: number, blockId: 
     case "question":
       data = { answer: cleanMultiline(s.answer, 5000) };
       break;
+    case "poll": {
+      const picked = ints(s.choice, optionCount || 1);
+      data = { choice: cfg.multiple && Number(cfg.multiple) ? picked : picked.slice(0, 1) };
+      if (!(data.choice as number[]).length) return null; // a vote needs an option
+      break;
+    }
     default:
       return null;
   }
@@ -255,7 +262,31 @@ export async function saveBlockState(userId: string, lessonId: number, blockId: 
     .insert(blockState)
     .values({ userId, blockId, lessonId, data, updatedAt: new Date() })
     .onConflictDoUpdate({ target: [blockState.userId, blockState.blockId], set: { data, updatedAt: new Date() } });
-  return data;
+  if (b.type === "poll") return { data, results: cfg.show_results === 0 || cfg.show_results === false ? undefined : (await pollCounts([{ id: blockId, options: optionCount }]))[blockId] };
+  return { data };
+}
+
+/** Votes per option for poll blocks. Anonymous: only counts leave the database. */
+export async function pollCounts(blocksIn: { id: number; options: number }[]): Promise<Record<number, number[]>> {
+  if (!blocksIn.length) return {};
+  const ids = blocksIn.map((b) => b.id);
+  const res = await db().execute(sql`
+    SELECT s.block_id, c.value::int AS opt, COUNT(*)::int AS n
+    FROM classroom_block_state s, jsonb_array_elements_text(s.data -> 'choice') AS c(value)
+    WHERE s.block_id IN (${sql.join(ids.map((i) => sql`${i}`), sql`, `)})
+    GROUP BY s.block_id, c.value`);
+  const out: Record<number, number[]> = Object.fromEntries(blocksIn.map((b) => [b.id, Array(b.options).fill(0)]));
+  for (const r of rowsOf<{ block_id: number; opt: number; n: number }>(res)) if (out[Number(r.block_id)] && Number(r.opt) < out[Number(r.block_id)].length) out[Number(r.block_id)][Number(r.opt)] = Number(r.n);
+  return out;
+}
+
+/** Results of the polls in a lesson that this student has voted in (and whose author shows results). */
+export async function lessonPollResults(userId: string, lessonId: number): Promise<Record<number, number[]>> {
+  const res = await db().execute(sql`
+    SELECT b.id, b.settings FROM classroom_blocks b JOIN classroom_block_state s ON s.block_id = b.id AND s.user_id = ${userId}
+    WHERE b.lesson_id = ${lessonId} AND b.type = 'poll' AND COALESCE(s.data -> 'choice', '[]'::jsonb) <> '[]'::jsonb`);
+  const polls = rowsOf<{ id: number; settings: { options?: unknown[]; show_results?: unknown } }>(res).filter((r) => !(r.settings?.show_results === 0 || r.settings?.show_results === false));
+  return pollCounts(polls.map((r) => ({ id: Number(r.id), options: Array.isArray(r.settings?.options) ? r.settings.options.length : 0 })));
 }
 
 export type SharedAnswer = { blockId: number; lessonId: number; lessonTitle: string; courseId: number; courseTitle: string; href: string; prompt: string; answer: string; author: string; updatedAt: string };

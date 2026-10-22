@@ -13,10 +13,10 @@ export const loadPublicCourse = cache(async (slug: string): Promise<{ course: Co
   return tree ? { course, modules: tree.modules } : null;
 });
 
-export const shellCourse = (c: Course): ShellCourse => ({ id: c.id, slug: c.slug, title: c.title, access: c.access, priceLabel: formatPrice(c.access === "paid" ? c.priceCents : 0, c.currency), comments: !!c.settings.comments });
+export const shellCourse = (c: Course, opts: { preview?: boolean } = {}): ShellCourse => ({ id: c.id, slug: c.slug, title: c.title, access: c.access, priceLabel: formatPrice(c.access === "paid" ? c.priceCents : 0, c.currency), comments: !!c.settings.comments, base: opts.preview ? `/admin/preview/classroom/${c.slug}` : `/classroom/${c.slug}`, preview: opts.preview });
 
 export const outlineOf = (modules: ModuleNode[]): OutlineModule[] =>
-  modules.map((m) => ({ id: m.id, slug: m.slug, title: m.title, summary: m.summary, lessons: m.lessons.map((l) => ({ id: l.id, slug: l.slug, title: l.title, summary: l.summary, minutes: l.minutes, preview: l.preview })) }));
+  modules.map((m) => ({ id: m.id, slug: m.slug, title: m.title, summary: m.summary, lessons: m.lessons.map((l) => ({ id: l.id, slug: l.slug, title: l.title, summary: l.summary, minutes: l.minutes, preview: l.preview, draft: l.status === "draft" })) }));
 
 /** Every public lesson address, to prebuild the pages. Empty when there is no database (a build without DATABASE_URL). */
 export async function allLessonParams(): Promise<{ course: string; module: string; lesson: string }[]> {

@@ -49,6 +49,7 @@ export function brandIssues(lesson: Pick<Lesson, "title" | "summary" | "image" |
     if (b.type === "audio" && s.url && !String(s.transcript ?? "").trim()) out.push({ level: "info", blockId: b.id, message: "add a transcript to the audio. It helps students who cannot listen." });
     if (b.type === "video" && s.source && !String(s.transcript ?? "").trim()) out.push({ level: "info", blockId: b.id, message: "add a transcript to the video. It helps students who cannot play sound." });
     if (b.type === "embed" && !s.url) flag("embed-empty", "an interactive embed has no address yet.", b.id);
+    if (b.type === "poll" && ((s.options as string[]) ?? []).length < 2) flag("poll-options", "a poll needs at least two options.", b.id);
     if (b.type === "flashcards" && (s.items as Settings[]).length < 2) out.push({ level: "info", blockId: b.id, message: "flashcards work best with at least five cards." });
   }
   const red = lesson.blocks.filter((b) => b.type === "button" && b.settings.style === "primary" && b.settings.label).length;

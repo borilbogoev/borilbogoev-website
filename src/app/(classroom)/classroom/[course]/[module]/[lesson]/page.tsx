@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { site } from "@/content/site";
-import { Cover } from "@/modules/classroom/components/catalog";
-import { LessonBody } from "@/modules/classroom/components/player";
+import { LessonArticle } from "@/modules/classroom/components/articles";
 import { allLessonParams, loadPublicCourse } from "@/modules/classroom/lib/public-data";
 
 // A lesson. The page is static and holds only what is public (title, summary, picture); the lesson content itself is fetched
@@ -33,22 +32,5 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function LessonPage({ params }: Props) {
   const f = await find(params);
   if (!f) notFound();
-  const { m, l } = f;
-  return (
-    <article className="cr-article">
-      <header className="cr-lesson-head">
-        <p className="cr-eyebrow">
-          {m.title}
-          {l.minutes ? ` · ${l.minutes} min` : ""}
-        </p>
-        <h1>
-          {l.title.replace(/\.$/, "")}
-          <span className="cr-dot">.</span>
-        </h1>
-        {l.summary ? <p className="cr-sub cr-sub--lg">{l.summary}</p> : null}
-        {l.image.url ? <Cover img={l.image} alt="" ratio="21 / 9" priority sizes="(min-width: 1100px) 760px, 100vw" /> : null}
-      </header>
-      <LessonBody />
-    </article>
-  );
+  return <LessonArticle moduleTitle={f.m.title} lesson={f.l} />;
 }

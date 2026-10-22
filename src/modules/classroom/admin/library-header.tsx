@@ -5,6 +5,7 @@ import { LibraryTabs } from "./tabs";
 export function ClassroomTabs({ role }: { role: Role }) {
   const items = [
     { href: "/admin/classroom", label: "Courses", show: can(role, "classroom.view") },
+    { href: "/admin/classroom/dashboard", label: "Dashboard", show: can(role, "classroom.view") },
     { href: "/admin/classroom/categories", label: "Categories", show: can(role, "classroom.view") },
     { href: "/admin/classroom/students", label: "Students", show: can(role, "classroom.view") },
     { href: "/admin/classroom/discussion", label: "Discussion", show: can(role, "classroom.moderate") },

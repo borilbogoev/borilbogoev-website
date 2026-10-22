@@ -32,8 +32,11 @@ export function CourseTabs({ courseId, slug, live, tabs }: { courseId: number; s
           {t.label}
         </Link>
       ))}
+      <a className="bbp-present-tab" href={`/admin/preview/classroom/${slug}`} target="_blank" rel="noopener noreferrer" title="The saved course in the real player, drafts included">
+        Preview ↗
+      </a>
       {live ? (
-        <a className="bbp-present-tab" href={`/classroom/${slug}`} target="_blank" rel="noopener noreferrer">
+        <a className="bbp-present-tab" style={{ marginLeft: 8 }} href={`/classroom/${slug}`} target="_blank" rel="noopener noreferrer">
           View live ↗
         </a>
       ) : null}
