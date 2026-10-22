@@ -1,3 +1,4 @@
+import { CLASSROOM_LISTED } from "@/modules/classroom/lib/listing";
 import Link from "next/link";
 import { offers } from "@/content/offers";
 import { site } from "@/content/site";
@@ -34,11 +35,13 @@ export function SiteFooter() {
         <nav aria-label="More">
           <p className="label mb-3 text-muted">More</p>
           <ul className="m-0 grid list-none gap-1 p-0">
-            <li>
-              <Link href="/classroom" className="inline-flex min-h-[36px] items-center text-[15px] hover:text-brand-text">
-                Classroom
-              </Link>
-            </li>
+            {CLASSROOM_LISTED ? (
+              <li>
+                <Link href="/classroom" className="inline-flex min-h-[36px] items-center text-[15px] hover:text-brand-text">
+                  Classroom
+                </Link>
+              </li>
+            ) : null}
             <li>
               <Link href="/about" className="inline-flex min-h-[36px] items-center text-[15px] hover:text-brand-text">
                 About

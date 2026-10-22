@@ -25,6 +25,10 @@ The Classroom is the learning management module: categories, courses, modules an
 | CLI | `scripts/classroom.ts` (`npm run classroom`) |
 | API | `/api/classroom/*` (learners), `/api/admin/classroom/*` (staff), `/api/classroom/revalidate` (the CLI) |
 
+## Listed or share-only
+
+The Classroom is **share-only** by default: no link in the menu or footer, not in the sitemap, and every public page carries `noindex`. Links still work for anyone who has them. To announce it, set `CLASSROOM_LISTED=true` in Vercel (Production) and redeploy (`lib/listing.ts`).
+
 ## Access control
 
 Part of the app's roles and permissions, not a separate system.

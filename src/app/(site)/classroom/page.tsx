@@ -3,6 +3,7 @@ import { JsonLd } from "@/components/json-ld";
 import { Section } from "@/components/ui";
 import { breadcrumbLd, pageMetadata } from "@/lib/seo";
 import { CategoryCard, CourseCard } from "@/modules/classroom/components/catalog";
+import { CLASSROOM_LISTED } from "@/modules/classroom/lib/listing";
 import { listActiveCourses, listCategories } from "@/modules/classroom/lib/courses";
 import { getSettings } from "@/modules/classroom/lib/settings-store";
 import { settingsDefaults } from "@/modules/classroom/lib/settings";
@@ -10,11 +11,14 @@ import { settingsDefaults } from "@/modules/classroom/lib/settings";
 // The Classroom hub. Static and cached; saving a course refreshes it at once (revalidatePath), this time is the safety net.
 export const revalidate = 300;
 
-export const metadata = pageMetadata({
-  title: "Classroom: courses on AI and automation",
-  description: "Courses, modules and lessons on AI, automation and building a business operating system, by Boril Bogoev, Ph.D.",
-  path: "/classroom",
-});
+export const metadata = {
+  ...pageMetadata({
+    title: "Classroom: courses on AI and automation",
+    description: "Courses, modules and lessons on AI, automation and building a business operating system, by Boril Bogoev, Ph.D.",
+    path: "/classroom",
+  }),
+  ...(CLASSROOM_LISTED ? {} : { robots: { index: false, follow: false } }),
+};
 
 async function load() {
   try {
