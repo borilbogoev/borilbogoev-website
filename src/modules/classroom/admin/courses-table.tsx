@@ -51,7 +51,6 @@ export function CoursesTable({ rows, canWrite, canDelete, siteUrl }: { rows: Cou
         <thead>
           <tr>
             <th>Course</th>
-            <th>Address</th>
             <th className="num">Modules</th>
             <th className="num">Lessons</th>
             <th className="num">Students</th>
@@ -74,11 +73,11 @@ export function CoursesTable({ rows, canWrite, canDelete, siteUrl }: { rows: Cou
                       #{r.id} · updated {f.ago(r.updatedAt)}
                       {r.categoryName ? ` · ${r.categoryName}` : ""} · {r.language.toUpperCase()}
                     </div>
+                    <div style={{ marginTop: 6 }}>
+                      <CopyCode text={`${siteUrl}/classroom/${r.slug}`}>/classroom/{r.slug}</CopyCode>
+                    </div>
                   </div>
                 </div>
-              </td>
-              <td>
-                <CopyCode text={`${siteUrl}/classroom/${r.slug}`}>/classroom/{r.slug}</CopyCode>
               </td>
               <td className="num">{fmtNum(r.modules)}</td>
               <td className="num">{fmtNum(r.lessons)}</td>
