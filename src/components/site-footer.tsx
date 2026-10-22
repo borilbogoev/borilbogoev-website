@@ -35,6 +35,11 @@ export function SiteFooter() {
           <p className="label mb-3 text-muted">More</p>
           <ul className="m-0 grid list-none gap-1 p-0">
             <li>
+              <Link href="/classroom" className="inline-flex min-h-[36px] items-center text-[15px] hover:text-brand-text">
+                Classroom
+              </Link>
+            </li>
+            <li>
               <Link href="/about" className="inline-flex min-h-[36px] items-center text-[15px] hover:text-brand-text">
                 About
               </Link>
