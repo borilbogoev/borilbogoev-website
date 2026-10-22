@@ -1,6 +1,6 @@
 // Roles and permissions. Add a permission here when a module needs a new kind of access.
 
-export const ROLES = ["owner", "admin", "editor", "contributor", "viewer"] as const;
+export const ROLES = ["owner", "admin", "editor", "contributor", "viewer", "student"] as const;
 export type Role = (typeof ROLES)[number];
 
 export const ROLE_LABELS: Record<Role, string> = {
@@ -9,14 +9,16 @@ export const ROLE_LABELS: Record<Role, string> = {
   editor: "Editor",
   contributor: "Contributor",
   viewer: "Viewer",
+  student: "Student",
 };
 
 export const ROLE_HELP: Record<Role, string> = {
   owner: "Everything, including other admins and the owner account.",
-  admin: "Everything in Forms, Landing Pages and Presentations, and manages editors, contributors and viewers.",
-  editor: "Builds and edits forms, landing pages and presentations, manages responses.",
+  admin: "Everything in Forms, Landing Pages, Presentations and Classroom, and manages editors, contributors, viewers and students.",
+  editor: "Builds and edits forms, landing pages, presentations and courses, manages responses, answers student questions.",
   contributor: "Reads responses, adds and edits records, exports CSV.",
-  viewer: "Read-only access to forms, landing pages, presentations, responses and dashboards.",
+  viewer: "Read-only access to forms, landing pages, presentations, courses, responses and dashboards.",
+  student: "Signs in to the Classroom and learns in the courses they are enrolled in. No access to the admin.",
 };
 
 export const PERMISSIONS = [
@@ -34,19 +36,28 @@ export const PERMISSIONS = [
   "presentations.view", // presentations list, builder (read-only), dashboards, Present view
   "presentations.write", // create, edit, duplicate, activate and deactivate presentations, manage categories
   "presentations.delete",
+  "classroom.view", // courses list, course builder (read-only), students, dashboards
+  "classroom.write", // create, edit, duplicate, activate and deactivate categories, courses, modules and lessons
+  "classroom.delete",
+  "classroom.moderate", // read every comment and question, reply, hide, resolve
+  "classroom.enrol", // enrol and remove students, confirm bank transfers
+  "classroom.settings", // payment details, Bunny.net keys, sign-up rules
+  "classroom.learn", // take the courses you are enrolled in (the only permission of a student)
 ] as const;
 export type Permission = (typeof PERMISSIONS)[number];
 
-const viewer: Permission[] = ["forms.view", "landing.view", "presentations.view"];
+const viewer: Permission[] = ["forms.view", "landing.view", "presentations.view", "classroom.view"];
 const contributor: Permission[] = [...viewer, "responses.write", "responses.export"];
-const editor: Permission[] = [...contributor, "forms.write", "responses.delete", "landing.write", "presentations.write"];
-const admin: Permission[] = [...editor, "forms.delete", "forms.settings", "landing.delete", "presentations.delete", "users.manage"];
+const editor: Permission[] = [...contributor, "forms.write", "responses.delete", "landing.write", "presentations.write", "classroom.write", "classroom.moderate"];
+const admin: Permission[] = [...editor, "forms.delete", "forms.settings", "landing.delete", "presentations.delete", "classroom.delete", "classroom.enrol", "classroom.settings", "users.manage"];
+const student: Permission[] = ["classroom.learn"];
 
 const GRANTS: Record<Role, readonly Permission[]> = {
   viewer,
   contributor,
   editor,
   admin,
+  student,
   owner: PERMISSIONS,
 };
 
@@ -61,7 +72,7 @@ export function can(role: string | null | undefined, permission: Permission): bo
 /** Which roles `actor` may assign to others (owners only create admins and owners). */
 export function assignableRoles(actor: Role): Role[] {
   if (actor === "owner") return [...ROLES];
-  if (actor === "admin") return ["editor", "contributor", "viewer"];
+  if (actor === "admin") return ["editor", "contributor", "viewer", "student"];
   return [];
 }
 
@@ -69,4 +80,9 @@ export function assignableRoles(actor: Role): Role[] {
 export function canManageUser(actor: Role, target: Role): boolean {
   if (actor === "owner") return true;
   return actor === "admin" && assignableRoles("admin").includes(target);
+}
+
+/** Whether a role may use the admin at all. Students only learn: they are sent to the Classroom instead. */
+export function canUseAdmin(role: string | null | undefined): boolean {
+  return isRole(role) && GRANTS[role].some((p) => p !== "classroom.learn");
 }

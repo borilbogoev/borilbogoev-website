@@ -29,6 +29,13 @@
       "when": 1792519483685,
       "tag": "0003_presentations_module",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792674725592,
+      "tag": "0004_classroom_module",
+      "breakpoints": true
     }
   ]
 }

@@ -1,0 +1,76 @@
+{
+  "title": "Your first AI operating system",
+  "slug": "first-ai-operating-system",
+  "category": "AI for business",
+  "summary": "Map one process, automate it, and keep it running. Six short lessons for business owners.",
+  "language": "en",
+  "access": "paid",
+  "price": 800,
+  "currency": "AED",
+  "settings": {
+    "level": "beginner",
+    "duration": "3 hours",
+    "outcomes": ["Map one process from start to finish", "Choose the first workflow to automate", "Write a prompt that gives the same result every time"],
+    "instructor": "Boril Bogoev, Ph.D.",
+    "instructor_role": "Head of AI and Automation"
+  },
+  "modules": [
+    {
+      "title": "Start with one process",
+      "summary": "Pick the process that costs you the most time and draw it on one page.",
+      "lessons": [
+        {
+          "title": "Welcome",
+          "summary": "What you will build, and how the course works.",
+          "minutes": 4,
+          "preview": true,
+          "blocks": [
+            { "type": "heading", "eyebrow": "Welcome", "text": "One process, one system.", "size": "h1" },
+            { "type": "text", "content": "You do not need a new tool. You need one process written down, then **one** step automated. This course shows how." },
+            { "type": "video", "source": "https://www.youtube.com/watch?v=dQw4w9WgXcQ", "title": "Course introduction", "transcript": "Welcome to the course. In the next lessons you map one process and automate its first step." },
+            { "type": "callout", "kind": "takeaway", "content": "Start small. A process you run weekly beats a perfect plan you never use." },
+            { "type": "poll", "question": "Which process costs you the most time?", "options": ["Email and messages", "Reporting", "Scheduling and meetings", "Content creation"] },
+            { "type": "checklist", "title": "Before lesson two", "items": ["Choose one process", "Open a blank page", "Set a timer for 20 minutes"] }
+          ]
+        },
+        {
+          "title": "Map the process",
+          "summary": "Write each step, who does it and how long it takes.",
+          "minutes": 12,
+          "blocks": [
+            { "type": "steps", "layout": "list", "items": [
+              { "title": "Trigger", "text": "What starts the process?", "meta": "2 min" },
+              { "title": "Steps", "text": "List every action in order.", "meta": "10 min" },
+              { "title": "Output", "text": "What does done look like?", "meta": "2 min" }
+            ] },
+            { "type": "code", "label": "Prompt", "code": "Act as an operations analyst. I will describe a process. Return a numbered list of steps, the owner of each step and the time it takes." },
+            { "type": "question", "prompt": "Describe your process in three sentences.", "share": 1 },
+            { "type": "flashcards", "title": "Key terms", "items": [
+              { "front": "Trigger", "back": "The event that starts a process." },
+              { "front": "Handoff", "back": "The moment work moves from one person to another." }
+            ] }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Automate the first step",
+      "summary": "Turn the slowest step into a repeatable workflow.",
+      "lessons": [
+        {
+          "title": "Choose the step",
+          "summary": "Pick the step that is repeated, rule-based and slow.",
+          "minutes": 8,
+          "blocks": [
+            { "type": "compare", "left_title": "Do it by hand", "left_items": ["Different result each time", "Depends on one person"], "right_title": "Automate it", "right_items": ["Same result each time", "Runs without you"] },
+            { "type": "accordion", "title": "Common questions", "items": [
+              { "title": "Do I need to code?", "content": "No. Start with the tools you already use." },
+              { "title": "How long does the first workflow take?", "content": "About ~2 hours, including testing." }
+            ] },
+            { "type": "resources", "title": "Resources", "items": [{ "label": "Process map template", "url": "https://borilbogoev.com/contact", "note": "Ask for the template" }] }
+          ]
+        }
+      ]
+    }
+  ]
+}

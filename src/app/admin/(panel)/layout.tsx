@@ -1,7 +1,8 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { logout } from "@/modules/auth/actions";
 import { requireUser } from "@/modules/auth/current";
-import { can, ROLE_LABELS } from "@/modules/auth/roles";
+import { can, canUseAdmin, ROLE_LABELS } from "@/modules/auth/roles";
 import { adminCore, adminModules } from "@/modules/registry";
 import { AdminProviders } from "@/modules/forms/admin/providers";
 import { getGlobalSettings } from "@/modules/forms/lib/settings-store";
@@ -10,6 +11,7 @@ import { AdminNav } from "./nav";
 // Everything in the admin needs a signed-in user. Pages add their own permission check on top.
 export default async function PanelLayout({ children }: { children: React.ReactNode }) {
   const user = await requireUser();
+  if (!canUseAdmin(user.role)) redirect("/classroom/my"); // students learn in the Classroom, not in the admin
   const timeZone = await getGlobalSettings().then((g) => g.timezone, () => "UTC");
   return (
     <AdminProviders timeZone={timeZone}>

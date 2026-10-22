@@ -6,7 +6,7 @@ export const SESSION_MAX_AGE = 60 * 60 * 24 * 14; // 14 days
 export type SessionClaims = {
   userId: string;
   version: number; // must match users.session_version, so a password change or a disabled account ends old sessions
-  method: "password" | "google";
+  method: "password" | "google" | "link"; // link: emailed Classroom sign-in link
 };
 
 function getSecret() {
@@ -30,7 +30,7 @@ export async function verifySessionToken(token: string | undefined): Promise<Ses
   try {
     const { payload } = await jwtVerify(token, getSecret(), { algorithms: ["HS256"] });
     if (!payload.sub || typeof payload.ver !== "number") return null;
-    return { userId: payload.sub, version: payload.ver, method: payload.method === "google" ? "google" : "password" };
+    return { userId: payload.sub, version: payload.ver, method: payload.method === "google" ? "google" : payload.method === "link" ? "link" : "password" };
   } catch {
     return null;
   }

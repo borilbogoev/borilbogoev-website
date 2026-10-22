@@ -19,7 +19,7 @@ export type NavItem =
   | { kind: "internal"; label: string; href: string }
   | { kind: "streamliner"; label: string; href: string };
 
-// The order follows the money model: The Streamliner, then the paid ladder, then About.
+// The order follows the money model: The Streamliner, then the paid ladder, then Classroom and About.
 // There is no Home link: the B* mark is the home link.
 export const nav: NavItem[] = [
   { kind: "streamliner", label: "The Streamliner", href: site.streamliner },
@@ -28,6 +28,7 @@ export const nav: NavItem[] = [
   { kind: "internal", label: "Sprint", href: "/sprint" },
   { kind: "internal", label: "Shift", href: "/shift" },
   { kind: "internal", label: "Subscription", href: "/subscription" },
+  { kind: "internal", label: "Classroom", href: "/classroom" },
   { kind: "internal", label: "About", href: "/about" },
 ];
 
