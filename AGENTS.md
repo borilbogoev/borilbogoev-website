@@ -61,7 +61,8 @@ Modules live in `src/modules/<name>` with their own schema, logic, components an
   - Never call `history.replaceState` directly in deck code: Next wraps it and reloads the page. Use `replaceUrl` in the controller.
   - Notes must never reach public HTML or the unlock answer. Keep `presenter` only in the Present view.
   - Test a deck against `npm run build && npm start`, not `next dev` (hot reload reloads the deck page).
-- Route groups: `(site)` has the header and footer, `(standalone)` (form pages), `(landing)` (landing pages, each chooses its own frame), `(deck)` (presentations, the deck fills the window) and `admin` do not.
+- `src/modules/classroom`: Classroom, the LMS (tables `classroom_*`). Admin at `/admin/classroom`, public pages at `/classroom/<course>/<module>/<lesson>`. People are ordinary `users` with the role `student`; access is `classroom.*` permissions plus enrolment (`lib/access.ts`). Public pages are static: personal and paid data (state, lesson blocks, notes, comments) comes from `/api/classroom/*` after the page loads. Lesson blocks are defined once in `lib/blocks.ts` (content blocks reuse the Presentations elements), drawn by `components/blocks.tsx` in the player and in the builder canvas, styled by `components/classroom.css` from the brand tokens only. Payments are bank transfers confirmed by an admin; Bunny.net keys live in Classroom settings (encrypted). Guide: `docs/classroom.md`.
+- Route groups: `(site)` has the header and footer, `(standalone)` (form pages), `(landing)` (landing pages, each chooses its own frame), `(deck)` (presentations, the deck fills the window), `(classroom)` (the Classroom player, with its own slim bar) and `admin` do not.
 - Public pages must not call `cookies()` or `headers()`. Form pages are static shells.
 
 ## Performance rules (target: LCP under 1 second)
