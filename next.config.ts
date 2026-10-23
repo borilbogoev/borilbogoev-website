@@ -18,6 +18,7 @@ const nextConfig: NextConfig = {
   // The School was called Classroom: keep every old link and emailed sign-in link working.
   async redirects() {
     return [
+      { source: "/l/session-001-three-headaches", destination: "/l/session-001-top-3-headaches", permanent: true },
       { source: "/classroom", destination: "/school", permanent: true },
       { source: "/classroom/:path*", destination: "/school/:path*", permanent: true },
       { source: "/admin/classroom", destination: "/admin/school", permanent: true },
