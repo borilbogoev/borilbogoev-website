@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import { nav, site } from "@/content/site";
 import { CloseIcon, ExternalIcon, MenuIcon } from "./icons";
 import { Monogram } from "./monogram";
+import { PortraitMark } from "./portrait-mark";
 import { StreamlinerLogo } from "./streamliner-logo";
 
 const linkBase =
@@ -67,6 +68,16 @@ export function HeaderNav() {
               >
                 <StreamlinerLogo height={22} />
               </a>
+            ) : item.kind === "portrait" ? (
+              <Link
+                key={item.href}
+                href={item.href}
+                aria-label={item.label}
+                aria-current={isActive(item.href) ? "page" : undefined}
+                className="inline-flex items-center"
+              >
+                <PortraitMark active={isActive(item.href)} />
+              </Link>
             ) : (
               <Link
                 key={item.href}
@@ -117,6 +128,19 @@ export function HeaderNav() {
                     <StreamlinerLogo height={26} />
                     <ExternalIcon size={18} className="text-muted" />
                   </a>
+                ) : item.kind === "portrait" ? (
+                  <Link
+                    href={item.href}
+                    onClick={close}
+                    aria-current={isActive(item.href) ? "page" : undefined}
+                    className={`flex min-h-[60px] items-center justify-between text-[18px] font-semibold ${isActive(item.href) ? "text-brand-text" : "text-ink"}`}
+                  >
+                    <span className="inline-flex items-center gap-3">
+                      <PortraitMark />
+                      {item.label}
+                    </span>
+                    {isActive(item.href) && <span aria-hidden className="h-2 w-2 rounded-full bg-brand" />}
+                  </Link>
                 ) : (
                   <Link
                     href={item.href}

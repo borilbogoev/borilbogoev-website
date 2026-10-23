@@ -10,7 +10,7 @@ export const adminModules: AdminModule[] = [
   { key: "forms", label: "Forms", href: "/admin/forms", desc: "Build forms, read responses, see how they perform.", permission: "forms.view" },
   { key: "landing", label: "Landing pages", href: "/admin/landing", desc: "Build pages at /l/<name> from blocks, publish them, see views and clicks.", permission: "landing.view" },
   { key: "presentations", label: "Presentations", href: "/admin/presentations", desc: "Build decks at /p/<name>: slides, accordion pages, demos and videos. Present them full window.", permission: "presentations.view" },
-  { key: "classroom", label: "Classroom", href: "/admin/classroom", desc: "Courses, modules and lessons at /classroom: video, audio, quizzes, notes, questions. Students, bank-transfer payments and access.", permission: "classroom.view" },
+  { key: "school", label: "School", href: "/admin/school", desc: "Courses, modules and lessons at /school: video, audio, quizzes, notes, questions. Students, bank-transfer payments and access.", permission: "school.view" },
 ];
 
 /** Admin-wide screens that are not modules. */

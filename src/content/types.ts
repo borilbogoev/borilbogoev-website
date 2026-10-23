@@ -28,6 +28,8 @@ export type Plans = {
   rows: PlanRow[];
   /** What every plan includes, shown as a checklist. */
   included?: { heading: string; items: string[] };
+  /** A free offer: replaces the table and cards with a list of rounded blocks and one price. Heading and intro come from above. */
+  deliverables?: { eyebrow: string; items: string[]; price: string };
   /** Used in structured data: ISO currency and the numeric price of each plan, in plan order. */
   currency: string;
   prices: number[];

@@ -113,6 +113,28 @@ export function PlanTable({ plans, rows, label }: { plans: Plan[]; rows: PlanRow
   );
 }
 
+/** A free offer: what you get as rounded blocks, then the price. No tiers. Server-rendered, no script. */
+export function Deliverables({ items, price }: { items: string[]; price: string }) {
+  return (
+    <div>
+      <ul className="m-0 grid list-none gap-3 p-0 md:grid-cols-2 md:gap-4">
+        {items.map((item) => (
+          <li key={item} className="flex items-start gap-3 rounded-[14px] border border-line bg-surface p-4">
+            <span className="icon-well">
+              <CheckIcon size={18} />
+            </span>
+            <span className="pt-1 text-[15px] font-medium leading-[1.55]">{item}</span>
+          </li>
+        ))}
+        <li className="flex items-center justify-between gap-4 rounded-[14px] border border-line bg-surface-alt p-4 md:col-span-2">
+          <span className="label text-muted">Price</span>
+          <span className="t-stat">{price}</span>
+        </li>
+      </ul>
+    </div>
+  );
+}
+
 /** Price cards, for offers whose plans share the same work and differ only in price. */
 export function PlanCards({ plans }: { plans: Plan[] }) {
   return (

@@ -12,7 +12,7 @@
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
     "landing": "tsx scripts/landing.ts",
-    "classroom": "tsx scripts/classroom.ts"
+    "school": "tsx scripts/school.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.2.0",

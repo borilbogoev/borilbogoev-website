@@ -11,7 +11,7 @@ import { AdminNav } from "./nav";
 // Everything in the admin needs a signed-in user. Pages add their own permission check on top.
 export default async function PanelLayout({ children }: { children: React.ReactNode }) {
   const user = await requireUser();
-  if (!canUseAdmin(user.role)) redirect("/classroom/my"); // students learn in the Classroom, not in the admin
+  if (!canUseAdmin(user.role)) redirect("/school/my"); // students learn in the School, not in the admin
   const timeZone = await getGlobalSettings().then((g) => g.timezone, () => "UTC");
   return (
     <AdminProviders timeZone={timeZone}>

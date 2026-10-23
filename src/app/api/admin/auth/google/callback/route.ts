@@ -4,16 +4,16 @@ import { getGoogleClient, OAUTH_KIND_COOKIE, OAUTH_NEXT_COOKIE, OAUTH_STATE_COOK
 import { safeNext } from "@/modules/auth/redirect";
 import { createSessionToken, SESSION_COOKIE, sessionCookieOptions } from "@/modules/auth/session";
 import { authenticateGoogle, createUser } from "@/modules/auth/users";
-import { getSettings } from "@/modules/classroom/lib/settings-store";
+import { getSettings } from "@/modules/school/lib/settings-store";
 
 type GoogleClaims = { email?: string; email_verified?: boolean; name?: string };
 
 // Step 2: Google sends the user back here.
 export async function GET(request: NextRequest) {
-  // A sign-in that started in the Classroom comes back to the Classroom.
+  // A sign-in that started in the School comes back to the School.
   const student = request.cookies.get(OAUTH_KIND_COOKIE)?.value === "student";
   const fail = (code: string) => {
-    const res = NextResponse.redirect(new URL(student ? `/classroom/sign-in?error=${code}` : `/admin/login?error=${code}`, request.url));
+    const res = NextResponse.redirect(new URL(student ? `/school/sign-in?error=${code}` : `/admin/login?error=${code}`, request.url));
     clearOauthCookies(res);
     return res;
   };
@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
 
   const email = claims.email?.toLowerCase();
   if (!email || claims.email_verified !== true) return fail("google_failed");
-  // Admin sign-in has no sign-up: only accounts created in Admin > Users get in. A Classroom sign-in may create a student
+  // Admin sign-in has no sign-up: only accounts created in Admin > Users get in. A School sign-in may create a student
   // account (role "student", no admin access) when sign-up is open; Google has verified the address.
   let result = await authenticateGoogle(email);
   if (!result.ok && student && result.reason === "invalid") {
@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
   }
   if (!result.ok) return fail("not_allowed");
 
-  const next = safeNext(request.cookies.get(OAUTH_NEXT_COOKIE)?.value, student ? "/classroom/my" : "/admin");
+  const next = safeNext(request.cookies.get(OAUTH_NEXT_COOKIE)?.value, student ? "/school/my" : "/admin");
   const res = NextResponse.redirect(new URL(next, request.url));
   res.cookies.set(SESSION_COOKIE, await createSessionToken({ userId: result.user.id, version: result.user.sessionVersion, method: "google" }), sessionCookieOptions);
   clearOauthCookies(res);
