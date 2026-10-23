@@ -48,16 +48,14 @@ function offerMarkdown(o: Offer) {
     "### Who it is for",
     ...o.audience.map((a) => `- ${a}`),
     "",
-    "### What you get",
-    ...o.gets.map((a) => `- ${a}`),
-    "",
+    ...(plans.deliverables ? [] : ["### What you get", ...o.gets.map((a) => `- ${a}`), ""]),
     "### How it works",
     ...o.steps.map((s, i) => `${i + 1}. **${s.title}.** ${s.text}`),
     "",
     `### ${plans.heading}`,
     plans.intro,
     "",
-    ...plans.plans.map((p) => `- **${p.name}**${p.sub ? ` (${p.sub})` : ""}: ${p.oldPrice ? `~~${p.oldPrice}~~ ` : ""}${p.price}${p.priceNote ? `, ${p.priceNote}` : ""}`),
+    ...(plans.deliverables ? [] : plans.plans).map((p) => `- **${p.name}**${p.sub ? ` (${p.sub})` : ""}: ${p.oldPrice ? `~~${p.oldPrice}~~ ` : ""}${p.price}${p.priceNote ? `, ${p.priceNote}` : ""}`),
   ];
   if (plans.rows.length) {
     lines.push("");
@@ -66,6 +64,7 @@ function offerMarkdown(o: Offer) {
       lines.push(`- ${row.feature}: ${cells.join("; ")}`);
     }
   }
+  if (plans.deliverables) lines.push("", `${plans.deliverables.eyebrow}:`, ...plans.deliverables.items.map((i) => `- ${i}`), `Price: ${plans.deliverables.price}`);
   if (plans.included) lines.push("", `${plans.included.heading}:`, ...plans.included.items.map((i) => `- ${i}`));
   lines.push("", `### ${o.notHeading}`, ...o.notItems.map((a) => `- ${a}`), "", "### Questions", ...o.faq.flatMap((f) => [`**${f.q}**`, f.a, ""]));
   return lines.join("\n");

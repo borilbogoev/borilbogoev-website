@@ -6,7 +6,7 @@ export const SESSION_MAX_AGE = 60 * 60 * 24 * 14; // 14 days
 export type SessionClaims = {
   userId: string;
   version: number; // must match users.session_version, so a password change or a disabled account ends old sessions
-  method: "password" | "google" | "link"; // link: emailed Classroom sign-in link
+  method: "password" | "google" | "link"; // link: emailed School sign-in link
 };
 
 function getSecret() {

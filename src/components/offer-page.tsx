@@ -6,7 +6,7 @@ import { Faq } from "./faq";
 import { FounderBand } from "./founder-band";
 import { CheckIcon, MinusIcon, UsersIcon } from "./icons";
 import { JsonLd } from "./json-ld";
-import { PlanCards, PlanTable } from "./plans";
+import { Deliverables, PlanCards, PlanTable } from "./plans";
 import { StickyCta } from "./sticky-cta";
 import { Section } from "./ui";
 
@@ -155,7 +155,7 @@ export function OfferPage({ offer }: { offer: Offer }) {
                 Send an Inquiry
               </a>
               <a href="#plans" className="bb-btn bb-btn-outline">
-                See Pricing
+                {plans.deliverables ? "See What You Get" : "See Pricing"}
               </a>
             </div>
           </div>
@@ -189,7 +189,8 @@ export function OfferPage({ offer }: { offer: Offer }) {
         </ul>
       </Section>
 
-      {/* What you get */}
+      {/* What you get (offers with a deliverables list show it below instead) */}
+      {!plans.deliverables && (
       <Section eyebrow="Outcome" heading="What you get">
         <ul className="m-0 grid list-none gap-3 p-0 md:grid-cols-2 md:gap-4">
           {offer.gets.map((line) => (
@@ -202,6 +203,7 @@ export function OfferPage({ offer }: { offer: Offer }) {
           ))}
         </ul>
       </Section>
+      )}
 
       {/* How it works */}
       <Section alt eyebrow="Process" heading="How it works">
@@ -217,8 +219,10 @@ export function OfferPage({ offer }: { offer: Offer }) {
       </Section>
 
       {/* Plans */}
-      <Section id="plans" eyebrow="Pricing" heading={plans.heading} intro={plans.intro}>
-        {plans.rows.length > 0 ? <PlanTable plans={plans.plans} rows={plans.rows} label={plans.heading} /> : <PlanCards plans={plans.plans} />}
+      <Section id="plans" eyebrow={plans.deliverables ? plans.deliverables.eyebrow : "Pricing"} heading={plans.heading} intro={plans.intro}>
+        {plans.deliverables ? (
+          <Deliverables items={plans.deliverables.items} price={plans.deliverables.price} />
+        ) : plans.rows.length > 0 ? <PlanTable plans={plans.plans} rows={plans.rows} label={plans.heading} /> : <PlanCards plans={plans.plans} />}
         {plans.included && (
           <div className="mt-10">
             <h3 className="t-h3 mb-4">{plans.included.heading}</h3>

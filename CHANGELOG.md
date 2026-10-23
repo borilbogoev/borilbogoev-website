@@ -4,6 +4,10 @@ All notable changes to this project. Versions follow [Semantic Versioning](https
 
 ## [0.2.0] - Unreleased
 
+### Changed
+- Classroom is now the School: `/school`, `/admin/school`, `npm run school`. Old `/classroom` URLs redirect. Database tables keep their `classroom_*` names. The School is listed in the menu after Sessions (`SCHOOL_LISTED=false` makes it share-only again).
+- Header: the portrait replaces the About text link. Session 1 renamed. Sessions pricing tiers replaced by a free Deliverables list.
+
 ### Added
 - Forms module (BB Forms, migrated from BB Forms WP): block builder, conversational and classic modes, conditional logic, responses inbox with CSV export, per-form dashboard, notifications, autoresponder, signed webhooks, file uploads (Vercel Blob), GDPR tools and retention.
 - Embed anywhere: `<FormEmbed id display="inline|modal">`, plus a standalone page per form at `/s/<slug>`. The two shared webinar links keep working.

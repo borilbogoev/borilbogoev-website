@@ -1,5 +1,5 @@
 // Site-wide settings, navigation and contact points.
-import { CLASSROOM_LISTED } from "@/modules/classroom/lib/listing";
+import { SCHOOL_LISTED } from "@/modules/school/lib/listing";
 
 export const site = {
   name: "Boril Bogoev",
@@ -18,19 +18,20 @@ export const site = {
 
 export type NavItem =
   | { kind: "internal"; label: string; href: string }
-  | { kind: "streamliner"; label: string; href: string };
+  | { kind: "streamliner"; label: string; href: string }
+  | { kind: "portrait"; label: string; href: string };
 
-// The order follows the money model: The Streamliner, then the paid ladder, then Classroom and About.
+// The order follows the money model: The Streamliner, then Sessions, the School, the paid ladder and the portrait (About).
 // There is no Home link: the B* mark is the home link.
 export const nav: NavItem[] = [
   { kind: "streamliner", label: "The Streamliner", href: site.streamliner },
   { kind: "internal", label: "Sessions", href: "/sessions" },
+  ...(SCHOOL_LISTED ? [{ kind: "internal" as const, label: "School", href: "/school" }] : []),
   { kind: "internal", label: "Screening", href: "/screening" },
   { kind: "internal", label: "Sprint", href: "/sprint" },
   { kind: "internal", label: "Shift", href: "/shift" },
   { kind: "internal", label: "Subscription", href: "/subscription" },
-  ...(CLASSROOM_LISTED ? [{ kind: "internal" as const, label: "Classroom", href: "/classroom" }] : []),
-  { kind: "internal", label: "About", href: "/about" },
+  { kind: "portrait", label: "About", href: "/about" },
 ];
 
 export const founderBio =

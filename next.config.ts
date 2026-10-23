@@ -15,6 +15,18 @@ const nextConfig: NextConfig = {
     // Tailwind CSS is small: inlining it removes a render-blocking request for first-time visitors.
     inlineCss: true,
   },
+  // The School was called Classroom: keep every old link and emailed sign-in link working.
+  async redirects() {
+    return [
+      { source: "/l/session-001-three-headaches", destination: "/l/session-001-top-3-headaches", permanent: true },
+      { source: "/classroom", destination: "/school", permanent: true },
+      { source: "/classroom/:path*", destination: "/school/:path*", permanent: true },
+      { source: "/admin/classroom", destination: "/admin/school", permanent: true },
+      { source: "/admin/classroom/:path*", destination: "/admin/school/:path*", permanent: true },
+      { source: "/admin/preview/classroom/:path*", destination: "/admin/preview/school/:path*", permanent: true },
+      { source: "/api/classroom/:path*", destination: "/api/school/:path*", permanent: true },
+    ];
+  },
   async headers() {
     return [
       {

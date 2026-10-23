@@ -25,4 +25,4 @@ export * from "@/modules/auth/schema";
 export * from "@/modules/forms/schema";
 export * from "@/modules/landing/schema";
 export * from "@/modules/presentations/schema";
-export * from "@/modules/classroom/schema";
+export * from "@/modules/school/schema";

@@ -3,7 +3,7 @@ import { Google } from "arctic";
 export const OAUTH_STATE_COOKIE = "bb_oauth_state";
 export const OAUTH_VERIFIER_COOKIE = "bb_oauth_verifier";
 export const OAUTH_NEXT_COOKIE = "bb_oauth_next";
-export const OAUTH_KIND_COOKIE = "bb_oauth_kind"; // "student": the sign-in started in the Classroom
+export const OAUTH_KIND_COOKIE = "bb_oauth_kind"; // "student": the sign-in started in the School
 
 export const isGoogleConfigured = () => Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET);
 
