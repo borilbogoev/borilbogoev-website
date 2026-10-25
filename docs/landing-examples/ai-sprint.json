@@ -1,0 +1,452 @@
+{
+  "title": "AI Sprint",
+  "slug": "ai-sprint",
+  "status": "draft",
+  "settings": {
+    "seo_title": "AI Sprint: five days to take work off your week",
+    "seo_description": "Five working days with Boril Bogoev, Ph.D. I map where your time goes, build the automations and train you to run them. 45 minutes a day from you. 7,500 AED launch price.",
+    "indexable": 1,
+    "chrome": "full",
+    "sticky_label": "Book My Sprint",
+    "sticky_url": "#book"
+  },
+  "blocks": [
+    {
+      "type": "hero_image",
+      "settings": {
+        "badge": "",
+        "eyebrow": "AI Sprint",
+        "headline": "Five days to take work off your week",
+        "accent_dot": 1,
+        "subtitle": "Five days. I analyse how you work, build the automations, and train you to run them.",
+        "text": "In five working days, I map where your time goes, build the automations and AI procedures that take work off you, and train you and your assistant to run them. You give me 45 minutes a day, and I do the rest.",
+        "bullets": [
+          "A written baseline on day 1, measured again on day 5 and day 30",
+          "The work is built for you, inside the tools you already use",
+          "14 days of support after the last session"
+        ],
+        "cta_label": "Book My Sprint",
+        "cta_url": "#book",
+        "secondary_label": "See What You Get",
+        "secondary_url": "#leave",
+        "note": "7,500 AED launch price for the next five clients · 4 starts a month, on Mondays",
+        "image": {
+          "id": 0,
+          "url": "/brand/ai/ai-sprint.svg",
+          "width": 1200,
+          "height": 900
+        },
+        "image_alt": "Five bars from Monday to Friday, rising each day, with Friday in red",
+        "image_side": "right",
+        "image_style": "rounded",
+        "style": "soft",
+        "spacing": "normal",
+        "anchor": "top"
+      }
+    },
+    {
+      "type": "stats",
+      "settings": {
+        "style": "band",
+        "bg": "inverse",
+        "spacing": "none",
+        "items": [
+          {
+            "prefix": "",
+            "value": "5",
+            "suffix": "",
+            "label": "Working days",
+            "note": ""
+          },
+          {
+            "prefix": "",
+            "value": "45",
+            "suffix": "",
+            "label": "Minutes a day",
+            "note": ""
+          },
+          {
+            "prefix": "",
+            "value": "4",
+            "suffix": "",
+            "label": "Sprints a month",
+            "note": ""
+          },
+          {
+            "prefix": "",
+            "value": "14",
+            "suffix": "",
+            "label": "Days of support after",
+            "note": ""
+          }
+        ],
+        "eyebrow": "",
+        "heading": "",
+        "intro": ""
+      }
+    },
+    {
+      "type": "list",
+      "settings": {
+        "eyebrow": "The problem",
+        "heading": "What you are dealing with",
+        "intro": "Executives who come to a Sprint usually recognise most of these.",
+        "items": [
+          "Other people's requests set your week. By Wednesday you have not worked on what you planned on Monday.",
+          "You do not know where your time goes. You are busy, but you cannot say how many hours go to email, preparation and reporting.",
+          "Information is scattered. The answer is in an email, a chat, a file or someone's head, and finding it takes time.",
+          "Reports are rebuilt every week or month. The same figures are collected and formatted by hand.",
+          "Long documents are read line by line. Contracts, proposals and board papers take hours of your attention.",
+          "Follow-ups slip. What was agreed in a meeting is not tracked until someone asks.",
+          "Your assistant spends time on work that could run without anyone. Scheduling, collecting, copying and chasing.",
+          "Tools were bought and not adopted. The licences are paid for, and your team uses a fraction of what they can do.",
+          "Delegating takes longer than doing it yourself. The instructions are not clear enough to hand over.",
+          "Decisions wait for analysis. A question that needs data takes days to answer.",
+          "The same process runs three different ways. Each person does it differently, and the quality varies.",
+          "You cannot step away. A week off means a backlog when you return."
+        ],
+        "mark": "dot",
+        "columns": 2,
+        "bg": "surface",
+        "spacing": "normal",
+        "anchor": "problem"
+      }
+    },
+    {
+      "type": "features",
+      "settings": {
+        "eyebrow": "What you leave with",
+        "heading": "At the end of the week you have",
+        "intro": "The tasks depend on your work. We choose them together on day 1, from what the analysis shows.",
+        "items": [
+          {
+            "icon": "chart",
+            "title": "A written baseline",
+            "text": "On day 1 we record how many hours a week you spend on your main recurring tasks. We measure again on day 5 and on day 30."
+          },
+          {
+            "icon": "target",
+            "title": "Your biggest tasks improved",
+            "text": "Three to five recurring tasks. Some run on their own, such as weekly reports, meeting briefs and follow-up tracking. Others are faster because you or your assistant follow a documented AI procedure."
+          },
+          {
+            "icon": "users",
+            "title": "Training on your own tasks",
+            "text": "You and your assistant practise on real work, not examples."
+          },
+          {
+            "icon": "book",
+            "title": "A playbook",
+            "text": "One document that lists what runs, who owns it and how to change it."
+          },
+          {
+            "icon": "shield",
+            "title": "Confidentiality rules",
+            "text": "For your tools and data, written for your situation."
+          },
+          {
+            "icon": "mail",
+            "title": "14 days of support",
+            "text": "By message after the Sprint ends."
+          }
+        ],
+        "columns": 3,
+        "style": "cards",
+        "bg": "alt",
+        "spacing": "normal",
+        "anchor": "leave"
+      }
+    },
+    {
+      "type": "cta",
+      "settings": {
+        "length": "short",
+        "eyebrow": "Next step",
+        "heading": "Your Monday is held once payment arrives.",
+        "text": "",
+        "cta_label": "Book My Sprint",
+        "cta_url": "#book",
+        "align": "center",
+        "bg": "inverse",
+        "spacing": "tight"
+      }
+    },
+    {
+      "type": "steps",
+      "settings": {
+        "eyebrow": "How it works",
+        "heading": "Five working days, Monday to Friday",
+        "intro": "Your time is 45 minutes a day, plus a few minutes each day to review what I send. That is about 5 hours in total, less than one working day spread across a week. The Monday after, your week runs on the new setup.",
+        "items": [
+          {
+            "title": "Day 1",
+            "text": "Session: we map your week, record the baseline and agree the target. Between sessions: I analyse your tasks and tools."
+          },
+          {
+            "title": "Day 2",
+            "text": "Session: we choose the tasks to improve and set the confidentiality rules. Between sessions: I design the changes."
+          },
+          {
+            "title": "Day 3",
+            "text": "Session: you review the first automations. Between sessions: I build and test them."
+          },
+          {
+            "title": "Day 4",
+            "text": "Session: we run them on live work. Between sessions: I fix what the live run shows."
+          },
+          {
+            "title": "Day 5",
+            "text": "Session: you and your assistant take over. Between sessions: I write the playbook."
+          }
+        ],
+        "layout": "list",
+        "bg": "surface",
+        "spacing": "normal",
+        "anchor": "how"
+      }
+    },
+    {
+      "type": "features",
+      "settings": {
+        "eyebrow": "Why this works",
+        "heading": "A measured result, built by me",
+        "intro": "",
+        "items": [
+          {
+            "icon": "bolt",
+            "title": "I build it",
+            "text": "The result does not depend on how much time you have to learn."
+          },
+          {
+            "icon": "target",
+            "title": "A written target",
+            "text": "On day 1 we agree how many hours a week should come back and how we will measure it. I do not agree to a target I do not think is reachable."
+          },
+          {
+            "icon": "clock",
+            "title": "Nothing waits more than a day",
+            "text": "You have a 45-minute session each day. Between sessions I analyse, build and test, and you review by message."
+          },
+          {
+            "icon": "layers",
+            "title": "Your tasks, your tools",
+            "text": "I work inside what you already use. You do not get a standard package."
+          },
+          {
+            "icon": "users",
+            "title": "Limited places",
+            "text": "I limit the number of Sprints each month, so each one gets my full attention."
+          },
+          {
+            "icon": "mail",
+            "title": "Support after the last session",
+            "text": "It continues for 14 days, so problems that appear in week two are fixed."
+          }
+        ],
+        "columns": 3,
+        "style": "plain",
+        "bg": "surface",
+        "spacing": "normal",
+        "anchor": "why"
+      }
+    },
+    {
+      "type": "bio",
+      "settings": {
+        "eyebrow": "Your coach",
+        "name": "Boril Bogoev, Ph.D.",
+        "role": "Executive AI coach",
+        "text": "AI is my subject, not a side topic. I use the same approach on my own work, and I run my own businesses with it.",
+        "credentials": [
+          "PhD in Automated Digital Business Models",
+          "Master's in Automation and Robotics",
+          "20+ years across graphic design, web development, marketing and AI orchestration"
+        ],
+        "image": {
+          "id": 0,
+          "url": "/brand/portrait-640.webp",
+          "width": 640,
+          "height": 640
+        },
+        "image_alt": "Portrait illustration of Boril Bogoev",
+        "image_side": "left",
+        "bg": "alt",
+        "spacing": "normal",
+        "anchor": "coach"
+      }
+    },
+    {
+      "type": "compare",
+      "settings": {
+        "eyebrow": "Who this is for",
+        "heading": "Is AI Sprint right for you?",
+        "intro": "AI Sprint is for executives who want the work done for them: CEOs, managing directors, founders, partners, senior directors and business owners. Many clients start with an AI Jump, but it is not required.",
+        "left_title": "This is for you if",
+        "left_items": [
+          "You can name the tasks that eat your week, such as email, reporting, meeting preparation or follow-ups",
+          "You can give me access to the tools and files involved",
+          "You can spare 45 minutes a day for five days",
+          "You want a result that is measured, not a feeling that things are better"
+        ],
+        "right_title": "This is not for you if",
+        "right_items": [
+          "You want training only",
+          "You want a company-wide programme",
+          "You cannot give access to your tools",
+          "You want no involvement at all, because I need your decisions during the week"
+        ],
+        "bg": "surface",
+        "spacing": "normal",
+        "anchor": "fit"
+      }
+    },
+    {
+      "type": "bonuses",
+      "settings": {
+        "eyebrow": "Included",
+        "heading": "What comes with it",
+        "intro": "Included in the Sprint fee.",
+        "items": [
+          {
+            "title": "Recorded training library",
+            "text": "Short video lessons on the core AI skills for executives, for you and your assistant to watch when time allows."
+          },
+          {
+            "title": "Access to AIxU: Dubai Chapter",
+            "text": "A community of professionals in the UAE who are learning to use AI in their work."
+          },
+          {
+            "title": "Library of ready-to-use instructions",
+            "text": "For common executive tasks, such as board papers, investor updates, negotiation preparation and hiring."
+          },
+          {
+            "title": "Assistant handover guide",
+            "text": "A short guide you can give to a new assistant or chief of staff so they understand your setup quickly."
+          }
+        ],
+        "total": "",
+        "bg": "alt",
+        "spacing": "normal",
+        "anchor": "included"
+      }
+    },
+    {
+      "type": "pricing",
+      "settings": {
+        "eyebrow": "Price",
+        "heading": "Launch price for the next five clients",
+        "intro": "Payable in full before the start. Your Jump fee is credited in full if you book the Sprint within 7 days of your Jump session.",
+        "items": [
+          {
+            "name": "AI Sprint",
+            "price": "7,500 AED",
+            "period": "launch price, first five clients",
+            "badge": "From client six: 10,000 AED",
+            "description": "Five working days, built for you and measured.",
+            "features": "Five 45-minute sessions, Monday to Friday\nWritten baseline and agreed target\nYour three to five biggest tasks improved\nTraining for you and your assistant\nPlaybook and confidentiality rules\n14 days of support by message",
+            "button_label": "Book My Sprint",
+            "button_url": "#book",
+            "highlight": 1
+          }
+        ],
+        "footnote": "From the sixth client the Sprint is 10,000 AED, whatever the date. Some AI tools charge a monthly subscription. I tell you which ones before the Sprint starts, and I recommend the fewest that do the job.",
+        "bg": "surface",
+        "spacing": "normal",
+        "anchor": "price"
+      }
+    },
+    {
+      "type": "guarantee",
+      "settings": {
+        "eyebrow": "Guarantee",
+        "heading": "Thirty more days at no charge",
+        "badge": "Guarantee",
+        "text": "On day 1 we write down your baseline and an agreed target for hours returned each week. If the target is not met by day 30, measured the same way as the baseline, I keep working with you at no charge for up to 30 more days or until we achieve the agreed baseline.",
+        "points": [
+          "You attend the sessions",
+          "You give me the access I ask for within 24 hours",
+          "You use the setup as we agreed",
+          "The target is set honestly on day 1"
+        ],
+        "bg": "alt",
+        "spacing": "normal",
+        "anchor": "guarantee"
+      }
+    },
+    {
+      "type": "faq",
+      "settings": {
+        "eyebrow": "FAQ",
+        "heading": "Questions",
+        "intro": "",
+        "items": [
+          {
+            "q": "How much of my time does it take?",
+            "a": "45 minutes a day for five days, plus a few minutes each day to approve or correct what I send you by message. About 5 hours in total."
+          },
+          {
+            "q": "Do I need to learn any tool?",
+            "a": "No. You do not need to read documentation or build anything. I do the analysis, the building and the testing."
+          },
+          {
+            "q": "What access do you need?",
+            "a": "Access to the tools and files involved, within 24 hours of my asking. Your assistant joins the day 5 session, if you have one."
+          },
+          {
+            "q": "Do I need an AI Jump first?",
+            "a": "No. Many clients start with a Jump, and its fee is credited in full if you book the Sprint within 7 days."
+          },
+          {
+            "q": "When can I start?",
+            "a": "Every Sprint starts on a Monday, with a maximum of 4 a month. Your Monday is held once payment arrives. Dates that are not paid for are released on the Friday before and offered to the next person in line."
+          },
+          {
+            "q": "What comes after the Sprint?",
+            "a": "AI Quest, a monthly seat for keeping your setup current. Your Quest seat is held for 7 days after your last Sprint session."
+          }
+        ],
+        "bg": "surface",
+        "spacing": "normal",
+        "anchor": "faq"
+      }
+    },
+    {
+      "type": "quote",
+      "settings": {
+        "quote": "The Monday after, your week runs on the new setup.",
+        "author": "",
+        "role": "",
+        "style": "statement",
+        "align": "center",
+        "bg": "inverse",
+        "spacing": "normal"
+      }
+    },
+    {
+      "type": "form",
+      "settings": {
+        "form_id": 9,
+        "display": "inline",
+        "eyebrow": "Book your start",
+        "heading": "Book your AI Sprint",
+        "intro": "Tell me where to reach you. I confirm your Monday once payment arrives.",
+        "width": "narrow",
+        "theme": "light",
+        "bg": "surface",
+        "spacing": "normal",
+        "anchor": "book"
+      }
+    },
+    {
+      "type": "ps",
+      "settings": {
+        "label": "P.S.",
+        "text": "I take a maximum of 4 Sprints a month, with one start date each Monday. The launch price of 7,500 AED applies to the first five clients only.",
+        "cta_label": "Book My Sprint",
+        "cta_url": "#book",
+        "bg": "surface",
+        "spacing": "tight"
+      }
+    }
+  ]
+}

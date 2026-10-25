@@ -1,8 +1,6 @@
 import { home } from "@/content/home";
-import { offers } from "@/content/offers";
 import { education, jobs, profile, publication, resumeHero, skillGroups, stats } from "@/content/resume";
 import { founderBio, site } from "@/content/site";
-import type { Offer } from "@/content/types";
 import { abs } from "./seo";
 
 const plain = (s: string) => s.replace(/\*\*/g, "");
@@ -17,8 +15,7 @@ export function llmsIndex() {
     `${site.positioning} ${site.tagline} Based in ${site.location}. Prices are in AED.`,
     "",
     "## Offers",
-    ...offers.map((o) => `- [${o.eyebrow}](${abs(`/${o.slug}`)}): ${o.card.summary} ${o.card.from}.`),
-    `- [The Streamliner](${site.streamliner}): ${home.streamlinerLine}`,
+    ...home.offers.map((o) => `- [${o.name}](${abs(`/l/${o.slug}`)}): ${o.summary} ${o.from}, ${o.note.toLowerCase()}.`),
     "",
     "## About",
     `- [Resume and experience](${abs("/about")}): ${resumeHero.description}`,
@@ -30,44 +27,8 @@ export function llmsIndex() {
   ].join("\n");
 }
 
-function offerMarkdown(o: Offer) {
-  const { plans } = o;
-  const lines = [
-    `## ${o.eyebrow}`,
-    `URL: ${abs(`/${o.slug}`)}`,
-    "",
-    `**${o.headline}**`,
-    "",
-    o.tagline,
-    "",
-    ...o.lead,
-    "",
-    "### The problem",
-    o.problem,
-    "",
-    "### Who it is for",
-    ...o.audience.map((a) => `- ${a}`),
-    "",
-    ...(plans.deliverables ? [] : ["### What you get", ...o.gets.map((a) => `- ${a}`), ""]),
-    "### How it works",
-    ...o.steps.map((s, i) => `${i + 1}. **${s.title}.** ${s.text}`),
-    "",
-    `### ${plans.heading}`,
-    plans.intro,
-    "",
-    ...(plans.deliverables ? [] : plans.plans).map((p) => `- **${p.name}**${p.sub ? ` (${p.sub})` : ""}: ${p.oldPrice ? `~~${p.oldPrice}~~ ` : ""}${p.price}${p.priceNote ? `, ${p.priceNote}` : ""}`),
-  ];
-  if (plans.rows.length) {
-    lines.push("");
-    for (const row of plans.rows) {
-      const cells = row.values.map((v, i) => `${plans.plans[i].name}: ${v === true ? "yes" : v === false ? "no" : v}`);
-      lines.push(`- ${row.feature}: ${cells.join("; ")}`);
-    }
-  }
-  if (plans.deliverables) lines.push("", `${plans.deliverables.eyebrow}:`, ...plans.deliverables.items.map((i) => `- ${i}`), `Price: ${plans.deliverables.price}`);
-  if (plans.included) lines.push("", `${plans.included.heading}:`, ...plans.included.items.map((i) => `- ${i}`));
-  lines.push("", `### ${o.notHeading}`, ...o.notItems.map((a) => `- ${a}`), "", "### Questions", ...o.faq.flatMap((f) => [`**${f.q}**`, f.a, ""]));
-  return lines.join("\n");
+function offerMarkdown(o: (typeof home.offers)[number]) {
+  return [`## ${o.name}`, `URL: ${abs(`/l/${o.slug}`)}`, "", `${o.tag}. ${o.summary}`, "", `Price: ${o.from}. ${o.note}.`, ""].join("\n");
 }
 
 /** Every page of the site as one Markdown document. */
@@ -105,5 +66,5 @@ export function llmsFull() {
     founderBio,
     "",
   ];
-  return [`# ${site.fullName}`, "", `> ${site.description}`, "", ...offers.map(offerMarkdown), ...resume].join("\n");
+  return [`# ${site.fullName}`, "", `> ${site.description}`, "", ...home.offers.map(offerMarkdown), ...resume].join("\n");
 }

@@ -1,0 +1,440 @@
+{
+  "title": "AI Jump",
+  "slug": "ai-jump",
+  "status": "draft",
+  "settings": {
+    "seo_title": "AI Jump: AI set up on your real work in two hours",
+    "seo_description": "One two-hour session with Boril Bogoev, Ph.D. AI set up on your own email, calendar and documents, running when you leave. 2,000 AED, credited against an AI Sprint.",
+    "indexable": 1,
+    "chrome": "full",
+    "sticky_label": "Book My Jump",
+    "sticky_url": "#book"
+  },
+  "blocks": [
+    {
+      "type": "hero_image",
+      "settings": {
+        "badge": "",
+        "eyebrow": "AI Jump",
+        "headline": "AI running on your real work in two hours",
+        "accent_dot": 1,
+        "subtitle": "Two hours. I set up AI on your real work, and you leave with it running.",
+        "text": "In one two-hour session, I set up AI on your own email, calendar and documents, and show you how to run it. You leave with a working setup and a one-page summary of how to use it.",
+        "bullets": [
+          "Your own inbox, calendar and documents, not examples",
+          "Online, in English or Bulgarian",
+          "Second session free if you do not leave with a working setup"
+        ],
+        "cta_label": "Book My Jump",
+        "cta_url": "#book",
+        "secondary_label": "See What You Get",
+        "secondary_url": "#leave",
+        "note": "2,000 AED · 8 places a month · Credited in full against an AI Sprint",
+        "image": {
+          "id": 0,
+          "url": "/brand/ai/ai-jump.svg",
+          "width": 1200,
+          "height": 900
+        },
+        "image_alt": "An inbox of messages, a dotted red jump and a finished setup that is running",
+        "image_side": "right",
+        "image_style": "rounded",
+        "style": "soft",
+        "spacing": "normal",
+        "anchor": "top"
+      }
+    },
+    {
+      "type": "stats",
+      "settings": {
+        "style": "band",
+        "bg": "inverse",
+        "spacing": "none",
+        "items": [
+          {
+            "prefix": "",
+            "value": "2",
+            "suffix": "h",
+            "label": "One working setup",
+            "note": ""
+          },
+          {
+            "prefix": "",
+            "value": "3",
+            "suffix": "",
+            "label": "Priorities, not twenty",
+            "note": ""
+          },
+          {
+            "prefix": "",
+            "value": "8",
+            "suffix": "",
+            "label": "Places a month",
+            "note": ""
+          },
+          {
+            "prefix": "",
+            "value": "2,000",
+            "suffix": "",
+            "label": "AED, credited to Sprint",
+            "note": ""
+          }
+        ],
+        "eyebrow": "",
+        "heading": "",
+        "intro": ""
+      }
+    },
+    {
+      "type": "list",
+      "settings": {
+        "eyebrow": "The problem",
+        "heading": "What you are dealing with",
+        "intro": "You may recognise several of these.",
+        "items": [
+          "You have no clear position on AI. You hear about it every day and cannot say which parts apply to your work.",
+          "You tried it and stopped. The answers were average, it took longer than doing the work yourself, and you went back to the old way.",
+          "Your inbox sets your day. You read, sort and answer messages that follow the same patterns every week.",
+          "You prepare for meetings in the minutes before them. The background is spread across emails, notes and files.",
+          "You write the same things again and again. Updates, replies and briefs start from a blank page each time.",
+          "Long documents wait for you. Contracts, proposals and reports pile up because reading them properly takes an hour you do not have.",
+          "Reports are put together by hand. The figures come from several places, and someone spends hours joining them.",
+          "You worry about confidentiality. You do not know what is safe to paste into an AI tool, and nobody has given you a rule.",
+          "Your team uses AI in their own ways. You cannot tell what is safe, what is good and what is worth keeping.",
+          "Courses assume time you do not have. Every tutorial asks for hours of learning before you see any benefit.",
+          "Decisions wait on you. The briefing you needed was not ready when the decision was.",
+          "You suspect others are ahead. You cannot judge whether the gap is real, because nobody gives you a straight comparison."
+        ],
+        "mark": "dot",
+        "columns": 2,
+        "bg": "surface",
+        "spacing": "normal",
+        "anchor": "problem"
+      }
+    },
+    {
+      "type": "features",
+      "settings": {
+        "eyebrow": "What you leave with",
+        "heading": "Six things, running on your own accounts",
+        "intro": "At the end of the two hours you have this. Which ones we set up depends on your work. In the first ten minutes we pick the three that matter most to you.",
+        "items": [
+          {
+            "icon": "mail",
+            "title": "An inbox routine",
+            "text": "AI reads and sorts your mail and drafts replies to routine messages in your style. You review everything before it is sent."
+          },
+          {
+            "icon": "calendar",
+            "title": "A meeting brief",
+            "text": "Before a meeting, you get a short brief built from your emails, notes and files on that person or topic."
+          },
+          {
+            "icon": "book",
+            "title": "A way through long documents",
+            "text": "Contracts, proposals and reports come back summarised, with the points that need your attention marked."
+          },
+          {
+            "icon": "bolt",
+            "title": "Drafting from your voice",
+            "text": "Updates, replies and briefs arrive as drafts to edit, not blank pages."
+          },
+          {
+            "icon": "shield",
+            "title": "Written rules on sharing",
+            "text": "What you can share with AI tools, fitted to your situation."
+          },
+          {
+            "icon": "check",
+            "title": "A one-page summary",
+            "text": "Your setup and how to use it, so it still works next month."
+          }
+        ],
+        "columns": 3,
+        "style": "cards",
+        "bg": "alt",
+        "spacing": "normal",
+        "anchor": "leave"
+      }
+    },
+    {
+      "type": "cta",
+      "settings": {
+        "length": "short",
+        "eyebrow": "Next step",
+        "heading": "Next Monday you open your inbox and work through it differently.",
+        "text": "",
+        "cta_label": "Book My Jump",
+        "cta_url": "#book",
+        "align": "center",
+        "bg": "inverse",
+        "spacing": "tight"
+      }
+    },
+    {
+      "type": "steps",
+      "settings": {
+        "eyebrow": "How it works",
+        "heading": "From booking to a working setup",
+        "intro": "Two hours, in one session. Your setup is running by the time it ends, and we run your own inbox through it before we finish.",
+        "items": [
+          {
+            "title": "Book and pay",
+            "text": "Your place is held when payment arrives. Dates are confirmed in the order that payment arrives."
+          },
+          {
+            "title": "Fill in a 30-minute form",
+            "text": "It tells me your tasks, tools and constraints. I arrive with your session already planned."
+          },
+          {
+            "title": "Two hours, live",
+            "text": "With your laptop and access to your email and calendar. We agree what may be shared before anything is connected."
+          },
+          {
+            "title": "Keep the summary",
+            "text": "A one-page summary of your setup and how to use it, so you do not depend on remembering the session."
+          }
+        ],
+        "layout": "cards",
+        "bg": "surface",
+        "spacing": "normal",
+        "anchor": "how"
+      }
+    },
+    {
+      "type": "features",
+      "settings": {
+        "eyebrow": "Why this works",
+        "heading": "Built on your material, not on examples",
+        "intro": "",
+        "items": [
+          {
+            "icon": "search",
+            "title": "Your real work",
+            "text": "We work on your real emails, calendar and documents. If something does not work on your material, we find out in the first hour, while I am still there."
+          },
+          {
+            "icon": "clock",
+            "title": "Prepared before we meet",
+            "text": "The 30-minute form tells me your tasks, tools and constraints. I arrive with your session already planned."
+          },
+          {
+            "icon": "target",
+            "title": "Only what you will use",
+            "text": "Three priorities, not twenty."
+          },
+          {
+            "icon": "lock",
+            "title": "Confidentiality first",
+            "text": "We agree what may be shared before anything is connected."
+          },
+          {
+            "icon": "book",
+            "title": "In writing",
+            "text": "The one-page summary means you do not depend on remembering the session."
+          },
+          {
+            "icon": "layers",
+            "title": "Tested on my own work",
+            "text": "I use the same approach on my own work. I run my own businesses with it."
+          }
+        ],
+        "columns": 3,
+        "style": "plain",
+        "bg": "surface",
+        "spacing": "normal",
+        "anchor": "why"
+      }
+    },
+    {
+      "type": "bio",
+      "settings": {
+        "eyebrow": "Your coach",
+        "name": "Boril Bogoev, Ph.D.",
+        "role": "Executive AI coach",
+        "text": "AI is my subject, not a side topic. I prepare before we meet, build only what you will use, and run my own businesses with the same approach.",
+        "credentials": [
+          "PhD in Automated Digital Business Models",
+          "Master's in Automation and Robotics",
+          "20+ years across graphic design, web development, marketing and AI orchestration"
+        ],
+        "image": {
+          "id": 0,
+          "url": "/brand/portrait-640.webp",
+          "width": 640,
+          "height": 640
+        },
+        "image_alt": "Portrait illustration of Boril Bogoev",
+        "image_side": "left",
+        "bg": "alt",
+        "spacing": "normal",
+        "anchor": "coach"
+      }
+    },
+    {
+      "type": "compare",
+      "settings": {
+        "eyebrow": "Who this is for",
+        "heading": "Is AI Jump right for you?",
+        "intro": "AI Jump is for one executive: a CEO, managing director, founder, partner or senior director who sets their own priorities and budget.",
+        "left_title": "This is for you if",
+        "left_items": [
+          "You use AI now and then, or not yet, and have nothing that works for you every day",
+          "Your days are driven by email, meetings and documents",
+          "You want it done with you in one sitting, not another course to finish"
+        ],
+        "right_title": "This is not for you if",
+        "right_items": [
+          "You want theory",
+          "You need a setup for a whole team",
+          "You need software built"
+        ],
+        "bg": "surface",
+        "spacing": "normal",
+        "anchor": "fit"
+      }
+    },
+    {
+      "type": "bonuses",
+      "settings": {
+        "eyebrow": "Included",
+        "heading": "What comes with it",
+        "intro": "Included in the 2,000 AED.",
+        "items": [
+          {
+            "title": "Recorded training library",
+            "text": "Short video lessons on the core AI skills for executives. Watch them when you have time, or pass them to your assistant."
+          },
+          {
+            "title": "Access to AIxU: Dubai Chapter",
+            "text": "A community of professionals in the UAE who are learning to use AI in their work."
+          },
+          {
+            "title": "Safe-use template",
+            "text": "A one-page template of rules for what to share with AI tools, which you can hand to your team."
+          }
+        ],
+        "total": "",
+        "bg": "alt",
+        "spacing": "normal",
+        "anchor": "included"
+      }
+    },
+    {
+      "type": "pricing",
+      "settings": {
+        "eyebrow": "Price",
+        "heading": "One session, one price",
+        "intro": "If you book an AI Sprint within 7 days of your Jump, the full 2,000 AED is credited against it. After 7 days, the Sprint is at its normal price.",
+        "items": [
+          {
+            "name": "AI Jump",
+            "price": "2,000 AED",
+            "period": "one two-hour session",
+            "badge": "8 places a month",
+            "description": "AI set up on your own email, calendar and documents.",
+            "features": "Two hours, live, online\nThree priorities built on your real work\nA one-page summary of your setup\nRecorded training library\nAccess to AIxU: Dubai Chapter\nSafe-use template",
+            "button_label": "Book My Jump",
+            "button_url": "#book",
+            "highlight": 1
+          }
+        ],
+        "footnote": "Some AI tools charge a monthly subscription. I tell you which ones before the session, and I recommend the fewest that do the job. If you prefer not to connect your real accounts, we work on sample material and I set up everything else.",
+        "bg": "surface",
+        "spacing": "normal",
+        "anchor": "price"
+      }
+    },
+    {
+      "type": "guarantee",
+      "settings": {
+        "eyebrow": "Guarantee",
+        "heading": "A second session at no charge",
+        "badge": "Guarantee",
+        "text": "If at the end of the session you do not have a working setup for at least two of your recurring tasks, I will give you one more Jump session for free in order to complete the tasks planned.",
+        "points": [
+          "You filled in the form",
+          "You attended the full session"
+        ],
+        "bg": "alt",
+        "spacing": "normal",
+        "anchor": "guarantee"
+      }
+    },
+    {
+      "type": "faq",
+      "settings": {
+        "eyebrow": "FAQ",
+        "heading": "Questions",
+        "intro": "",
+        "items": [
+          {
+            "q": "How much of my time does it take?",
+            "a": "30 minutes to fill in a form before the session, then two hours of your attention. That is 2.5 hours, once."
+          },
+          {
+            "q": "Do I need technical knowledge?",
+            "a": "No. You need nothing installed in advance and nothing to read or watch first. You bring your laptop and access to your email and calendar."
+          },
+          {
+            "q": "Do I have to connect my real accounts?",
+            "a": "No. If you prefer not to, we work on sample material and I set up everything else."
+          },
+          {
+            "q": "Is there a monthly cost for the tools?",
+            "a": "Some AI tools charge a monthly subscription. I tell you which ones before the session, and I recommend the fewest that do the job."
+          },
+          {
+            "q": "Why only 8 places a month?",
+            "a": "Each Jump needs preparation before and a written summary after, and I do both myself. When the 8 places are taken, the next place is in the following month. I do not add extra sessions."
+          },
+          {
+            "q": "What happens after the Jump?",
+            "a": "If you want the work done for you, book an AI Sprint within 7 days and your 2,000 AED is credited in full. Sprint start dates are limited to four a month, always on a Monday."
+          }
+        ],
+        "bg": "surface",
+        "spacing": "normal",
+        "anchor": "faq"
+      }
+    },
+    {
+      "type": "quote",
+      "settings": {
+        "quote": "Next Monday you open your inbox and work through it differently.",
+        "author": "",
+        "role": "",
+        "style": "statement",
+        "align": "center",
+        "bg": "inverse",
+        "spacing": "normal"
+      }
+    },
+    {
+      "type": "form",
+      "settings": {
+        "form_id": 7,
+        "display": "inline",
+        "eyebrow": "Book your place",
+        "heading": "Book your AI Jump",
+        "intro": "Tell me where to reach you. I confirm your date in the order that payment arrives.",
+        "width": "narrow",
+        "theme": "light",
+        "bg": "surface",
+        "spacing": "normal",
+        "anchor": "book"
+      }
+    },
+    {
+      "type": "ps",
+      "settings": {
+        "label": "P.S.",
+        "text": "This month's 8 places close when they are taken. When they are gone, the next place is in the following month.",
+        "cta_label": "Book My Jump",
+        "cta_url": "#book",
+        "bg": "surface",
+        "spacing": "tight"
+      }
+    }
+  ]
+}

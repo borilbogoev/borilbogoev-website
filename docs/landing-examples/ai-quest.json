@@ -1,0 +1,459 @@
+{
+  "title": "AI Quest",
+  "slug": "ai-quest",
+  "status": "draft",
+  "settings": {
+    "seo_title": "AI Quest: a monthly seat to keep your AI setup current",
+    "seo_description": "A monthly seat with Boril Bogoev, Ph.D. One 45-minute call a week, answers within one business day and one new improvement every month. 4,500 AED a month. Open to AI Sprint clients.",
+    "indexable": 1,
+    "chrome": "full",
+    "sticky_label": "Join AI Quest",
+    "sticky_url": "#book"
+  },
+  "blocks": [
+    {
+      "type": "hero_image",
+      "settings": {
+        "badge": "",
+        "eyebrow": "AI Quest",
+        "headline": "Your AI setup, kept current every month",
+        "accent_dot": 1,
+        "subtitle": "A monthly seat with me. One call a week, answers within a day, and one new improvement to your setup every month.",
+        "text": "Quest keeps your AI setup working and makes it better each month. You get four 45-minute calls, support by message with an answer within one business day, and one new automation or improvement built by me.",
+        "bullets": [
+          "Open to clients who have completed an AI Sprint",
+          "A monthly scorecard against your Sprint baseline",
+          "Cancel with 30 days' notice"
+        ],
+        "cta_label": "Join AI Quest",
+        "cta_url": "#book",
+        "secondary_label": "See What You Get",
+        "secondary_url": "#leave",
+        "note": "4,500 AED a month · 12 seats · Price locked while you are a member",
+        "image": {
+          "id": 0,
+          "url": "/brand/ai/ai-quest.svg",
+          "width": 1200,
+          "height": 900
+        },
+        "image_alt": "A ring of twelve seats around a weekly rhythm, one seat held in red",
+        "image_side": "right",
+        "image_style": "rounded",
+        "style": "soft",
+        "spacing": "normal",
+        "anchor": "top"
+      }
+    },
+    {
+      "type": "stats",
+      "settings": {
+        "style": "band",
+        "bg": "inverse",
+        "spacing": "none",
+        "items": [
+          {
+            "prefix": "",
+            "value": "12",
+            "suffix": "",
+            "label": "Seats in total",
+            "note": ""
+          },
+          {
+            "prefix": "",
+            "value": "45",
+            "suffix": "",
+            "label": "Minute call every week",
+            "note": ""
+          },
+          {
+            "prefix": "",
+            "value": "1",
+            "suffix": "",
+            "label": "Business day to answer",
+            "note": ""
+          },
+          {
+            "prefix": "",
+            "value": "1",
+            "suffix": "",
+            "label": "New improvement monthly",
+            "note": ""
+          }
+        ],
+        "eyebrow": "",
+        "heading": "",
+        "intro": ""
+      }
+    },
+    {
+      "type": "list",
+      "settings": {
+        "eyebrow": "The problem",
+        "heading": "What you are dealing with",
+        "intro": "A setup is the start. These are the problems that show up in the months after it.",
+        "items": [
+          "A setup that works today drifts. Nobody updates it, and it slowly stops matching how you work.",
+          "Tools change every month. You cannot tell which changes matter and which do not.",
+          "New tasks keep arriving. Your setup covers last quarter's work, not this quarter's.",
+          "Your team does not use what was built. It sits there while people work the old way.",
+          "You hit a problem and have nobody to ask. Nobody else understands your setup.",
+          "The quality of the output varies. Some days it is good and some days it is not, and you do not know why.",
+          "Under pressure, you go back to old habits. A setup only helps if it is used in the busiest weeks.",
+          "Every new tool needs judging. Security, cost and fit, and you have no time to check each one.",
+          "Confidentiality rules go out of date. Tools change their terms and features, and your rules do not follow.",
+          "You want your assistant involved and have no plan. Who does what, and in which order?",
+          "Improvements wait for an owner. Everyone agrees something should be better, and nobody has the time.",
+          "You cannot tell whether it saves you time. It feels useful, but nobody has measured it since the first week."
+        ],
+        "mark": "dot",
+        "columns": 2,
+        "bg": "surface",
+        "spacing": "normal",
+        "anchor": "problem"
+      }
+    },
+    {
+      "type": "features",
+      "settings": {
+        "eyebrow": "What changes",
+        "heading": "Every month you get",
+        "intro": "Your time is one 45-minute call a week, about 3 hours a month. That is the length of a standing weekly meeting.",
+        "items": [
+          {
+            "icon": "calendar",
+            "title": "A call every week",
+            "text": "45 minutes. We review what ran, fix what did not, and decide what comes next."
+          },
+          {
+            "icon": "spark",
+            "title": "One new improvement",
+            "text": "Built by me. For example a new report that assembles itself, a briefing for a recurring meeting, or a procedure for your assistant."
+          },
+          {
+            "icon": "mail",
+            "title": "Answers within a day",
+            "text": "To any question about your setup, by message, within one business day."
+          },
+          {
+            "icon": "chart",
+            "title": "A monthly scorecard",
+            "text": "Hours returned compared with your Sprint baseline, what was delivered, and what is next."
+          },
+          {
+            "icon": "layers",
+            "title": "Tool changes handled",
+            "text": "I follow the changes. I tell you only the ones that affect you and update your setup when they do."
+          },
+          {
+            "icon": "users",
+            "title": "Your team brought in",
+            "text": "Your assistant and team, step by step, at the pace you choose."
+          },
+          {
+            "icon": "shield",
+            "title": "Rules kept current",
+            "text": "Confidentiality rules updated when your tools change."
+          }
+        ],
+        "columns": 3,
+        "style": "cards",
+        "bg": "alt",
+        "spacing": "normal",
+        "anchor": "leave"
+      }
+    },
+    {
+      "type": "cta",
+      "settings": {
+        "length": "short",
+        "eyebrow": "Next step",
+        "heading": "The first improvement is delivered within your first month.",
+        "text": "",
+        "cta_label": "Join AI Quest",
+        "cta_url": "#book",
+        "align": "center",
+        "bg": "inverse",
+        "spacing": "tight"
+      }
+    },
+    {
+      "type": "steps",
+      "settings": {
+        "eyebrow": "How it works",
+        "heading": "A fixed rhythm that keeps the setup in use",
+        "intro": "The first improvement is delivered within your first month. After that, one every month. You do not research tools, test updates or read about changes. That is my part.",
+        "items": [
+          {
+            "title": "Every week",
+            "text": "One 45-minute call. We review what ran, fix what did not, and decide what comes next."
+          },
+          {
+            "title": "Any day",
+            "text": "A message when something does not work or when you want something new. You get an answer within one business day."
+          },
+          {
+            "title": "Every month",
+            "text": "One new improvement built by me, and a scorecard against your Sprint baseline. You decide which improvement comes next."
+          },
+          {
+            "title": "Always",
+            "text": "I follow tool changes and keep your setup and confidentiality rules current."
+          }
+        ],
+        "layout": "list",
+        "bg": "surface",
+        "spacing": "normal",
+        "anchor": "how"
+      }
+    },
+    {
+      "type": "features",
+      "settings": {
+        "eyebrow": "Why this works",
+        "heading": "Earned every month",
+        "intro": "",
+        "items": [
+          {
+            "icon": "layers",
+            "title": "I built your setup",
+            "text": "I do not need it explained again, and nothing is lost between one month and the next."
+          },
+          {
+            "icon": "chart",
+            "title": "Measured against your baseline",
+            "text": "You see whether it is working in numbers, not impressions."
+          },
+          {
+            "icon": "calendar",
+            "title": "A fixed weekly rhythm",
+            "text": "The setup keeps being used, including in your busiest weeks."
+          },
+          {
+            "icon": "check",
+            "title": "Leave with 30 days' notice",
+            "text": "That means I have to earn every month."
+          },
+          {
+            "icon": "lock",
+            "title": "Your price is locked",
+            "text": "The price you join at stays the same for as long as you remain a member, even if I raise it later."
+          },
+          {
+            "icon": "bolt",
+            "title": "I meet the same changes you do",
+            "text": "I use the same approach on my own work."
+          }
+        ],
+        "columns": 3,
+        "style": "plain",
+        "bg": "surface",
+        "spacing": "normal",
+        "anchor": "why"
+      }
+    },
+    {
+      "type": "bio",
+      "settings": {
+        "eyebrow": "Your coach",
+        "name": "Boril Bogoev, Ph.D.",
+        "role": "Executive AI coach",
+        "text": "AI is my subject, not a side topic. I built your Sprint setup, I keep it current, and I use the same approach on my own work.",
+        "credentials": [
+          "PhD in Automated Digital Business Models",
+          "Master's in Automation and Robotics",
+          "20+ years across graphic design, web development, marketing and AI orchestration"
+        ],
+        "image": {
+          "id": 0,
+          "url": "/brand/portrait-640.webp",
+          "width": 640,
+          "height": 640
+        },
+        "image_alt": "Portrait illustration of Boril Bogoev",
+        "image_side": "left",
+        "bg": "alt",
+        "spacing": "normal",
+        "anchor": "coach"
+      }
+    },
+    {
+      "type": "compare",
+      "settings": {
+        "eyebrow": "Who this is for",
+        "heading": "Is AI Quest right for you?",
+        "intro": "AI Quest is for executives who already have a working setup from an AI Sprint and want it kept current and extended.",
+        "left_title": "This is for you if",
+        "left_items": [
+          "Your setup works, and you want it to cover more of your work over time",
+          "You want one person who knows your setup and answers within a day",
+          "You want your assistant or direct reports brought in step by step",
+          "You do not want to spend your own time following new tools"
+        ],
+        "right_title": "This is not for you if",
+        "right_items": [
+          "You are starting from nothing, because that starts with a Sprint",
+          "You want on-call support, because messages are answered within one business day, not within the hour"
+        ],
+        "bg": "surface",
+        "spacing": "normal",
+        "anchor": "fit"
+      }
+    },
+    {
+      "type": "bonuses",
+      "settings": {
+        "eyebrow": "Included",
+        "heading": "What comes with it",
+        "intro": "Included in the monthly fee.",
+        "items": [
+          {
+            "title": "Access to AIxU: Dubai Chapter",
+            "text": "A community of professionals in the UAE who are learning to use AI in their work."
+          },
+          {
+            "title": "Recorded training library",
+            "text": "Including the lessons I add over time."
+          },
+          {
+            "title": "Library of ready-to-use instructions",
+            "text": "For common executive tasks, with the additions I make."
+          },
+          {
+            "title": "First choice of Sprint dates",
+            "text": "For anyone you introduce."
+          }
+        ],
+        "total": "",
+        "bg": "alt",
+        "spacing": "normal",
+        "anchor": "included"
+      }
+    },
+    {
+      "type": "pricing",
+      "settings": {
+        "eyebrow": "Price",
+        "heading": "Monthly, or three months in advance",
+        "intro": "Your seat is held for 7 days after your last Sprint session. After that it goes to the next person on the waiting list.",
+        "items": [
+          {
+            "name": "Monthly",
+            "price": "4,500 AED",
+            "period": "per month",
+            "description": "Cancel with 30 days' notice.",
+            "features": "A 45-minute call every week\nAnswers within one business day\nOne new improvement every month\nA monthly scorecard\nTool changes and confidentiality rules kept current",
+            "button_label": "Join AI Quest",
+            "button_url": "#book"
+          },
+          {
+            "name": "Three months",
+            "price": "12,150 AED",
+            "period": "paid in advance",
+            "badge": "10% less",
+            "description": "Instead of 13,500 AED. Available when you join only.",
+            "features": "Everything in Monthly\nPrice locked while you are a member",
+            "button_label": "Join AI Quest",
+            "button_url": "#book",
+            "highlight": 1
+          }
+        ],
+        "footnote": "Quest has 12 seats. When all 12 are taken, a new seat opens only when a member leaves. The waiting list is served in the order people joined it.",
+        "bg": "surface",
+        "spacing": "normal",
+        "anchor": "price"
+      }
+    },
+    {
+      "type": "guarantee",
+      "settings": {
+        "eyebrow": "Guarantee",
+        "heading": "Month to month, no penalty",
+        "badge": "Cancel anytime",
+        "text": "Quest is month to month. You cancel with 30 days' notice, with no penalty, and I hand over a written list of everything built for you.",
+        "points": [
+          "You attend the calls",
+          "You give me the access I ask for",
+          "You carry out the activities as we agreed"
+        ],
+        "bg": "alt",
+        "spacing": "normal",
+        "anchor": "guarantee"
+      }
+    },
+    {
+      "type": "faq",
+      "settings": {
+        "eyebrow": "FAQ",
+        "heading": "Questions",
+        "intro": "",
+        "items": [
+          {
+            "q": "Who can join?",
+            "a": "Clients who have completed an AI Sprint. If you are starting from nothing, that starts with a Sprint."
+          },
+          {
+            "q": "How much of my time does it take?",
+            "a": "One 45-minute call a week, about 3 hours a month, plus a message when something does not work or when you want something new."
+          },
+          {
+            "q": "Is this on-call support?",
+            "a": "No. Messages are answered within one business day, not within the hour."
+          },
+          {
+            "q": "Why only 12 seats?",
+            "a": "Each seat takes about 6 to 7 hours of my month, and I do the work myself. I do not add a 13th seat. The waiting list is served in the order people joined it."
+          },
+          {
+            "q": "Can my price change?",
+            "a": "Your price is locked. The price you join at stays the same for as long as you remain a member, even if I raise it later."
+          },
+          {
+            "q": "How do I leave?",
+            "a": "With 30 days' notice, with no penalty. I hand over a written list of everything built for you."
+          }
+        ],
+        "bg": "surface",
+        "spacing": "normal",
+        "anchor": "faq"
+      }
+    },
+    {
+      "type": "quote",
+      "settings": {
+        "quote": "You can leave with 30 days' notice. That means I have to earn every month.",
+        "author": "",
+        "role": "",
+        "style": "statement",
+        "align": "center",
+        "bg": "inverse",
+        "spacing": "normal"
+      }
+    },
+    {
+      "type": "form",
+      "settings": {
+        "form_id": 11,
+        "display": "inline",
+        "eyebrow": "Join the waiting list or take a seat",
+        "heading": "Join AI Quest",
+        "intro": "Tell me where to reach you. Seats are served in the order people join.",
+        "width": "narrow",
+        "theme": "light",
+        "bg": "surface",
+        "spacing": "normal",
+        "anchor": "book"
+      }
+    },
+    {
+      "type": "ps",
+      "settings": {
+        "label": "P.S.",
+        "text": "There are 12 seats and I do not add a 13th. A new seat opens only when a member leaves.",
+        "cta_label": "Join AI Quest",
+        "cta_url": "#book",
+        "bg": "surface",
+        "spacing": "tight"
+      }
+    }
+  ]
+}

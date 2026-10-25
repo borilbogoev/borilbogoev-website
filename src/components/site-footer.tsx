@@ -1,6 +1,5 @@
-import { SCHOOL_LISTED } from "@/modules/school/lib/listing";
 import Link from "next/link";
-import { offers } from "@/content/offers";
+import { home } from "@/content/home";
 import { site } from "@/content/site";
 import { LocationIcon } from "./icons";
 import { Monogram } from "./monogram";
@@ -23,9 +22,9 @@ export function SiteFooter() {
         <nav aria-label="Work with me">
           <p className="label mb-3 text-muted">Work with me</p>
           <ul className="m-0 grid list-none gap-1 p-0">
-            {offers.map((o) => (
+            {home.offers.map((o) => (
               <li key={o.slug}>
-                <Link href={`/${o.slug}`} className="inline-flex min-h-[36px] items-center text-[15px] hover:text-brand-text">
+                <Link href={`/l/${o.slug}`} className="inline-flex min-h-[36px] items-center text-[15px] hover:text-brand-text">
                   {o.name}
                 </Link>
               </li>
@@ -35,13 +34,6 @@ export function SiteFooter() {
         <nav aria-label="More">
           <p className="label mb-3 text-muted">More</p>
           <ul className="m-0 grid list-none gap-1 p-0">
-            {SCHOOL_LISTED ? (
-              <li>
-                <Link href="/school" className="inline-flex min-h-[36px] items-center text-[15px] hover:text-brand-text">
-                  School
-                </Link>
-              </li>
-            ) : null}
             <li>
               <Link href="/about" className="inline-flex min-h-[36px] items-center text-[15px] hover:text-brand-text">
                 About
@@ -51,11 +43,6 @@ export function SiteFooter() {
               <Link href="/contact" className="inline-flex min-h-[36px] items-center text-[15px] hover:text-brand-text">
                 Contact
               </Link>
-            </li>
-            <li>
-              <a href={site.streamliner} target="_blank" rel="noopener" className="inline-flex min-h-[36px] items-center text-[15px] hover:text-brand-text">
-                The Streamliner
-              </a>
             </li>
             <li>
               <a href={site.linkedin} target="_blank" rel="noopener" className="inline-flex min-h-[36px] items-center text-[15px] hover:text-brand-text">
