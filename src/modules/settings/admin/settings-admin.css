@@ -1,0 +1,13 @@
+.bbs-list{list-style:none;margin:20px 0 0;padding:0;display:grid;gap:10px;max-width:760px}
+.bbs-list li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:start;padding:14px 16px;border:1px solid var(--bbfa-line);border-radius:14px;background:#fff}
+.bbs-list li.is-off{background:var(--bbfa-bg)}
+.bbs-list li.is-off .bbs-main{opacity:.6}
+.bbs-title{display:flex;align-items:center;gap:10px;margin-bottom:2px}
+.bbs-tag{font:600 10.5px var(--bbfa-font);letter-spacing:.06em;text-transform:uppercase;color:var(--bbfa-muted);border:1px solid var(--bbfa-line2);border-radius:999px;padding:2px 8px}
+.bbs-tag.is-link{color:var(--bbfa-accent);border-color:var(--bbfa-soft-line)}
+.bbs-fields{display:grid;gap:8px}
+.bbs-fields .bbfa-ctl{margin:0}
+.bbs-side{display:grid;gap:10px;justify-items:end}
+.bbs-side .bbfa-toggle{margin:0}
+.bbs-bar{display:flex;align-items:center;gap:12px;max-width:760px;margin-top:18px;padding-top:16px;border-top:1px solid var(--bbfa-line2);flex-wrap:wrap}
+@media (max-width:600px){.bbs-list li{grid-template-columns:1fr}.bbs-side{justify-items:start}}

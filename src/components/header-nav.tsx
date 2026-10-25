@@ -3,16 +3,39 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { nav, site } from "@/content/site";
+import { site, type NavItem } from "@/content/site";
 import { CloseIcon, ExternalIcon, MenuIcon } from "./icons";
 import { Monogram } from "./monogram";
 import { PortraitMark } from "./portrait-mark";
 import { StreamlinerLogo } from "./streamliner-logo";
 
+/** A free link from Admin > Settings > Menus. Paths on this site use next/link, everything else (and "new tab") a plain anchor. */
+function NavLink({ item, active, className, activeClass, onClick, trailing }: { item: Extract<NavItem, { kind: "link" }>; active: boolean; className: string; activeClass: string; onClick?: () => void; trailing?: React.ReactNode }) {
+  const cls = `${className} ${active ? activeClass : ""}`;
+  const content = (
+    <>
+      {item.label}
+      {trailing}
+    </>
+  );
+  if (item.href.startsWith("/") && !item.newTab) {
+    return (
+      <Link href={item.href} onClick={onClick} aria-current={active ? "page" : undefined} className={cls}>
+        {content}
+      </Link>
+    );
+  }
+  return (
+    <a href={item.href} onClick={onClick} {...(item.newTab ? { target: "_blank", rel: "noopener", "aria-label": `${item.label} (opens in a new tab)` } : {})} className={cls}>
+      {content}
+    </a>
+  );
+}
+
 const linkBase =
   "relative inline-flex items-center text-[14px] font-medium text-muted transition-colors hover:text-brand-text";
 
-export function HeaderNav() {
+export function HeaderNav({ items }: { items: NavItem[] }) {
   const pathname = usePathname();
   // The drawer is open only for the page it was opened on, so navigating closes it.
   const [openAt, setOpenAt] = useState<string | null>(null);
@@ -56,8 +79,10 @@ export function HeaderNav() {
         </Link>
 
         <nav aria-label="Primary" className="hidden items-center gap-7 lg:flex">
-          {nav.map((item) =>
-            item.kind === "streamliner" ? (
+          {items.map((item, i) =>
+            item.kind === "link" ? (
+              <NavLink key={`${i}-${item.href}`} item={item} active={!item.newTab && isActive(item.href)} className={`${linkBase} py-2`} activeClass="!text-ink after:absolute after:inset-x-0 after:-bottom-px after:h-0.5 after:bg-brand" />
+            ) : item.kind === "streamliner" ? (
               <a
                 key={item.href}
                 href={item.href}
@@ -114,9 +139,18 @@ export function HeaderNav() {
       >
         <nav aria-label="Mobile" className="container-bb py-2">
           <ul className="m-0 list-none p-0">
-            {nav.map((item) => (
-              <li key={item.href} className="border-b border-line">
-                {item.kind === "streamliner" ? (
+            {items.map((item, i) => (
+              <li key={`${i}-${item.href}`} className="border-b border-line">
+                {item.kind === "link" ? (
+                  <NavLink
+                    item={item}
+                    active={!item.newTab && isActive(item.href)}
+                    onClick={close}
+                    className="flex min-h-[56px] items-center justify-between text-[18px] font-semibold text-ink"
+                    activeClass="!text-brand-text"
+                    trailing={item.newTab ? <ExternalIcon size={18} className="text-muted" /> : undefined}
+                  />
+                ) : item.kind === "streamliner" ? (
                   <a
                     href={item.href}
                     target="_blank"
