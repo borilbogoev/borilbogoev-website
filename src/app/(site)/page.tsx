@@ -1,11 +1,9 @@
 import Link from "next/link";
-import { ArrowRightIcon, ExternalIcon, LocationIcon } from "@/components/icons";
+import { ArrowRightIcon, LocationIcon } from "@/components/icons";
 import { JsonLd } from "@/components/json-ld";
 import { StatsBand } from "@/components/stats-band";
-import { StreamlinerLogo } from "@/components/streamliner-logo";
 import { Section } from "@/components/ui";
 import { home } from "@/content/home";
-import { offers } from "@/content/offers";
 import { resumeHero } from "@/content/resume";
 import { site } from "@/content/site";
 import { pageMetadata } from "@/lib/seo";
@@ -33,8 +31,8 @@ export default function HomePage() {
             <p className="t-overline mt-6">{resumeHero.role}</p>
             <p className="t-body-lg mt-5 max-w-[56ch]">{home.lead}</p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link href="/sessions" className="bb-btn bb-btn-primary">
-                Explore Sessions
+              <Link href="/l/ai-jump#book" className="bb-btn bb-btn-primary">
+                Book My Jump
               </Link>
               <Link href="/about" className="bb-btn bb-btn-outline">
                 About Boril
@@ -63,25 +61,22 @@ export default function HomePage() {
       <StatsBand />
 
       <Section id="path" eyebrow="Work with me" heading={home.ladderHeading} intro={home.ladderIntro}>
-        <ul className="m-0 grid list-none gap-4 p-0 sm:grid-cols-2 md:gap-6 lg:grid-cols-3">
-          <li>
-            <a href={site.streamliner} target="_blank" rel="noopener" className="card flex h-full flex-col gap-4 no-underline">
-              <StreamlinerLogo height={26} className="self-start" />
-              <p className="t-body-sm m-0 text-muted">{home.streamlinerLine}</p>
-              <span className="mt-auto inline-flex items-center gap-2 text-[14px] font-semibold">
-                Open The Streamliner <ExternalIcon size={16} />
-              </span>
-            </a>
-          </li>
-          {offers.map((o, i) => (
+        <ul className="m-0 grid list-none gap-4 p-0 md:grid-cols-3 md:gap-6">
+          {home.offers.map((o, i) => (
             <li key={o.slug}>
-              <Link href={`/${o.slug}`} className="card flex h-full flex-col gap-3 no-underline">
-                <p className="t-mono text-brand-text">{String(i + 1).padStart(2, "0")}</p>
-                <h3 className="t-h2">{o.eyebrow}</h3>
-                <p className="t-body-sm m-0 text-muted">{o.card.summary}</p>
-                <p className="mt-auto flex items-center justify-between pt-2 text-[14px] font-semibold">
-                  <span>{o.card.from}</span>
-                  <ArrowRightIcon size={18} className="text-brand" />
+              <Link href={`/l/${o.slug}`} className="card flex h-full flex-col gap-3 no-underline">
+                <img src={o.image} width={1200} height={900} alt={o.alt} loading="lazy" decoding="async" className="mb-1 h-auto w-full rounded-[var(--radius-sm)]" />
+                <p className="t-mono text-brand-text">
+                  {String(i + 1).padStart(2, "0")} · {o.tag}
+                </p>
+                <h3 className="t-h2">{o.name}</h3>
+                <p className="t-body-sm m-0 text-muted">{o.summary}</p>
+                <p className="mt-auto flex items-center justify-between gap-3 pt-2 text-[14px] font-semibold">
+                  <span>
+                    {o.from}
+                    <span className="t-caption block font-normal text-muted">{o.note}</span>
+                  </span>
+                  <ArrowRightIcon size={18} className="shrink-0 text-brand" />
                 </p>
               </Link>
             </li>
@@ -89,12 +84,12 @@ export default function HomePage() {
         </ul>
       </Section>
 
-      <Section alt eyebrow="Get in touch" heading={home.closing.heading}>
+      <Section alt eyebrow="Next step" heading={home.closing.heading}>
         <div className="grid items-start gap-6 md:grid-cols-[1fr_auto] md:gap-12">
           <p className="t-body-lg max-w-[56ch]">{home.closing.text}</p>
           <div className="flex flex-col gap-3 sm:flex-row md:flex-col">
-            <Link href="/contact" className="bb-btn bb-btn-dark">
-              Contact
+            <Link href="/l/ai-jump#book" className="bb-btn bb-btn-dark">
+              Book My Jump
             </Link>
             <a href={site.linkedin} target="_blank" rel="noopener" className="bb-btn bb-btn-outline">
               LinkedIn Profile

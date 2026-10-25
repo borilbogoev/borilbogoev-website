@@ -1,5 +1,4 @@
 // Site-wide settings, navigation and contact points.
-import { SCHOOL_LISTED } from "@/modules/school/lib/listing";
 
 export const site = {
   name: "Boril Bogoev",
@@ -8,7 +7,7 @@ export const site = {
   tagline: "Systems always win.",
   positioning: "From chaos to operating systems.",
   description:
-    "Boril Bogoev, Ph.D. designs and builds AI-powered business operating systems. Sessions, Screening, Sprint, Shift and Subscription for executives and business owners.",
+    "Boril Bogoev, Ph.D. designs and builds AI-powered business operating systems. AI Jump, AI Sprint and AI Quest for executives and business owners.",
   jobTitle: "Head of AI & Automation",
   location: "Dubai, UAE",
   linkedin: "https://linkedin.com/in/borilbogoev",
@@ -23,16 +22,12 @@ export type NavItem =
   | { kind: "link"; label: string; href: string; newTab: boolean };
 
 // The default menu. The live menu is set in Admin > Settings > Menus (src/modules/settings/lib/menu.ts); this is the fallback.
-// The order follows the money model: The Streamliner, then Sessions, the School, the paid ladder and the portrait (About).
+// The order follows the ladder: AI Jump, AI Sprint, AI Quest, then the portrait (About).
 // There is no Home link: the B* mark is the home link.
 export const nav: NavItem[] = [
-  { kind: "streamliner", label: "The Streamliner", href: site.streamliner },
-  { kind: "internal", label: "Sessions", href: "/sessions" },
-  ...(SCHOOL_LISTED ? [{ kind: "internal" as const, label: "School", href: "/school" }] : []),
-  { kind: "internal", label: "Screening", href: "/screening" },
-  { kind: "internal", label: "Sprint", href: "/sprint" },
-  { kind: "internal", label: "Shift", href: "/shift" },
-  { kind: "internal", label: "Subscription", href: "/subscription" },
+  { kind: "internal", label: "AI Jump", href: "/l/ai-jump" },
+  { kind: "internal", label: "AI Sprint", href: "/l/ai-sprint" },
+  { kind: "internal", label: "AI Quest", href: "/l/ai-quest" },
   { kind: "portrait", label: "About", href: "/about" },
 ];
 

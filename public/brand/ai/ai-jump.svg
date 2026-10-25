@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900" role="img" aria-label="An inbox of messages, a dotted red jump and a finished setup">
+<rect width="1200" height="900" fill="#f7f7f7"/>
+<g fill="none" stroke="#1a1a1a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+<g stroke="#6b6b6b">
+<rect x="90" y="610" width="270" height="170" rx="16" fill="#fff"/><path d="M90 636l135 92 135-92"/>
+<rect x="150" y="540" width="270" height="170" rx="16" fill="#fff"/><path d="M150 566l135 92 135-92"/>
+<rect x="210" y="470" width="270" height="170" rx="16" fill="#fff"/><path d="M210 496l135 92 135-92"/>
+</g>
+<circle cx="190" cy="220" r="86" fill="#fff"/><path d="M190 160v60l40 28"/>
+<rect x="760" y="420" width="330" height="330" rx="22" fill="#fff"/>
+<path d="M760 500h330M830 390v60M1020 390v60"/>
+<path stroke="#e2e2e2" d="M800 560h250M800 610h250M800 660h160"/>
+</g>
+<path d="M420 430C520 110 830 110 925 395" fill="none" stroke="#c72c2c" stroke-width="7" stroke-linecap="round" stroke-dasharray="1 20"/>
+<path d="M897 355l28 44 30-46" fill="none" stroke="#c72c2c" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="1000" cy="690" r="42" fill="#c72c2c"/><path d="M980 690l14 15 28-32" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+<g font-family="Inter,system-ui,-apple-system,Segoe UI,sans-serif" font-weight="700" letter-spacing="3">
+<text x="190" y="368" text-anchor="middle" font-size="26" fill="#1a1a1a">2 HOURS</text>
+<text x="925" y="468" text-anchor="middle" font-size="22" fill="#6b6b6b">RUNNING</text>
+</g>
+</svg>
