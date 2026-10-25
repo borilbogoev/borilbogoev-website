@@ -1,7 +1,7 @@
 {
   "title": "AI Jump",
   "slug": "ai-jump",
-  "status": "draft",
+  "status": "published",
   "settings": {
     "seo_title": "AI Jump: AI set up on your real work in two hours",
     "seo_description": "One two-hour session with Boril Bogoev, Ph.D. AI set up on your own email, calendar and documents, running when you leave. 2,000 AED, credited against an AI Sprint.",
@@ -49,7 +49,7 @@
       "settings": {
         "style": "band",
         "bg": "inverse",
-        "spacing": "none",
+        "spacing": "tight",
         "items": [
           {
             "prefix": "",

@@ -1,7 +1,7 @@
 {
   "title": "AI Sprint",
   "slug": "ai-sprint",
-  "status": "draft",
+  "status": "published",
   "settings": {
     "seo_title": "AI Sprint: five days to take work off your week",
     "seo_description": "Five working days with Boril Bogoev, Ph.D. I map where your time goes, build the automations and train you to run them. 45 minutes a day from you. 7,500 AED launch price.",
@@ -49,7 +49,7 @@
       "settings": {
         "style": "band",
         "bg": "inverse",
-        "spacing": "none",
+        "spacing": "tight",
         "items": [
           {
             "prefix": "",
