@@ -19,8 +19,10 @@ export const site = {
 export type NavItem =
   | { kind: "internal"; label: string; href: string }
   | { kind: "streamliner"; label: string; href: string }
-  | { kind: "portrait"; label: string; href: string };
+  | { kind: "portrait"; label: string; href: string }
+  | { kind: "link"; label: string; href: string; newTab: boolean };
 
+// The default menu. The live menu is set in Admin > Settings > Menus (src/modules/settings/lib/menu.ts); this is the fallback.
 // The order follows the money model: The Streamliner, then Sessions, the School, the paid ladder and the portrait (About).
 // There is no Home link: the B* mark is the home link.
 export const nav: NavItem[] = [

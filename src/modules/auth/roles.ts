@@ -42,6 +42,7 @@ export const PERMISSIONS = [
   "school.moderate", // read every comment and question, reply, hide, resolve
   "school.enrol", // enrol and remove students, confirm bank transfers
   "school.settings", // payment details, Bunny.net keys, sign-up rules
+  "settings.manage", // site settings: the main menu
   "school.learn", // take the courses you are enrolled in (the only permission of a student)
 ] as const;
 export type Permission = (typeof PERMISSIONS)[number];
@@ -49,7 +50,7 @@ export type Permission = (typeof PERMISSIONS)[number];
 const viewer: Permission[] = ["forms.view", "landing.view", "presentations.view", "school.view"];
 const contributor: Permission[] = [...viewer, "responses.write", "responses.export"];
 const editor: Permission[] = [...contributor, "forms.write", "responses.delete", "landing.write", "presentations.write", "school.write", "school.moderate"];
-const admin: Permission[] = [...editor, "forms.delete", "forms.settings", "landing.delete", "presentations.delete", "school.delete", "school.enrol", "school.settings", "users.manage"];
+const admin: Permission[] = [...editor, "forms.delete", "forms.settings", "landing.delete", "presentations.delete", "school.delete", "school.enrol", "school.settings", "settings.manage", "users.manage"];
 const student: Permission[] = ["school.learn"];
 
 const GRANTS: Record<Role, readonly Permission[]> = {
