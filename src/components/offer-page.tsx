@@ -30,7 +30,7 @@ function AsteriskMark() {
  * Brand: one dark ground, one red primary button, a red full stop and bullet dots, mono for the time.
  * Reusable for any urgent or featured announcement.
  */
-function UpcomingEvent({ event }: { event: NonNullable<Offer["upcoming"]> }) {
+export function UpcomingEvent({ event }: { event: NonNullable<Offer["upcoming"]> }) {
   const title = event.title.replace(/\.$/, "");
   return (
     <section aria-label={event.label} className="w-full border-b border-line bg-surface pb-10 pt-8 md:pb-14 md:pt-12">
@@ -109,7 +109,7 @@ function UpcomingEvent({ event }: { event: NonNullable<Offer["upcoming"]> }) {
               </ul>
             )}
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <a href={event.signupUrl} target="_blank" rel="noopener noreferrer" className="bb-btn bb-btn-primary">
+              <a href={event.signupUrl} {...(event.signupUrl.startsWith("/") ? {} : { target: "_blank", rel: "noopener noreferrer" })} className="bb-btn bb-btn-primary">
                 {event.signupLabel}
               </a>
               {event.secondary && (
