@@ -1,5 +1,22 @@
 // Home page copy.
 export const home = {
+  // The next live Session, shown as a dark card at the top of the home page. Remove the block when there is none.
+  upcoming: {
+    label: "Next Session",
+    title: "The top 3 headaches busy executives can kill with AI before the coffee gets cold.",
+    subtitle: "One live Session. Three everyday problems, solved.",
+    text: "I demonstrate the problem, the solution and the result. Bring your own questions for the Q&A.",
+    bullets: ["Live demonstration", "A method you can reuse the same evening", "Q&A with Boril at the end"],
+    iso: "2026-10-29T13:00:00+04:00",
+    day: "29",
+    month: "October",
+    year: "2026",
+    weekday: "Thursday",
+    time: "1 PM",
+    zone: "Gulf Standard Time (Dubai)",
+    signupUrl: "/l/session-001-top-3-headaches",
+    signupLabel: "Sign up",
+  },
   badge: "Systems always win.",
   headline: "From chaos to operating systems",
   lead: "I design and build AI-powered business operating systems for executives and business owners. Start with a two-hour Jump, go hands-on with a five-day Sprint, then keep the setup current with a monthly Quest.",
