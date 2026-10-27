@@ -23,12 +23,15 @@ const pad = (n: number) => String(n).padStart(2, "0");
 /** A trailing full stop is the brand's signature: set it in red. */
 function Dotted({ text, force }: { text: string; force?: boolean }) {
   const t = String(text ?? "");
-  if (force || t.endsWith(".")) return (
-    <>
-      {t.replace(/\.$/, "")}
-      <span className="pr-dot">.</span>
-    </>
-  );
+  if (force || /[.?]$/.test(t)) {
+    const mark = /[.?]$/.test(t) ? t.slice(-1) : ".";
+    return (
+      <>
+        {/[.?]$/.test(t) ? t.slice(0, -1) : t}
+        <span className="pr-dot">{mark}</span>
+      </>
+    );
+  }
   return <>{t}</>;
 }
 
@@ -49,17 +52,26 @@ const Placeholder = ({ children }: { children: ReactNode }) => <div className="p
 type Ctx = { editing: boolean; tone: "light" | "dark" };
 
 function Heading({ s }: { s: S }) {
-  if (!s.eyebrow && !s.text && !s.subtitle) return null;
-  return (
-    <div className="pr-head">
-      {s.eyebrow ? <p className="pr-eyebrow">{s.eyebrow}</p> : null}
+  if (!s.eyebrow && !s.text && !s.subtitle && !s.number) return null;
+  const head = (
+    <div className={`pr-head${s.number ? " has-num" : ""}`}>
+      {s.number ? <p className="pr-num">{s.number}</p> : null}
+      {s.eyebrow ? <p className={`pr-eyebrow${s.pill ? " is-pill" : ""}`}>{s.eyebrow}</p> : null}
       {s.text ? (
         <h2 className={`pr-h pr-h--${s.size}`}>
           <Dotted text={s.text} force={!!s.accent_dot} />
         </h2>
       ) : null}
-      {s.subtitle ? <p className="pr-sub">{s.subtitle}</p> : null}
+      {s.subtitle ? <p className={`pr-sub pr-sub--${s.size}`}>{s.subtitle}</p> : null}
     </div>
+  );
+  return s.badge ? (
+    <div className="pr-headrow">
+      {head}
+      <p className="pr-badge">{s.badge}</p>
+    </div>
+  ) : (
+    head
   );
 }
 
@@ -81,7 +93,7 @@ function ImageEl({ s, c }: { s: S; c: Ctx }) {
   const img = s.image as Img;
   if (!img?.url) return c.editing ? <Placeholder>Add a picture</Placeholder> : null;
   return (
-    <figure className={`pr-fig pr-fig--${s.shape} pr-fit--${s.fit}${s.mono ? " is-mono" : ""}`}>
+    <figure className={`pr-fig pr-fig--${s.shape} pr-fit--${s.fit}${s.mono ? " is-mono" : ""}${s.scale === "small" ? " is-small" : ""}`}>
       <Pic img={img} alt={s.alt} sizes="(min-width: 900px) 50vw, 100vw" />
       {s.caption ? <figcaption>{s.caption}</figcaption> : null}
     </figure>
@@ -92,10 +104,10 @@ function Gallery({ s, c }: { s: S; c: Ctx }) {
   const items = ((s.items as S[]) ?? []).filter((i) => i.image?.url);
   if (!items.length) return c.editing ? <Placeholder>Add pictures</Placeholder> : null;
   return (
-    <div className={`pr-gallery pr-cols-${s.columns}${s.mono ? " is-mono" : ""}`}>
+    <div className={`pr-gallery pr-gallery--${s.style || "plain"} pr-cols-${s.columns}${s.mono ? " is-mono" : ""}`}>
       {items.map((it, i) => (
         <figure key={i} className="pr-fig pr-fig--rounded pr-fit--cover">
-          <Pic img={it.image} alt={it.alt} sizes="(min-width: 900px) 33vw, 100vw" />
+          <Pic img={it.image} alt={it.alt} sizes="(min-width: 900px) 50vw, 100vw" />
           {it.caption ? <figcaption>{it.caption}</figcaption> : null}
         </figure>
       ))}
@@ -154,12 +166,13 @@ function EmbedEl({ s, c }: { s: S; c: Ctx }) {
 
 function QuoteEl({ s }: { s: S }) {
   if (!s.quote) return null;
+  const statement = s.size === "statement";
   return (
     <blockquote className={`pr-quote pr-quote--${s.size}`}>
       <span className="pr-qmark" aria-hidden="true">
         “
       </span>
-      <p>{s.quote}</p>
+      <p>{statement ? <Dotted text={String(s.quote)} /> : s.quote}</p>
       {s.author || s.role ? (
         <footer>
           {s.author ? <strong>{s.author}</strong> : null}
@@ -191,7 +204,7 @@ function Stats({ s }: { s: S }) {
 function Steps({ s }: { s: S }) {
   const items = (s.items as S[]) ?? [];
   return (
-    <ol className={`pr-steps pr-steps--${s.layout}`} data-build-items={s.build_items ? "" : undefined} style={{ "--n": Math.max(1, Math.min(items.length, 5)) } as CSSProperties}>
+    <ol className={`pr-steps pr-steps--${s.layout}${s.style === "big" ? " is-big" : ""}`} data-build-items={s.build_items ? "" : undefined} style={{ "--n": Math.max(1, Math.min(items.length, 5)) } as CSSProperties}>
       {items.map((it, i) => (
         <li key={i}>
           <span className="pr-step__n">{pad(i + 1)}</span>
@@ -208,18 +221,136 @@ function Steps({ s }: { s: S }) {
 
 function Cards({ s }: { s: S }) {
   const items = (s.items as S[]) ?? [];
+  const compact = s.style === "compact";
   return (
-    <ul className={`pr-cards pr-cols-${s.columns}`} data-build-items={s.build_items ? "" : undefined}>
+    <ul className={`pr-cards pr-cols-${s.columns}${compact ? " is-compact" : ""}${compact && s.size === "lg" ? " is-lg" : ""}`} data-build-items={s.build_items ? "" : undefined}>
       {items.map((it, i) => (
         <li key={i} className="pr-card">
-          <span className="pr-well">
-            <LIcon name={it.icon || "check"} size={22} />
-          </span>
-          <h3>{it.title}</h3>
+          <div className="pr-card__head">
+            <span className="pr-well">
+              <LIcon name={it.icon || "check"} size={compact ? 32 : 22} />
+            </span>
+            <h3>
+              {it.num ? <span className="pr-card__n">{it.num}</span> : null}
+              {it.num ? " " : null}
+              {it.title}
+            </h3>
+          </div>
           {it.text ? <p>{it.text}</p> : null}
         </li>
       ))}
     </ul>
+  );
+}
+
+function Panels({ s }: { s: S }) {
+  const items = (s.items as S[]) ?? [];
+  return (
+    <div className="pr-boxes" style={{ "--n": items.length } as CSSProperties}>
+      {items.map((it, i) => (
+        <section key={i} className={`pr-box is-${it.tone}${it.title_size === "lg" ? " has-lg" : ""}`}>
+          {it.label ? <p className={`pr-box__label${it.label_red ? " is-red" : ""}`}>{it.label}</p> : null}
+          {it.title ? (
+            <h3 className={`pr-box__title pr-box__title--${it.title_size}`}>
+              <Dotted text={String(it.title)} force={it.title_size === "lg"} />
+            </h3>
+          ) : null}
+          {it.text ? <div className="pr-md pr-box__text" dangerouslySetInnerHTML={MD(it.text)} /> : null}
+          {it.note ? <p className="pr-box__note">{it.note}</p> : null}
+        </section>
+      ))}
+    </div>
+  );
+}
+
+function Pricing({ s }: { s: S }) {
+  const items = (s.items as S[]) ?? [];
+  return (
+    <div className="pr-pricing" style={{ "--n": items.length } as CSSProperties}>
+      {items.map((it, i) => {
+        const star = String(it.name ?? "").endsWith("*");
+        const name = star ? String(it.name).slice(0, -1) : String(it.name ?? "");
+        return (
+          <section key={i} className={`pr-plan is-${it.tone}`}>
+            <div className="pr-plan__top">
+              <p className="pr-plan__step">{it.step}</p>
+              {it.badge ? <p className="pr-plan__badge">{it.badge}</p> : null}
+            </div>
+            <h3 className="pr-plan__name">
+              {name}
+              {star ? <span className="pr-dot">*</span> : null}
+            </h3>
+            {it.tagline ? <p className="pr-plan__tag">{it.tagline}</p> : null}
+            <p className="pr-plan__price">
+              {it.price}
+              {it.unit ? <span> {it.unit}</span> : null}
+            </p>
+            {it.old_price ? <p className="pr-plan__old">{it.old_price}</p> : null}
+            {it.note ? <p className="pr-plan__note">{it.note}</p> : null}
+            <hr />
+            <ul className="pr-plan__list">
+              {((it.features as string[]) ?? []).filter(Boolean).map((f, j) => (
+                <li key={j}>
+                  <LIcon name="check" size={28} className="pr-check" />
+                  <span>{f}</span>
+                </li>
+              ))}
+            </ul>
+            {it.chip ? <p className="pr-plan__chip">{it.chip}</p> : null}
+          </section>
+        );
+      })}
+    </div>
+  );
+}
+
+function Bars({ s }: { s: S }) {
+  const items = ((s.items as S[]) ?? []).map((it) => ({ label: String(it.label ?? ""), shown: String(it.value ?? ""), n: parseFloat(String(it.value ?? "").replace(",", ".")) || 0 }));
+  if (!items.length) return null;
+  const max = Math.max(...items.map((i) => i.n), 1);
+  const top = Number(s.highlight) || 0;
+  return (
+    <ul className="pr-bars">
+      {items.map((it, i) => (
+        <li key={i} className={i < top ? "is-top" : ""}>
+          <p className="pr-bars__label">{it.label}</p>
+          <div className="pr-bars__row">
+            <div className="pr-bars__track" role="img" aria-label={`${it.label}: ${it.shown}`}>
+              <i style={{ width: `${Math.max(1, Math.round((it.n / max) * 1000) / 10)}%` }} />
+            </div>
+            <p className="pr-bars__value">{it.shown}</p>
+          </div>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function Tags({ s }: { s: S }) {
+  const items = ((s.items as S[]) ?? []).filter((i) => i.text);
+  if (!items.length) return null;
+  return (
+    <ul className="pr-tags">
+      {items.map((it, i) => (
+        <li key={i} className={it.tone === "red" ? "is-red" : ""}>
+          {it.text}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function Callout({ s }: { s: S }) {
+  if (!s.lead && !s.text) return null;
+  return (
+    <div className="pr-callout">
+      <LIcon name="bulb" size={36} className="pr-callout__i" />
+      <p>
+        {s.lead ? <strong>{s.lead}</strong> : null}
+        {s.lead && s.text ? " " : null}
+        {s.text}
+      </p>
+    </div>
   );
 }
 
@@ -403,6 +534,21 @@ function ElementView({ el, c }: { el: DeckElement; c: Ctx }) {
     case "compare":
       body = <Compare s={s} />;
       break;
+    case "panels":
+      body = <Panels s={s} />;
+      break;
+    case "pricing":
+      body = <Pricing s={s} />;
+      break;
+    case "bars":
+      body = <Bars s={s} />;
+      break;
+    case "tags":
+      body = <Tags s={s} />;
+      break;
+    case "callout":
+      body = <Callout s={s} />;
+      break;
     case "code":
       body = <Code s={s} />;
       break;
@@ -440,10 +586,10 @@ function ElementView({ el, c }: { el: DeckElement; c: Ctx }) {
 /* Slide                                                                      */
 /* -------------------------------------------------------------------------- */
 
-function Motif() {
+function Motif({ variant = "" }: { variant?: string }) {
   // The brand's asterisk, drawn once, large, in the one red.
   return (
-    <svg className="pr-motif" viewBox="1380 -1500 840 840" aria-hidden="true" focusable="false">
+    <svg className={`pr-motif${variant ? ` pr-motif--${variant}` : ""}`} viewBox="1380 -1500 840 840" aria-hidden="true" focusable="false">
       <path fill="currentColor" d="M1693.6 -652H1903.6L1883.6 -923L2109.6 -770L2214.6 -952L1970.6 -1070L2214.6 -1188L2109.6 -1372L1883.6 -1219L1903.6 -1490H1693.6L1714.6 -1219L1488.6 -1372L1382.6 -1188L1628.6 -1070L1382.6 -952L1488.6 -770L1714.6 -923Z" />
     </svg>
   );
@@ -452,7 +598,7 @@ function Motif() {
 export function SlideView({ slide, index, total, active = false, open = false, editing = false, presenter = false, deckDark = false }: { slide: DeckSlide; index: number; total: number; active?: boolean; open?: boolean; editing?: boolean; presenter?: boolean; deckDark?: boolean }) {
   const s = slide.settings;
   const bg = String(s.bg);
-  const tone: "light" | "dark" = bg === "image" ? "dark" : bg === "inverse" ? (deckDark ? "light" : "dark") : deckDark ? "dark" : "light";
+  const tone: "light" | "dark" = bg === "image" || bg === "accent" ? "dark" : bg === "inverse" ? (deckDark ? "light" : "dark") : deckDark ? "dark" : "light";
   const c: Ctx = { editing, tone };
   const split = String(s.layout).startsWith("split");
   const render = (list: DeckElement[]) => list.map((el, i) => <ElementView key={el.id || i} el={el} c={c} />);
@@ -473,6 +619,7 @@ export function SlideView({ slide, index, total, active = false, open = false, e
       data-layout={s.layout}
       data-align={s.align}
       data-valign={s.valign}
+      data-pad={s.pad === "tight" ? "tight" : undefined}
       data-open={open ? "1" : "0"}
       aria-roledescription="slide"
       aria-label={`${index + 1} of ${total}: ${title}`}
@@ -505,7 +652,7 @@ export function SlideView({ slide, index, total, active = false, open = false, e
             <div className="pr-col">{render(slide.elements)}</div>
           )}
         </div>
-        {s.motif === "asterisk" ? <Motif /> : null}
+        {s.motif === "asterisk" ? <Motif /> : s.motif === "asterisk_xl" ? <Motif variant="xl" /> : s.motif === "asterisk_corner" ? <Motif variant="corner" /> : null}
       </div>
       {presenter && s.notes ? (
         <aside className="pr-notes-src" hidden>
@@ -517,9 +664,9 @@ export function SlideView({ slide, index, total, active = false, open = false, e
 }
 
 /** One slide as a miniature, for the builder canvas. Same CSS as the real deck. */
-export function SlideThumb({ slide, index, total, orientation, deckDark, mode }: { slide: DeckSlide; index: number; total: number; orientation: DeckOrientation; deckDark: boolean; mode: DeckMode }) {
+export function SlideThumb({ slide, index, total, orientation, deckDark, mode, large = false }: { slide: DeckSlide; index: number; total: number; orientation: DeckOrientation; deckDark: boolean; mode: DeckMode; large?: boolean }) {
   return (
-    <div className="pr pr-edit" data-mode={mode === "accordion" ? "edit-accordion" : "slides"} data-orient={orientation === "portrait" ? "portrait" : "landscape"} data-theme={deckDark ? "dark" : "light"}>
+    <div className="pr pr-edit" data-mode={mode === "accordion" ? "edit-accordion" : "slides"} data-orient={orientation === "portrait" ? "portrait" : "landscape"} data-theme={deckDark ? "dark" : "light"} data-scale={large ? "large" : "standard"}>
       <div className="pr-frame">
         <SlideView slide={slide} index={index} total={total} active open editing deckDark={deckDark} />
       </div>
@@ -580,6 +727,7 @@ export function DeckView({ deck, slides, presenter = false, track = false, unloc
       data-mode={deck.mode}
       data-orient={deck.orientation}
       data-theme={s.theme}
+      data-scale={s.scale}
       data-transition={s.transition}
       data-tone={tone}
       data-total={shown.length}

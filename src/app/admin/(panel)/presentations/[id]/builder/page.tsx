@@ -23,6 +23,7 @@ export default async function BuildPresentationPage({ params }: { params: Promis
       initialMode={deck.mode}
       initialOrientation={deck.orientation}
       dark={deck.settings.theme === "dark"}
+      large={deck.settings.scale === "large"}
       protectedDeck={!!deck.passwordHash}
       initialSlides={slides}
       forms={forms}

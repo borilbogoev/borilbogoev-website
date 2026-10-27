@@ -18,6 +18,11 @@ export type ElementType =
   | "steps"
   | "cards"
   | "compare"
+  | "panels"
+  | "pricing"
+  | "bars"
+  | "tags"
+  | "callout"
   | "code"
   | "table"
   | "logos"
@@ -72,11 +77,14 @@ export const ELEMENTS: Record<ElementType, ElementDef> = {
     icon: "heading",
     desc: "Eyebrow, heading and a light line under it. The first thing the room reads.",
     controls: [
+      text("number", "Big number above (section slides)", "", "A large red figure such as 01. Used on section dividers."),
       text("eyebrow", "Eyebrow (small red label)", ""),
+      toggle("pill", "Eyebrow as a pill (cover)", 0),
       text("text", "Heading", "A clear heading in sentence case."),
       toggle("accent_dot", "Red full stop after the heading", 1),
       text("subtitle", "Subtitle (light line)", ""),
-      select("size", "Size", "h1", { display: "Display: cover title", display_lg: "Display large: statement", h1: "Heading", h2: "Subheading" }),
+      text("badge", "Badge on the right (small outlined pill)", "", "A short fact beside the heading, such as 3 hours · 12 modules."),
+      select("size", "Size", "h1", { display: "Display: cover title", display_xl: "Display extra large: statement", display_lg: "Display large: section", display_md: "Display medium: name", h1: "Heading", h2: "Subheading" }),
       ...placement("all"),
     ],
   },
@@ -87,7 +95,7 @@ export const ELEMENTS: Record<ElementType, ElementDef> = {
     desc: "A short paragraph in Markdown. Keep it to two or three lines.",
     controls: [
       md("content", "Text (Markdown)", "One short paragraph. **Key phrases** in bold."),
-      select("size", "Size", "md", { lg: "Large", md: "Normal", sm: "Small", meta: "Caption in mono" }),
+      select("size", "Size", "md", { lg: "Large", md: "Normal", sm: "Small", caps: "Capitals, bold (role line)", meta: "Caption in mono" }),
       select("tone", "Colour", "muted", { muted: "Grey (body copy)", ink: "Black" }),
       ...placement("1"),
     ],
@@ -116,7 +124,8 @@ export const ELEMENTS: Record<ElementType, ElementDef> = {
       text("alt", "Image description (alt text)", ""),
       text("caption", "Caption", ""),
       select("fit", "Fit", "contain", { contain: "Fit: show the whole picture", cover: "Fill: crop to the space" }),
-      select("shape", "Shape", "rounded", { rounded: "Rounded corners", plain: "Plain", circle: "Circle with dashed ring" }),
+      select("shape", "Shape", "rounded", { rounded: "Rounded corners", card: "Rounded corners, shadow and border", plain: "Plain", circle: "Circle with dashed ring" }),
+      select("scale", "Size", "full", { full: "Fill the space", small: "Small and centred (a logo)" }),
       toggle("mono", "Greyscale", 0, "The brand shows photography in greyscale. Leave off for screenshots and diagrams."),
       ...placement("2"),
     ],
@@ -129,6 +138,7 @@ export const ELEMENTS: Record<ElementType, ElementDef> = {
     controls: [
       items("items", "Images", [image("image", "Image"), text("alt", "Image description (alt text)", ""), text("caption", "Caption", "")], [], "caption", 8),
       select("columns", "Columns", "3", { "2": "2", "3": "3", "4": "4" }),
+      select("style", "Style", "plain", { plain: "Plain", card: "Large pictures with a bold caption, shadow and border", tile: "Compact tiles with a mono caption, shadow and border (four to a slide)" }),
       toggle("mono", "Greyscale", 0),
       ...placement("all"),
     ],
@@ -170,7 +180,7 @@ export const ELEMENTS: Record<ElementType, ElementDef> = {
       area("quote", "Quote", "One sentence that makes the idea stick."),
       text("author", "Who said it", ""),
       text("role", "Role or source", ""),
-      select("size", "Size", "lg", { md: "Normal", lg: "Large", xl: "Extra large" }),
+      select("size", "Size", "lg", { md: "Normal", lg: "Large", xl: "Extra large", statement: "Statement: centred, large quote mark, red full stop" }),
       ...placement("all"),
     ],
   },
@@ -214,6 +224,7 @@ export const ELEMENTS: Record<ElementType, ElementDef> = {
         8,
       ),
       select("layout", "Layout", "row", { row: "Cards in a row", list: "List of rows (agenda)" }),
+      select("style", "Cards", "default", { default: "Standard", big: "Large figures and text" }),
       toggle("build_items", "Show one step at a time, on each click", 0),
       ...placement("all"),
     ],
@@ -227,16 +238,18 @@ export const ELEMENTS: Record<ElementType, ElementDef> = {
       items(
         "items",
         "Cards",
-        [{ key: "icon", type: "select", label: "Icon", default: "check", choices: ICONS }, text("title", "Title", "Card title"), text("text", "Text", "One sentence.")],
+        [{ key: "icon", type: "select", label: "Icon", default: "check", choices: ICONS }, text("num", "Red number before the title (optional)", ""), text("title", "Title", "Card title"), text("text", "Text", "One sentence.")],
         [
           { icon: "spark", title: "First idea", text: "One sentence." },
           { icon: "workflow", title: "Second idea", text: "One sentence." },
           { icon: "chart", title: "Third idea", text: "One sentence." },
         ],
         "title",
-        8,
+        12,
       ),
       select("columns", "Columns", "3", { "2": "2", "3": "3", "4": "4" }),
+      select("style", "Style", "default", { default: "Standard: icon on top", compact: "Compact: icon beside the title, outlined card" }),
+      select("size", "Compact size", "md", { md: "Normal (up to 12 cards)", lg: "Large (up to 6 cards)" }),
       toggle("build_items", "Show one card at a time, on each click", 0),
       ...placement("all"),
     ],
@@ -253,6 +266,89 @@ export const ELEMENTS: Record<ElementType, ElementDef> = {
       { key: "right_items", type: "options", label: "Right points", default: ["Automated work", "One operating system"] },
       ...placement("all"),
     ],
+  },
+  panels: {
+    label: "Panels",
+    group: "data",
+    icon: "features",
+    desc: "Two or three large panels side by side, light or dark: pain and strategy, bad news and good news, cons and pros.",
+    controls: [
+      items(
+        "items",
+        "Panels",
+        [
+          text("label", "Label (small capitals)", "The pain"),
+          toggle("label_red", "Label in red", 0),
+          text("title", "Title", ""),
+          select("title_size", "Title size", "md", { md: "Normal", lg: "Large, with a red full stop" }),
+          md("text", "Text (Markdown: lists, bold)", ""),
+          text("note", "Red line at the end", ""),
+          select("tone", "Tone", "light", { light: "Light card", dark: "Dark card" }),
+        ],
+        [
+          { label: "The pain", label_red: 1, title: "", title_size: "md", text: "What hurts today.", note: "", tone: "light" },
+          { label: "The strategy", label_red: 1, title: "", title_size: "md", text: "What changes.", note: "", tone: "light" },
+          { label: "The result", label_red: 0, title: "The headline.", title_size: "lg", text: "What you get.", note: "", tone: "dark" },
+        ],
+        "label",
+        3,
+      ),
+      ...placement("all"),
+    ],
+  },
+  pricing: {
+    label: "Pricing",
+    group: "data",
+    icon: "numbers",
+    desc: "Plans side by side: step, name, price with the old price struck through, what is included and how many places are left.",
+    controls: [
+      items(
+        "items",
+        "Plans",
+        [
+          text("step", "Step label", "STEP 01"),
+          text("badge", "Badge (red, top right)", ""),
+          text("name", "Name (a trailing * is set in red)", "Plan name*"),
+          text("tagline", "One line", ""),
+          text("price", "Price", "1,500"),
+          text("unit", "Currency and period", "AED"),
+          text("old_price", "Old price (struck through)", ""),
+          text("note", "Small note under the price", ""),
+          { key: "features", type: "options", label: "What is included", default: [] },
+          text("chip", "Outlined chip at the bottom", ""),
+          select("tone", "Tone", "light", { light: "Light card", dark: "Dark card (the plan to highlight)" }),
+        ],
+        [],
+        "name",
+        4,
+      ),
+      ...placement("all"),
+    ],
+  },
+  bars: {
+    label: "Bar chart",
+    group: "data",
+    icon: "numbers",
+    desc: "Horizontal bars for survey answers or shares. The longest bar fills the track; the top ones are drawn in red.",
+    controls: [
+      items("items", "Bars", [text("label", "Label", "Answer"), text("value", "Value (a number, % optional)", "50%")], [], "label", 12),
+      { key: "highlight", type: "number", label: "How many top bars in red", default: 3, min: 0, max: 12 },
+      ...placement("all"),
+    ],
+  },
+  tags: {
+    label: "Tags",
+    group: "text",
+    icon: "tag",
+    desc: "Short pills in a row: credentials, tool, setup time, cost. Red or grey.",
+    controls: [items("items", "Tags", [text("text", "Text", "Tag"), select("tone", "Colour", "grey", { grey: "Grey", red: "Red" })], [], "text", 8), ...placement("1")],
+  },
+  callout: {
+    label: "Callout",
+    group: "text",
+    icon: "quote",
+    desc: "A tinted tip with an outline icon: a bold first phrase and one sentence.",
+    controls: [text("lead", "Bold first phrase", "Using it for work?"), text("text", "Text", ""), ...placement("all")],
   },
   code: {
     label: "Code",

@@ -194,6 +194,7 @@ export function DeckSettingsEditor({ deckId, title: t0, status: st0, slug: sl0, 
 
         <Card id="sec-presenting" eyebrow="Presenting" title="How the deck looks and moves" desc="Slides fill the browser window, not the whole screen, so your other tabs and demos stay one click away.">
           <SelectField label="Theme" value={s.theme} onChange={(v) => set("theme", v as DeckSettings["theme"])} choices={{ light: "Light: white slides, dark bands for emphasis", dark: "Dark: dark slides, light bands for emphasis" }} />
+          <SelectField label="Type size" value={s.scale} onChange={(v) => set("scale", v as DeckSettings["scale"])} choices={{ standard: "Standard: compact type", large: "Large: big headings and cards, as in the brand slides" }} />
           <SelectField label="Transition" value={s.transition} onChange={(v) => set("transition", v as DeckSettings["transition"])} choices={{ fade: "Fade", slide: "Slide sideways", none: "None" }} />
           <SelectField label="Footer" value={s.footer} onChange={(v) => set("footer", v as DeckSettings["footer"])} choices={{ brand: "The B* mark and the slide number", minimal: "The slide number only", none: "Nothing" }} />
           <SelectField label="Language" value={s.lang} onChange={(v) => set("lang", v as DeckSettings["lang"])} choices={{ en: "English", bg: "Bulgarian" }} />

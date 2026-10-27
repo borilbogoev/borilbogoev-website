@@ -11,7 +11,7 @@ const LONG_DASH = /[–—]/;
 const BUTTON_KEYS = new Set(["label"]);
 const SKIP_KEYS = new Set(["url", "href", "icon", "style", "size", "bg", "layout", "align", "valign", "motif", "anchor", "kind", "col", "build", "marker", "tone", "fit", "shape", "ratio", "mode", "columns", "display", "color", "code", "rows", "notes"]);
 
-type Text = { key: string; value: string };
+type Text = { key: string; value: string; type?: string };
 
 function strings(value: unknown, key = "", out: Text[] = []): Text[] {
   if (typeof value === "string") {
@@ -38,14 +38,14 @@ export function brandIssues(slides: DeckSlide[]): BrandIssue[] {
       seen.add(rule);
       add("warn", message);
     };
-    const parts: Text[] = [...strings(slide.settings), ...slide.elements.flatMap((e) => strings(e.settings))];
-    for (const { key, value } of parts) {
+    const parts: Text[] = [...strings(slide.settings), ...slide.elements.flatMap((e) => strings(e.settings).map((t) => ({ ...t, type: e.type })))];
+    for (const { key, value, type } of parts) {
       if (EMOJI.test(value)) flag("emoji", "remove the emoji. The brand uses outline icons only.");
       if (value.includes("!")) flag("bang", "remove the exclamation mark. The brand tone is calm and exact.");
       if (LONG_DASH.test(value)) flag("dash", 'replace the long dash with a comma, a colon or "to".');
       const hype = HYPE.exec(value);
       if (hype) flag(`hype:${hype[0].toLowerCase()}`, `replace the hype word "${hype[0]}" with a concrete claim.`);
-      if (BUTTON_KEYS.has(key) && words(value) > 4) flag(`btn:${value}`, `shorten the button "${value}" to two or three words.`);
+      if (type === "button" && BUTTON_KEYS.has(key) && words(value) > 4) flag(`btn:${value}`, `shorten the button "${value}" to two or three words.`);
     }
     for (const e of slide.elements) {
       const s = e.settings;

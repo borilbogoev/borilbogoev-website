@@ -56,11 +56,12 @@ export const SLIDE_CONTROLS: Control[] = [
   select("layout", "Layout", "stack", { stack: "One column", split: "Two columns, equal", split_text: "Two columns, wide left", split_media: "Two columns, wide right" }),
   select("align", "Alignment", "left", { left: "Left", center: "Centered" }),
   select("valign", "Vertical position", "center", { top: "Top", center: "Middle", bottom: "Bottom" }),
-  select("bg", "Background", "surface", { surface: "White", alt: "Light grey", inverse: "Dark band", image: "Picture" }),
+  select("bg", "Background", "surface", { surface: "White", alt: "Light grey", inverse: "Dark band", tint: "Pale red", accent: "Red", image: "Picture" }),
   { key: "bg_image", type: "image", label: "Background picture", default: { id: 0, url: "" } },
   { key: "bg_dim", type: "number", label: "Darken the picture (%)", default: 55, min: 0, max: 90 },
   toggle("bg_mono", "Greyscale picture", 1),
-  select("motif", "Motif", "none", { none: "None", asterisk: "Large red asterisk (the brand's signature)" }),
+  select("motif", "Motif", "none", { none: "None", asterisk: "Red asterisk, bottom right (the brand's signature)", asterisk_xl: "Very large red asterisk, right side", asterisk_corner: "Faint asterisk in the top right corner" }),
+  select("pad", "Margins", "normal", { normal: "Normal", tight: "Tight (four pictures on a slide)" }),
   text("anchor", "Anchor (for #links)", "", "Letters, numbers and dashes. Link to this slide with #name."),
   toggle("hidden", "Skip this slide when presenting", 0, "Kept in the builder, hidden from viewers."),
   toggle("open", "Open by default (accordion)", 0),
@@ -68,7 +69,7 @@ export const SLIDE_CONTROLS: Control[] = [
 ];
 
 /** Keys shown under "Look" in the slide inspector. */
-export const SLIDE_LOOK_KEYS = new Set(["layout", "align", "valign", "bg", "bg_image", "bg_dim", "bg_mono", "motif"]);
+export const SLIDE_LOOK_KEYS = new Set(["layout", "align", "valign", "bg", "bg_image", "bg_dim", "bg_mono", "motif", "pad"]);
 export const SLIDE_ACCORDION_KEYS = new Set(["summary", "open"]);
 
 export function slideDefaults(): Settings {

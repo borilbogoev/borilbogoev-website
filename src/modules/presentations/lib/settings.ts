@@ -37,6 +37,8 @@ export type DeckSettings = {
   indexable: number;
   lang: "en" | "bg";
   theme: "light" | "dark";
+  /** standard: compact type. large: the big presentation type of the brand slides (72 px headings on a 1920 px slide). */
+  scale: "standard" | "large";
   transition: "none" | "fade" | "slide";
   progress: number;
   counter: number;
@@ -69,6 +71,7 @@ export function deckSettingsDefaults(): DeckSettings {
     indexable: 0,
     lang: "en",
     theme: "light",
+    scale: "standard",
     transition: "fade",
     progress: 1,
     counter: 1,
@@ -100,6 +103,7 @@ export function sanitizeDeckSettings(input: unknown, base: DeckSettings = deckSe
   if (has("og_image")) d.og_image = cleanUrl(s.og_image);
   if (has("lang")) d.lang = s.lang === "bg" ? "bg" : "en";
   if (has("theme")) d.theme = s.theme === "dark" ? "dark" : "light";
+  if (has("scale")) d.scale = s.scale === "large" ? "large" : "standard";
   if (has("transition")) d.transition = s.transition === "none" || s.transition === "slide" ? s.transition : "fade";
   if (has("footer")) d.footer = s.footer === "minimal" || s.footer === "none" ? s.footer : "brand";
   if (has("autoplay")) d.autoplay = Math.max(0, Math.min(300, Math.round(Number(s.autoplay)) || 0));

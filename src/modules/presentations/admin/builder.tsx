@@ -28,6 +28,7 @@ type Props = {
   initialMode: DeckMode;
   initialOrientation: DeckOrientation;
   dark: boolean;
+  large?: boolean;
   protectedDeck: boolean;
   initialSlides: DeckSlide[];
   forms: { id: number; title: string }[];
@@ -58,7 +59,7 @@ function elementLabel(e: DeckElement): string {
 
 /* -------------------------------------------------------------------------- */
 
-export function PresentationBuilder({ deckId, slug, siteUrl, initialTitle, initialStatus, initialMode, initialOrientation, dark, protectedDeck, initialSlides, forms, canSave }: Props) {
+export function PresentationBuilder({ deckId, slug, siteUrl, initialTitle, initialStatus, initialMode, initialOrientation, dark, large, protectedDeck, initialSlides, forms, canSave }: Props) {
   const toast = useToast();
   const confirm = useConfirm();
   const [title, setTitle] = useState(initialTitle);
@@ -558,6 +559,7 @@ export function PresentationBuilder({ deckId, slug, siteUrl, initialTitle, initi
               orientation={orientation}
               mode={mode}
               dark={dark}
+              large={large}
               canSave={canSave}
               onSelect={select}
               onMove={moveSlide}
@@ -634,6 +636,7 @@ type CardProps = {
   orientation: DeckOrientation;
   mode: DeckMode;
   dark: boolean;
+  large?: boolean;
   canSave: boolean;
   onSelect: (s: number, e: number | null) => void;
   onMove: (i: number, d: -1 | 1) => void;
@@ -644,7 +647,7 @@ type CardProps = {
   onHide: (uid: number, hidden: boolean) => void;
 };
 
-const SlideCard = memo(function SlideCard({ slide, index, total, selected, selEl, dropBefore, dropAfter, dropTarget, orientation, mode, dark, canSave, onSelect, onMove, onDuplicate, onRemove, onDragStart, onDragEnd, onHide }: CardProps) {
+const SlideCard = memo(function SlideCard({ slide, index, total, selected, selEl, dropBefore, dropAfter, dropTarget, orientation, mode, dark, large, canSave, onSelect, onMove, onDuplicate, onRemove, onDragStart, onDragEnd, onHide }: CardProps) {
   const K = SLIDE_KINDS[slide.kind];
   // The thumbnail uses the element's builder id as its data-el, so a click on it can be mapped back to the element.
   const view = useMemo<DeckSlide>(() => ({ id: slide.uid, kind: slide.kind, settings: slide.settings, elements: slide.elements.map((e) => ({ id: e.uid, type: e.type, settings: e.settings })) }), [slide]);
@@ -691,7 +694,7 @@ const SlideCard = memo(function SlideCard({ slide, index, total, selected, selEl
         </span>
       </div>
       <div className={`bbp-thumb${orientation === "portrait" ? " is-portrait" : ""}`}>
-        <SlideThumb slide={view} index={index} total={total} orientation={orientation} deckDark={dark} mode={mode} />
+        <SlideThumb slide={view} index={index} total={total} orientation={orientation} deckDark={dark} mode={mode} large={large} />
       </div>
       {canSave ? (
         <div className="bbfa-block__tools">
