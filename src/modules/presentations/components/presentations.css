@@ -2665,3 +2665,29 @@
 .pr[data-scale="large"] .pr-headrow .pr-h {
   text-wrap: balance;
 }
+
+/* ---- Large type size: every slide fits the window, never scrolls. The reference slide is 16:9 (66.7em by 37.5em), so the
+   type follows the smaller of the width and the height of the frame. ---- */
+.pr[data-scale="large"] .pr-slide {
+  font-size: clamp(8px, min(1.5cqw, 2.667cqh), 90px);
+}
+.pr[data-mode="slides"][data-scale="large"] .pr-slide__body {
+  overflow: hidden;
+}
+
+/* ---- Compact cards: one padding on every side (24px) and one gap (24px) ---- */
+.pr-cards.is-compact {
+  gap: 0.833em;
+}
+.pr-cards.is-compact .pr-card {
+  padding: 0.833em;
+}
+.pr-cards.is-compact .pr-card__head {
+  gap: 0.417em;
+}
+.pr-cards.is-compact .pr-card p {
+  margin-top: 0.278em;
+}
+.pr[data-scale="large"] .pr-slide__body {
+  padding-bottom: 4.2em;
+}
