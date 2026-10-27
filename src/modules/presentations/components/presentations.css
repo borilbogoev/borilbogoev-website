@@ -2691,3 +2691,41 @@
 .pr[data-scale="large"] .pr-slide__body {
   padding-bottom: 4.2em;
 }
+
+/* ---- Large type size: one margin on every slide. The top and bottom margins (3.6em) clear the top bar and the navigation, so
+   content never touches them; the content area is 66.7em by 30.3em on the 16:9 reference slide. ---- */
+.pr[data-scale="large"] .pr-slide__body,
+.pr[data-scale="large"] .pr-slide[data-pad="tight"] .pr-slide__body {
+  padding: 3.6em 4.444em;
+}
+.pr[data-scale="large"] .pr-col {
+  gap: 1.5em;
+}
+.pr[data-scale="large"] .pr-slide[data-kind="cover"] .pr-col {
+  gap: 0.8em;
+}
+.pr[data-scale="large"] .pr-h--display {
+  max-width: 10.6em;
+  font-size: 3.3em;
+}
+.pr-gallery--tile .pr-fit--cover img {
+  aspect-ratio: 2.5 / 1;
+}
+.pr-bars {
+  gap: 0.1em;
+}
+.pr-bars li {
+  gap: 0.05em;
+}
+.pr-box__text {
+  line-height: 1.4;
+}
+.pr-plan {
+  padding: 1em 1.25em;
+}
+.pr-callout {
+  padding: 0.5em 0.972em;
+}
+.pr-gallery--tile .pr-fit--cover img {
+  aspect-ratio: 2.8 / 1;
+}
