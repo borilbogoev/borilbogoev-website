@@ -71,3 +71,53 @@
 .bbp-choice label{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border:1.5px solid var(--bbfa-line2);border-radius:999px;cursor:pointer;font:600 13px var(--bbfa-font)}
 .bbp-choice label:has(input:checked){border-color:var(--bbfa-accent);background:var(--bbfa-soft);color:var(--bbfa-accent)}
 .bbp-choice input{position:absolute;opacity:0;pointer-events:none}
+
+/* Row actions as icons with a tooltip */
+.bbp-acts {
+  white-space: nowrap;
+}
+.bbp-act {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  margin-left: 2px;
+  border-radius: 8px;
+  color: var(--ink-muted);
+  text-decoration: none;
+}
+.bbp-act:hover,
+.bbp-act:focus-visible {
+  color: var(--ink);
+  background: var(--surface-alt);
+}
+.bbp-act.is-danger:hover,
+.bbp-act.is-danger:focus-visible {
+  color: var(--brand-text);
+  background: var(--brand-tint);
+}
+.bbp-act::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  z-index: 5;
+  padding: 4px 9px;
+  border-radius: 6px;
+  background: #1a1a1a;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.3;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 2px);
+  transition: opacity 0.12s ease, transform 0.12s ease;
+}
+.bbp-act:hover::after,
+.bbp-act:focus-visible::after {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}

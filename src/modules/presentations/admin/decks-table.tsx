@@ -26,6 +26,28 @@ export type DeckRow = {
   avgReach: number | null;
 };
 
+const ACT_ICONS: Record<string, React.ReactNode> = {
+  build: <path d="M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4" />,
+  dashboard: <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" />,
+  present: <path d="M8 5.5v13l11-6.5z" />,
+  duplicate: (
+    <>
+      <rect x="9" y="9" width="11" height="11" rx="2" />
+      <path d="M5 15V6a2 2 0 0 1 2-2h8" />
+    </>
+  ),
+  delete: <path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" />,
+};
+
+/** Outline icons on a 24px grid, 2px stroke. */
+function ActIcon({ name }: { name: string }) {
+  return (
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      {ACT_ICONS[name]}
+    </svg>
+  );
+}
+
 export function DecksTable({ rows, canWrite, canDelete, siteUrl }: { rows: DeckRow[]; canWrite: boolean; canDelete: boolean; siteUrl: string }) {
   const router = useRouter();
   const toast = useToast();
@@ -52,10 +74,7 @@ export function DecksTable({ rows, canWrite, canDelete, siteUrl }: { rows: DeckR
         <thead>
           <tr>
             <th>Presentation</th>
-            <th>Address</th>
             <th className="num">Slides</th>
-            <th className="num">Views</th>
-            <th className="num">Avg reach</th>
             <th>Status</th>
             <th />
           </tr>
@@ -70,21 +89,10 @@ export function DecksTable({ rows, canWrite, canDelete, siteUrl }: { rows: DeckR
                   <Link className="bbfa-forms__title" href={`${base}/builder`}>
                     {r.title}
                   </Link>
-                  <div className="bbfa-sub">
-                    #{r.id} · updated {f.ago(r.updatedAt)}
-                    {r.categoryName ? ` · ${r.categoryName}` : ""}
+                  <div style={{ marginTop: 6 }}>
+                    <CopyCode text={url}>/p/{r.slug}</CopyCode>
                   </div>
-                  {r.tags.length ? (
-                    <div className="bbp-tags" style={{ marginTop: 4 }}>
-                      {r.tags.map((t) => (
-                        <span key={t}>{t}</span>
-                      ))}
-                    </div>
-                  ) : null}
-                </td>
-                <td>
-                  <CopyCode text={url}>/p/{r.slug}</CopyCode>
-                  <div className="bbp-icons" style={{ marginTop: 4 }}>
+                  <div className="bbp-icons" style={{ marginTop: 6 }}>
                     <PIcon name={r.mode === "accordion" ? "rows" : "slides"} />
                     <span>{r.mode === "accordion" ? "Accordion" : "Slides"}</span>
                     <PIcon name={r.orientation === "portrait" ? "portrait" : "landscape"} />
@@ -96,34 +104,49 @@ export function DecksTable({ rows, canWrite, canDelete, siteUrl }: { rows: DeckR
                       </>
                     ) : null}
                   </div>
+                  <div className="bbfa-sub" style={{ marginTop: 6 }}>
+                    #{r.id} · updated {f.ago(r.updatedAt)}
+                    {r.categoryName ? ` · ${r.categoryName}` : ""}
+                  </div>
+                  {r.tags.length ? (
+                    <div className="bbp-tags" style={{ marginTop: 6 }}>
+                      {r.tags.map((t) => (
+                        <span key={t}>{t}</span>
+                      ))}
+                    </div>
+                  ) : null}
                 </td>
                 <td className="num">{fmtNum(r.slides)}</td>
-                <td className="num">{fmtNum(r.views)}</td>
-                <td className="num">{r.avgReach === null ? "–" : r.avgReach}</td>
                 <td>
                   <StatusPill status={r.status} />
                 </td>
-                <td className="bbfa-row-actions">
-                  <Link href={`${base}/builder`}>{canWrite ? "Build" : "View"}</Link>
-                  <Link href={`${base}/dashboard`}>Dashboard</Link>
-                  <a href={`/admin/preview/presentations/${r.id}`} target="_blank" rel="noopener noreferrer">
-                    Present ↗
+                <td className="bbfa-row-actions bbp-acts">
+                  <Link href={`${base}/builder`} className="bbp-act" data-tip={canWrite ? "Build" : "View"} aria-label={canWrite ? "Build" : "View"}>
+                    <ActIcon name="build" />
+                  </Link>
+                  <Link href={`${base}/dashboard`} className="bbp-act" data-tip="Dashboard" aria-label="Dashboard">
+                    <ActIcon name="dashboard" />
+                  </Link>
+                  <a href={`/admin/preview/presentations/${r.id}`} target="_blank" rel="noopener noreferrer" className="bbp-act" data-tip="Present" aria-label="Present (opens in a new tab)">
+                    <ActIcon name="present" />
                   </a>
                   {canWrite ? (
-                    <a href="#" onClick={(e) => (e.preventDefault(), void run(() => api(`presentations/${r.id}/duplicate`, { method: "POST" }), "Presentation duplicated", "Could not duplicate"))}>
-                      Duplicate
+                    <a href="#" className="bbp-act" data-tip="Duplicate" aria-label="Duplicate" onClick={(e) => (e.preventDefault(), void run(() => api(`presentations/${r.id}/duplicate`, { method: "POST" }), "Presentation duplicated", "Could not duplicate"))}>
+                      <ActIcon name="duplicate" />
                     </a>
                   ) : null}
                   {canDelete ? (
                     <a
                       href="#"
-                      className="is-danger"
+                      className="bbp-act is-danger"
+                      data-tip="Delete"
+                      aria-label="Delete"
                       onClick={async (e) => {
                         e.preventDefault();
                         if (await confirm("Delete this presentation with its slides and statistics? This cannot be undone.")) void run(() => api(`presentations/${r.id}`, { method: "DELETE" }), "Presentation deleted", "Could not delete");
                       }}
                     >
-                      Delete
+                      <ActIcon name="delete" />
                     </a>
                   ) : null}
                 </td>
