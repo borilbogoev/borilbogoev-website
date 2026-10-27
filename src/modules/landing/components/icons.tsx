@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 // Outline icons on a 24px grid, 2px stroke, round caps and joins, no fills (design system, Iconography).
 const PATHS: Record<string, ReactNode> = {
   check: <path d="M20 6 9 17l-5-5" />,
+  bulb: <path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z" />,
   minus: <path d="M6 12h12" />,
   arrow: <path d="M5 12h14M13 6l6 6-6 6" />,
   external: <path d="M7 17 17 7M8 7h9v9" />,

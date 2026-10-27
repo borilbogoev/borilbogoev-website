@@ -23,7 +23,9 @@ Presentations are decks built from slides, live at `https://borilbogoev.com/p/<n
 
 ## Model
 
-A deck has slides, a slide has elements. A **slide layout** (Cover, Section, Agenda, Title and bullets, Big statement, Two columns, Before and after, Full picture, Picture and text, Picture grid, Video, Interactive embed, Live demo, Numbers, Quote, Three ideas, Process, Table, Code or prompt, Presenter, Logos, Form, Closing, Questions, Blank) is only a starting point, like a slide master: it adds a slide with the right settings and pre-filled elements, and everything can then be changed. Elements: Heading, Text, Bullet list, Image, Image grid, Video, Interactive embed, Quote, Numbers, Steps, Cards, Before and after, Code, Table, Logos, Person, Button, Form, Divider, Spacer.
+A deck has slides, a slide has elements. A **slide layout** (Cover, Section, Agenda, Title and bullets, Big statement, Two columns, Before and after, Full picture, Picture and text, Picture grid, Video, Interactive embed, Live demo, Numbers, Quote, Three ideas, Process, Table, Code or prompt, Presenter, Logos, Form, Closing, Questions, Blank) is only a starting point, like a slide master: it adds a slide with the right settings and pre-filled elements, and everything can then be changed. Elements: Heading, Text, Bullet list, Image, Image grid, Video, Interactive embed, Quote, Numbers, Steps, Cards, Before and after, Panels, Pricing, Bar chart, Tags, Callout, Code, Table, Logos, Person, Button, Form, Divider, Spacer.
+
+**The brand slide kit** (rebuilt from the Claude brand slides): the deck setting *Type size: Large* switches to the big presentation type (72 px headings on a 1920 px slide, 1em = 28.8px at that width). It adds heading extras (big red number, pill eyebrow, badge, display sizes), slide backgrounds Pale red and Red, the Faint asterisk and Very large asterisk motifs, the Tight margin option, picture styles with shadow and border (Image grid: *Large pictures* with a bold caption, *Compact tiles* for four to a slide), the Statement quote, Cards in a compact or large outlined style, Steps with large figures, and the elements Panels (pain, strategy, result; bad news, good news; cons, pros), Pricing (plans with a struck-through old price, a highlighted plan and a slots chip), Bar chart, Tags and Callout. Decks that keep *Standard* are drawn as before.
 
 - **Modes**: `slides` (one slide at a time, full window) and `accordion` (a long page, sections fold). Viewers can switch with the M key or the button when "Viewers can switch" is on, and a link can force a mode with `?mode=accordion`.
 - **Layouts**: `landscape` fills the window, `portrait` is a tall 9:16 column for phones held upright (centred on a grey ground on a wide screen), `auto` follows the window. Slides are sized in `em` from the size of their frame, so a slide looks the same on a phone and a projector.
@@ -44,6 +46,22 @@ Right arrow, Space, Page Down: next. Left arrow, Page Up, Shift+Space: previous.
 ## Copy and brand
 
 Same rules as the rest of the site, checked live in the builder ("Brand check"): eyebrow then sentence-case heading, short declarative sentences, no emoji, no exclamation marks, no long dashes, no hype words, buttons of two or three words, one red primary button per slide, alt text on pictures. White slides with dark bands for emphasis (or the dark theme reversed), one red accent, outline icons, the red full stop on display headings, the asterisk motif only on Cover and Closing, photography in greyscale on full-picture slides.
+
+## Create or edit a deck from the terminal
+
+`npm run presentations -- <command>` manages decks without opening the admin (`scripts/presentations.ts`, modelled on `npm run landing`). Output is JSON; it runs against `DATABASE_URL`.
+
+| Command | What it does |
+|---|---|
+| `catalog [element]` / `slides [kind]` / `templates` / `forms` | What a spec may contain: every element with its settings, the slide kinds with their starting settings, the starter decks, the forms |
+| `list`, `get <id\|slug> [--spec]` | Decks with views and reach; one deck with its brand check, or as a spec file |
+| `validate spec.json` | Sanitises the spec and runs the brand check. Writes nothing |
+| `create spec.json [--publish]` / `update <id\|slug> spec.json` | Creates a draft (or an active deck), or replaces the slides and settings of an existing one |
+| `status`, `duplicate`, `delete --yes`, `revisions`, `restore`, `stats`, `upload` | The rest of the admin actions |
+
+A spec is `{ title, slug, status, mode, orientation, tags, settings, slides: [{ kind, settings, elements: [{ type, settings }] }] }`. A slide only lists what differs from its kind's starting settings. Any image field may be `{ "file": "/path/to/picture.png" }`: the file is stored once (WebP sizes in the Blob store, cached by content in the temp folder) and replaced by the stored picture. Speaker notes go in the slide settings (`notes`).
+
+Limits to design around: Cards allow 4 columns and 8 items, Steps 5 in a row, Numbers 6. A slide is 1080 px tall at its reference size, so about six cards with one line of text, or nine table rows, is the most one slide holds: split a longer list over several slides instead of squeezing it. Check a deck against `npm run build && npm start`, never `next dev`. Next caches the data of a static page for 5 minutes, so after editing a deck delete `.next/cache/fetch-cache` before a local rebuild.
 
 ## Going live checklist
 
