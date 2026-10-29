@@ -16,7 +16,7 @@ export const LIMITS = {
 
 export const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"] as const;
 
-export const RESERVED_SLUGS = ["communities", "messages", "notifications", "post", "new", "admin", "u", "moderate"] as const;
+export const RESERVED_SLUGS = ["communities", "messages", "notifications", "post", "new", "admin", "u", "moderate", "posts", "comments", "conversations", "mentions", "uploads", "reports", "blocks"] as const;
 
 export const VISIBILITY = ["listed", "hidden"] as const;
 export const JOIN_MODES = ["open", "closed"] as const;
