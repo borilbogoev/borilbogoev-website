@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { PageHead } from "@/modules/account/components/ui";
 import { requireAccountUser } from "@/modules/account/lib/session";
 import { ProfileView } from "@/modules/community/components/profile-view";
@@ -14,6 +15,11 @@ export default async function AccountCommunityPage({ searchParams }: { searchPar
   return (
     <>
       <PageHead eyebrow="Community" title="My Community" intro="Your posts, comments, mentions and conversations." />
+      <p style={{ margin: "-8px 0 24px" }}>
+        <Link href="/community" className="bb-btn bb-btn-primary">
+          Open the community feed and write a post
+        </Link>
+      </p>
       <ProfileView viewer={viewer} targetId={user.id} base="/account/community" section={sp.section} community={sp.community} />
     </>
   );
