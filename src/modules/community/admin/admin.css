@@ -1,0 +1,21 @@
+/* Small additions to the shared admin styles. Brand tokens only. */
+.cm-adm-filters { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 16px; }
+.cm-adm-filters select, .cm-adm-filters input[type="search"], .cm-adm-filters input[type="text"] { height: 36px; border: 1.5px solid var(--bbfa-line2, #e2e2e2); border-radius: 999px; padding: 0 14px; font: 600 13px var(--bbfa-font, inherit); background: #fff; }
+.cm-adm-actions { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.cm-adm-quote { margin: 4px 0 0; font-size: 13px; color: var(--bbfa-muted, #6b6b6b); max-width: 520px; overflow-wrap: anywhere; }
+.cm-adm-snapshot { margin: 6px 0 0; padding: 8px 10px; border-left: 3px solid var(--bbfa-accent, #c72c2c); background: var(--bbfa-bg, #f7f7f7); font-size: 13px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.cm-adm-form { display: grid; gap: 16px; max-width: 640px; }
+.cm-adm-form label span.cm-adm-label { display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--bbfa-muted, #6b6b6b); margin-bottom: 6px; }
+.cm-adm-form input[type="text"], .cm-adm-form input[type="number"], .cm-adm-form textarea, .cm-adm-form select { width: 100%; border: 1.5px solid var(--bbfa-line2, #e2e2e2); border-radius: 12px; padding: 10px 12px; font: 500 14px var(--bbfa-font, inherit); background: #fff; }
+.cm-adm-form textarea { min-height: 90px; }
+.cm-adm-form .row2 { display: grid; gap: 16px; grid-template-columns: 1fr 1fr; }
+@media (max-width: 599px) { .cm-adm-form .row2 { grid-template-columns: 1fr; } }
+.cm-adm-check { display: flex; gap: 10px; align-items: center; font-weight: 600; }
+.cm-adm-check input { width: 18px; height: 18px; accent-color: var(--bbfa-accent, #c72c2c); }
+.cm-adm-log { list-style: none; margin: 0; padding: 0; font-size: 13px; }
+.cm-adm-log li { display: flex; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--bbfa-line, #ececec); flex-wrap: wrap; }
+.cm-adm-log time { color: var(--bbfa-muted, #6b6b6b); min-width: 150px; }
+.cm-adm-results { margin: 8px 0 0; padding: 0; list-style: none; border: 1px solid var(--bbfa-line2, #e2e2e2); border-radius: 12px; background: #fff; max-width: 480px; }
+.cm-adm-results button { display: block; width: 100%; text-align: left; border: 0; background: none; padding: 10px 14px; font: inherit; cursor: pointer; }
+.cm-adm-results button:hover, .cm-adm-results button:focus-visible { background: var(--bbfa-soft, #fbeded); outline: 0; }
+.cm-adm-wrap { overflow-x: auto; }

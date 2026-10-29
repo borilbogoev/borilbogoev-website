@@ -15,6 +15,7 @@ export const ACCOUNT_NAV: { href: string; label: string; icon: ReactNode; exact?
   { href: "/account", label: "Home", exact: true, icon: icon(<path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10" />) },
   { href: "/account/info", label: "My Info", icon: icon(<><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7" /></>) },
   { href: "/account/courses", label: "My Courses", icon: icon(<><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z" /><path d="M4 19V5M9 7h6" /></>) },
+  { href: "/account/community", label: "Community", icon: icon(<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z" />) },
   { href: "/account/responses", label: "My Responses", icon: icon(<><rect x="5" y="3" width="14" height="18" rx="2" /><path d="M9 8h6M9 12h6M9 16h3" /></>) },
 ];
 
