@@ -44,6 +44,7 @@ export const PERMISSIONS = [
   "school.settings", // payment details, Bunny.net keys, sign-up rules
   "settings.manage", // site settings: the main menu
   "school.learn", // take the courses you are enrolled in (the only permission of a student)
+  "community.manage", // Community control panel: communities, members, moderation, settings, suspensions (SuperAdmin only)
 ] as const;
 export type Permission = (typeof PERMISSIONS)[number];
 

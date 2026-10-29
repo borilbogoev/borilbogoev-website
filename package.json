@@ -13,7 +13,8 @@
     "db:studio": "drizzle-kit studio",
     "landing": "tsx scripts/landing.ts",
     "school": "tsx scripts/school.ts",
-    "presentations": "tsx scripts/presentations.ts"
+    "presentations": "tsx scripts/presentations.ts",
+    "test:community": "tsx --test \"src/modules/community/__tests__/*.test.ts\""
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.2.0",

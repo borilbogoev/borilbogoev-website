@@ -43,6 +43,13 @@
       "when": 1793276138742,
       "tag": "0005_damp_franklin_richards",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1793280350191,
+      "tag": "0006_community_module",
+      "breakpoints": true
     }
   ]
 }
