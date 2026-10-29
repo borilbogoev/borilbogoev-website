@@ -4,7 +4,9 @@
 // It differs in what it saves: a post (title, excerpt, community, category, blocks) through /api/admin/community/rich.
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState, type DragEvent } from "react";
-import { ControlField, type ControlCtx } from "@/modules/forms/admin/controls";
+import { ControlField, ImageControl, type ControlCtx, type ImageValue } from "@/modules/forms/admin/controls";
+import { RichSnippet } from "../components/rich-snippet";
+import { highlightsOf, snippetCover, THEMES, THEME_LABELS, type Theme } from "../lib/rich";
 import { api, ApiError, Icon, useConfirm, useToast } from "@/modules/forms/admin/ui";
 import type { Settings } from "@/modules/forms/lib/blocks";
 import { brandIssues, type BrandIssue } from "@/modules/landing/lib/brand";
@@ -13,12 +15,13 @@ import { sanitizeLandingSettings } from "@/modules/landing/lib/settings";
 import "@/modules/forms/admin/admin.css";
 import "@/modules/landing/admin/landing-admin.css";
 import "./admin.css";
+import "../components/community.css";
 
 type EditBlock = LandingBlock & { uid: number };
 
 type Props = {
   postId: number;
-  initial: { title: string; excerpt: string; status: string; communityId: number; categoryId: number | null; blocks: { type: string; settings: Settings }[] };
+  initial: { title: string; excerpt: string; status: string; theme: Theme; featured: { image?: ImageValue; video?: string }; communityId: number; categoryId: number | null; blocks: { type: string; settings: Settings }[] };
   communities: { id: number; name: string; slug: string }[];
   categories: { id: number; communityId: number; name: string; status: string }[];
   forms: { id: number; title: string }[];
@@ -43,6 +46,9 @@ export function RichPostBuilder({ postId, initial, communities, categories, form
 
   const [title, setTitle] = useState(initial.title);
   const [excerpt, setExcerpt] = useState(initial.excerpt);
+  const [theme, setTheme] = useState<Theme>(initial.theme);
+  const [fImage, setFImage] = useState<ImageValue>({ id: 0, url: "", ...(initial.featured.image ?? {}) } as ImageValue);
+  const [fVideo, setFVideo] = useState(initial.featured.video ?? "");
   const [communityId, setCommunityId] = useState(initial.communityId);
   const [categoryId, setCategoryId] = useState<number | null>(initial.categoryId);
   const [status, setStatus] = useState(initial.status);
@@ -57,6 +63,7 @@ export function RichPostBuilder({ postId, initial, communities, categories, form
   const community = communities.find((c) => c.id === communityId);
   const cats = categories.filter((c) => c.communityId === communityId);
   const slug = community?.slug ?? "community";
+  const preview = useMemo(() => snippetCover(blocks.map((b) => ({ type: b.type, settings: b.settings })), { image: fImage.url ? fImage : undefined, video: fVideo }), [blocks, fImage, fVideo]);
 
   const touch = () => setDirty(true);
   const selected = blocks.find((b) => b.uid === sel) ?? null;
@@ -156,7 +163,7 @@ export function RichPostBuilder({ postId, initial, communities, categories, form
       try {
         const res = await api<{ post: { status: string; blocks: { type: string; settings: Settings }[] } }>(`community/rich/${postId}`, {
           method: "PUT",
-          body: { title, excerpt, communityId, categoryId, status: nextStatus ?? status, blocks: blocks.map((b) => ({ type: b.type, settings: b.settings })) },
+          body: { title, excerpt, theme, featured: { image: fImage.url ? fImage : undefined, video: fVideo }, communityId, categoryId, status: nextStatus ?? status, blocks: blocks.map((b) => ({ type: b.type, settings: b.settings })) },
         });
         const next = res.post.blocks.map(prep);
         setBlocks(next);
@@ -170,7 +177,7 @@ export function RichPostBuilder({ postId, initial, communities, categories, form
         setSaving(false);
       }
     },
-    [saving, blocks, sel, postId, title, excerpt, communityId, categoryId, status, toast],
+    [saving, blocks, sel, postId, title, excerpt, theme, fImage, fVideo, communityId, categoryId, status, toast],
   );
 
   useEffect(() => {
@@ -285,6 +292,39 @@ export function RichPostBuilder({ postId, initial, communities, categories, form
               <span className="cm-adm-label">Feed excerpt (shown under the title in the feed, up to 400 characters)</span>
               <textarea rows={2} maxLength={400} value={excerpt} onChange={(e) => { setExcerpt(e.target.value); touch(); }} />
             </label>
+            <fieldset className="cm-themes">
+              <legend className="cm-adm-label">Feed look</legend>
+              <div className="cm-themes__grid">
+                {THEMES.map((th) => (
+                  <label key={th} className={`cm-theme${theme === th ? " is-on" : ""}`}>
+                    <input type="radio" name="theme" value={th} checked={theme === th} onChange={() => { setTheme(th); touch(); }} />
+                    <span className={`cm-theme__sw cm-theme__sw--${th}`} aria-hidden="true"><i /><i /></span>
+                    <strong>{THEME_LABELS[th].name}</strong>
+                    <small>{THEME_LABELS[th].desc}</small>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+            <div className="row2">
+              <div>
+                <ImageControl label="Featured picture (optional)" value={fImage} uploadUrl="/api/admin/landing/media" onChange={(v) => { setFImage(v); touch(); }} />
+              </div>
+              <label>
+                <span className="cm-adm-label">Featured video link (optional)</span>
+                <input type="text" placeholder="https://www.youtube.com/watch?v=..." value={fVideo} onChange={(e) => { setFVideo(e.target.value); touch(); }} />
+                <small className="bbfa-muted">YouTube, Vimeo, Loom or an MP4. With a picture it shows a play mark on it; a YouTube link alone gets its own thumbnail.</small>
+              </label>
+            </div>
+            <p className="bbfa-muted" style={{ margin: 0 }}>If you set neither, the snippet uses the first picture or video in the blocks below.</p>
+            <div>
+              <span className="cm-adm-label">Preview in the feed</span>
+              <div className="cm-preview">
+                <RichSnippet
+                  href={`/community/${slug}/post/${postId}`}
+                  data={{ title: title || "Untitled post", excerpt, theme, cover: preview.url, coverVideo: preview.video, highlights: highlightsOf(blocks.map((b) => ({ type: b.type, settings: b.settings }))), pinned: false, categoryName: cats.find((c) => c.id === categoryId)?.name, commentCount: 0, commentsLocked: false }}
+                />
+              </div>
+            </div>
           </div>
           <div className="bbfa-canvas__meta">
             {blocks.length} blocks · {siteUrl.replace(/^https?:\/\//, "")}/community/{slug}/post/{postId}

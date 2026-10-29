@@ -25,6 +25,7 @@ All notable changes to this project. Versions follow [Semantic Versioning](https
 
 - Community module: communities, a feed with text and up to 4 images, comments, @mentions, notifications, 1-1 chat, reports, blocks, bans and suspensions. Pages under `/community`, a Community tab in `/account`, a moderator view at `/community/moderate`, and a control panel at `/admin/communities` (owner only). Live updates by polling. Likes on posts and comments. Tables `community_*` (migrations `0006_community_module` and `0007_community_likes`). Guide in `docs/community/`.
 - Community rich content (SuperAdmin): posts built from the landing page blocks, community categories as feed tabs, pinned posts, sort rules per category and for the "All" feed (Default, New, Top, Unread), comments on or off, and a fuller post menu. Admin section "Rich posts" with a builder. Migration `0008_community_rich_posts`.
+- Community rich posts: five feed looks (Ink, Paper, Signal, Tint, Frame), a featured picture or video link per post, and an automatic snippet picture from the first image or video block, with a live preview in the builder. Migration `0009_community_snippet_themes`.
 
 ### Changed
 - Shared builder controls moved to `modules/forms/admin/controls.tsx` (Forms builder behaves as before); block settings gained `url`, `items` and `form` controls.

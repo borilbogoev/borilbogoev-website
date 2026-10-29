@@ -81,3 +81,10 @@ Setup: `docs/community/README.md` has the local database steps. In the control p
    - [ ] Set a category's sorting to Top and "All" to New; the feed follows without picking a sort. The sort menu still switches to Unread.
    - [ ] "Build a rich post" in the feed opens the builder on the right community and category.
    - [ ] A normal member sees none of: Build a rich post, Pin, Turn off comments, drafts.
+
+17. Snippet looks and pictures (SuperAdmin)
+   - [ ] In the builder, each of the five looks changes the preview and the feed (Ink, Paper, Signal, Tint, Frame).
+   - [ ] With no featured media, the first image block becomes the snippet picture.
+   - [ ] A post whose first visual is a video block shows its cover image or YouTube thumbnail with a play mark.
+   - [ ] A featured picture wins over the blocks; a featured video link adds the play mark.
+   - [ ] A post with no visual shows text only. On a phone the picture stacks under the text (above it for Tint).

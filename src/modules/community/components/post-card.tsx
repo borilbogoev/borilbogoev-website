@@ -11,6 +11,7 @@ import { t } from "../strings";
 import { HighlightIcon } from "./highlight-icon";
 import { ImageGrid } from "./image-grid";
 import { LikeButton } from "./like-button";
+import { RichSnippet } from "./rich-snippet";
 import { MentionText } from "./mention-text";
 import { emptyMention, MentionTextarea, stored, type MentionValue } from "./mention-textarea";
 import { Dialog, Menu, type MenuItem } from "./menu";
@@ -169,42 +170,20 @@ export function PostCard({
     </>
   );
 
-  // ---- rich post, in the feed: a snippet ----
+  // ---- rich post, in the feed: a snippet in one of the themes ----
   if (rich && !detail) {
     return (
-      <article className={`cm-rich${hiddenTag ? " is-hidden" : ""}`} id={`post-${post.id}`}>
-        <div className="cm-rich__main">
-          <div className="cm-rich__top">
-            <span className="cm-rich__tag">
-              {post.pinned ? <><HighlightIcon name="pin" size={14} /> {t.rich.pinned}</> : t.rich.featured}
-              {category ? <span className="cm-rich__cat"> · {category.name}</span> : null}
-            </span>
-            <Menu items={items} />
-          </div>
-          <h2 className="cm-rich__title">
-            <Link href={href} className="cm-rich__link">{post.title}</Link>
-          </h2>
-          {post.body ? <p className="cm-rich__excerpt">{post.body}</p> : null}
-          {post.highlights.length ? (
-            <ul className="cm-rich__chips" aria-label="What is inside">
-              {post.highlights.map((h) => (
-                <li key={h.label}><HighlightIcon name={h.icon} size={14} /> {h.label}</li>
-              ))}
-            </ul>
-          ) : null}
-          <div className="cm-rich__foot">
-            <LikeButton type="post" id={post.id} liked={post.liked} count={post.likeCount} />
-            <Link href={href} className="cm-rich__comments">{t.post.comments(post.commentCount)}{post.commentsLocked ? " · off" : ""}</Link>
-            <span className="cm-muted-inv"><RelativeTime iso={post.createdAt} /></span>
-          </div>
-        </div>
-        {post.cover ? (
-          <Link href={href} className="cm-rich__cover" tabIndex={-1} aria-hidden="true">
-            <img src={post.cover} alt="" loading="lazy" decoding="async" />
-          </Link>
-        ) : null}
+      <>
+        <RichSnippet
+          id={`post-${post.id}`}
+          href={href}
+          data={{ title: post.title, excerpt: post.body, theme: post.theme, cover: post.cover, coverVideo: post.coverVideo, highlights: post.highlights, pinned: post.pinned, categoryName: category?.name, commentCount: post.commentCount, commentsLocked: post.commentsLocked, hidden: hiddenTag }}
+          menu={<Menu items={items} />}
+          like={<LikeButton type="post" id={post.id} liked={post.liked} count={post.likeCount} />}
+          time={<span className="cm-rich__time"><RelativeTime iso={post.createdAt} /></span>}
+        />
         {dialogs}
-      </article>
+      </>
     );
   }
 

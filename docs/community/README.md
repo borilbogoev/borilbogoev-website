@@ -41,12 +41,14 @@ src/app/(community)/   thin pages          src/app/api/community/   member API  
 
 - **Rich posts:** a post built from the Landing Pages blocks (all of them: hero, hero with image, call to action, buttons, form, countdown, session, video, pricing, FAQ and more). Stored in `community_posts` (`kind = 'rich'`, `title`, `blocks` JSON, the feed excerpt in `body`), so likes, comments, pinning, comments off, hiding and deleting work as for any post. Blocks are cleaned against the Landing schema on save; unknown types are dropped. Drawn by `components/rich-body.tsx` with the landing renderer, so a block looks the same in both places.
 - **Where to build:** `/admin/communities/posts` is the main place (list, filters, pin, publish, comments on or off, delete) and `/admin/communities/posts/<id>` is the builder (`admin/rich-builder.tsx`, derived from the landing builder: palette, canvas, inspector, brand check). In the feed, the SuperAdmin's composer has **Build a rich post**, which opens the builder with the community and category already chosen. Drafts are visible only to the SuperAdmin (preview at the post address).
-- **In the feed:** a dark snippet with a red edge, the title, the excerpt, chips for what is inside (Form, Countdown, Live session, Video...), the first picture and the like and comment counts. On click, the built page opens with the comments below.
+- **In the feed:** a snippet with the title, the excerpt, chips for what is inside (Form, Countdown, Live session, Video...), a picture and the like and comment counts. On click, the built page opens with the comments below.
+- **Feed looks (themes):** each rich post picks one of five, each a combination of brand colours and a layout, drawn from brand tokens only (`components/community.css`, `.cm-rich--<theme>`): **Ink** (dark band, red edge, picture right), **Paper** (white, ink frame, picture left), **Signal** (solid red, white type, framed picture), **Tint** (soft red, wide picture on top), **Frame** (light grey, ink border, large title, framed square picture). The builder shows a live preview. To add a theme: add its key to `THEMES` in `lib/rich.ts` and a `.cm-rich--<key>` block that sets the variables `--rb --rf --rm --rl --ra --rbo --rpb --rpf`.
+- **Snippet picture:** the SuperAdmin can set a **featured picture** and/or a **featured video link** in the builder. Otherwise the feed uses the first visual block of the post: an image, hero image, gallery or cards picture, or a video block (its cover image, or the YouTube thumbnail). A video gets a play mark. YouTube thumbnails come from `i.ytimg.com`; Vimeo, Loom and MP4 need a cover image.
 - **Categories:** `/admin/communities/<id>/categories`. Published categories are tabs after "All" (`?category=<slug>`). Members choose one when posting; the author or the SuperAdmin can change it later. Deleting a category keeps its posts.
 - **Sorting:** each category and the "All" feed (community edit page) has a default rule: Default (latest activity), New, Top (most liked). Pinned posts come first under every rule. Members can switch with the sort menu (`?sort=`), which also offers Unread (posts you have not opened; tracked in `community_post_reads`).
 - **Pin:** the SuperAdmin pins and unpins any published post; hiding or deleting unpins.
 - **Post menu:** Edit (the author, or the SuperAdmin on any text post), Edit in the builder (rich posts), Copy link, Change category, Pin or Unpin, Turn comments off or on, Hide or Show again, Report, Ban author from this community, Delete.
-- **Migration:** `drizzle/0008_community_rich_posts.sql` (categories, post columns, reads table, indexes, and a backfill of `last_activity_at`).
+- **Migrations:** `drizzle/0008_community_rich_posts.sql` (categories, post columns, reads table, indexes, and a backfill of `last_activity_at`) and `drizzle/0009_community_snippet_themes.sql` (`theme` and `featured` on posts).
 
 ## Data model
 
@@ -75,7 +77,7 @@ Mentions and reports point at posts, comments, messages or users by `source_type
 
 ## Migrations
 
-Three files, in order: `drizzle/0006_community_module.sql` (all tables, indexes and the idempotent seed: default community "Community" and the settings row) `drizzle/0007_community_likes.sql` (likes table and `like_count` columns) and `drizzle/0008_community_rich_posts.sql` (categories, rich posts, pinning, reads).
+Four files, in order: `drizzle/0006_community_module.sql` (all tables, indexes and the idempotent seed: default community "Community" and the settings row) `drizzle/0007_community_likes.sql` (likes table and `like_count` columns) `drizzle/0008_community_rich_posts.sql` (categories, rich posts, pinning, reads) and `drizzle/0009_community_snippet_themes.sql` (snippet theme and featured media).
 
 ```bash
 # local: in-memory Postgres, applies drizzle/*.sql on start (see scripts/local-db/README.md)
@@ -89,7 +91,7 @@ npm run db:migrate
 ## Tests
 
 ```bash
-npm run test:community   # 25 tests: permissions, cursors, text/mention parsing, and the services against real SQL (PGlite)
+npm run test:community   # 27 tests: permissions, cursors, text/mention parsing, and the services against real SQL (PGlite)
 ```
 
 ## How polling works

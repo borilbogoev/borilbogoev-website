@@ -64,6 +64,13 @@
       "when": 1793288318796,
       "tag": "0008_community_rich_posts",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1793290477077,
+      "tag": "0009_community_snippet_themes",
+      "breakpoints": true
     }
   ]
 }

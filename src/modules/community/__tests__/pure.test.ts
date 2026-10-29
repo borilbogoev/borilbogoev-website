@@ -3,7 +3,7 @@ import { test } from "node:test";
 import { decodeCursor, encodeCursor, isAfter } from "../lib/cursor";
 import { neutralizeMentions, parseMentions, plainText, tokenize, toEditable, toStored } from "../lib/text";
 import * as p from "../server/permissions";
-import { coverOf, highlightsOf } from "../lib/rich";
+import { coverOf, highlightsOf, isTheme, snippetCover, THEMES, videoThumb } from "../lib/rich";
 
 const U1 = "11111111-1111-4111-8111-111111111111";
 const U2 = "22222222-2222-4222-8222-222222222222";
@@ -135,4 +135,22 @@ test("permissions: pin, comments off, category, rich", () => {
   assert.equal(p.canChangeCategory(actor(), member, comm(), live, U2).ok, false, "someone else");
   assert.equal(p.canChangeCategory(su, null, comm(), live, U2).ok, true, "SuperAdmin");
   assert.equal(p.canReact(actor(), member, comm(), { postingPaused: true }).ok, true);
+});
+
+test("snippet cover: featured picture, featured video, then the first visual block", () => {
+  const img = { settings: { image: { url: "/hero.webp" } }, type: "hero_image" };
+  const yt = { type: "video", settings: { url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" } };
+  const vimeoNoPoster = { type: "video", settings: { url: "https://vimeo.com/123456789" } };
+  const vimeoPoster = { type: "video", settings: { url: "https://vimeo.com/123456789", poster: { url: "/poster.webp" } } };
+  assert.deepEqual(snippetCover([img], { image: { url: "/featured.webp" } }), { url: "/featured.webp", video: false });
+  assert.deepEqual(snippetCover([img], { image: { url: "/featured.webp" }, video: "https://youtu.be/dQw4w9WgXcQ" }), { url: "/featured.webp", video: true }, "picture plus video link gets the play mark");
+  assert.deepEqual(snippetCover([img], { video: "https://youtu.be/dQw4w9WgXcQ" }), { url: "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg", video: true });
+  assert.deepEqual(snippetCover([img, yt]), { url: "/hero.webp", video: false }, "first visual block wins");
+  assert.deepEqual(snippetCover([{ type: "text", settings: {} }, yt, img]), { url: "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg", video: true }, "a video block before the image wins");
+  assert.deepEqual(snippetCover([vimeoNoPoster, img]), { url: "/hero.webp", video: false }, "a video with no picture is skipped");
+  assert.deepEqual(snippetCover([vimeoPoster]), { url: "/poster.webp", video: true });
+  assert.deepEqual(snippetCover([{ type: "text", settings: {} }]), { url: "", video: false });
+  assert.equal(videoThumb("https://example.com/x.mp4"), "");
+  assert.equal(THEMES.length, 5);
+  assert.ok(isTheme("signal") && !isTheme("neon"));
 });
