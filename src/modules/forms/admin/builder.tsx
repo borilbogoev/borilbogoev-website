@@ -463,6 +463,15 @@ function Summary({ b, accent }: { b: EditBlock; accent: string }) {
       );
     case "image":
       return <div className="bbfa-card-body">{s.image?.url ? <img className="bbfa-prev-img" src={s.image.url} alt="" /> : <div className="bbfa-prev-empty">No image selected</div>}</div>;
+    case "session":
+      return (
+        <div className="bbfa-card-body">
+          <div className="bbfa-prev-text">
+            <strong>{s.title}</strong>
+            {s.date ? ` · ${s.date}${s.time ? ` ${s.time}` : ""}` : ""}
+          </div>
+        </div>
+      );
     case "divider":
       return (
         <div className="bbfa-card-body">

@@ -4,6 +4,7 @@
 import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
 import { Monogram } from "@/components/monogram";
+import { SessionCard } from "@/components/session-card";
 import { renderMarkdown } from "@/modules/forms/lib/markdown";
 import { LIcon } from "@/modules/landing/components/icons";
 import { parseVideo } from "@/modules/landing/lib/media";
@@ -566,6 +567,9 @@ function ElementView({ el, c }: { el: DeckElement; c: Ctx }) {
       break;
     case "form":
       body = <FormEl s={s} c={c} />;
+      break;
+    case "session":
+      body = <SessionCard data={s} />;
       break;
     case "divider":
       body = <Divider s={s} />;

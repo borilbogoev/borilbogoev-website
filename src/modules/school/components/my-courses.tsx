@@ -47,6 +47,10 @@ export function MyCourses() {
         <button type="button" className="cr-link" onClick={signOut}>
           Sign out
         </button>
+        {" "}
+        <Link className="cr-link" href="/account">
+          My account
+        </Link>
         {me.user?.staff ? (
           <>
             {" "}

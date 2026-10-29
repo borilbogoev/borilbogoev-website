@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { ArrowRightIcon, LocationIcon } from "@/components/icons";
 import { JsonLd } from "@/components/json-ld";
-import { UpcomingEvent } from "@/components/offer-page";
 import { StatsBand } from "@/components/stats-band";
 import { Section } from "@/components/ui";
 import { home } from "@/content/home";
@@ -21,8 +20,6 @@ export const metadata = {
 export default function HomePage() {
   return (
     <>
-      {home.upcoming && <UpcomingEvent event={home.upcoming} />}
-
       <section className="section hero-soft pb-14 pt-12 md:pb-24 md:pt-20">
         <div className="container-bb grid items-center gap-12 lg:grid-cols-[1fr_auto] lg:gap-16">
           <div>

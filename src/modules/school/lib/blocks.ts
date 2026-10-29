@@ -30,6 +30,7 @@ export type BlockType =
   | "question"
   | "poll"
   | "flashcards"
+  | "session"
   | "divider"
   | "spacer";
 
@@ -193,6 +194,7 @@ export const BLOCKS: Record<BlockType, BlockDef> = {
     ],
   },
   divider: reuse("divider", "layout"),
+  session: reuse("session", "action"),
   spacer: reuse("spacer", "layout"),
 };
 

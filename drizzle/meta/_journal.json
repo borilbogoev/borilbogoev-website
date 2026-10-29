@@ -36,6 +36,13 @@
       "when": 1792674725592,
       "tag": "0004_classroom_module",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1793276138742,
+      "tag": "0005_damp_franklin_richards",
+      "breakpoints": true
     }
   ]
 }

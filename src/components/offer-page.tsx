@@ -2,6 +2,7 @@ import { offers } from "@/content/offers";
 import { FormEmbed } from "@/modules/forms";
 import type { Offer } from "@/content/types";
 import { breadcrumbLd, faqLd, offerLd } from "@/lib/seo";
+import { SessionCard } from "./session-card";
 import { Faq } from "./faq";
 import { FounderBand } from "./founder-band";
 import { CheckIcon, MinusIcon, UsersIcon } from "./icons";
@@ -10,116 +11,15 @@ import { Deliverables, PlanCards, PlanTable } from "./plans";
 import { StickyCta } from "./sticky-cta";
 import { Section } from "./ui";
 
-/** "12 PM" becomes "12:00 PM"; any other format is shown as written. */
-function clock(time: string) {
-  const m = /^(\d{1,2})(?::(\d{2}))?\s*(AM|PM)$/i.exec(time.trim());
-  return m ? `${m[1]}:${m[2] ?? "00"} ${m[3].toUpperCase()}` : time;
-}
-
-/** A large six-spoke asterisk, the brand's graphic device, drawn in outline. */
-function AsteriskMark() {
-  return (
-    <svg aria-hidden viewBox="-50 -50 100 100" className="pointer-events-none absolute -bottom-16 -right-12 h-[300px] w-[300px] md:-bottom-24 md:-right-16 md:h-[420px] md:w-[420px]" fill="none" stroke="var(--on-inverse-line)" strokeWidth="9" strokeLinecap="round">
-      <path d="M0 -42V42M-36.4 -21L36.4 21M-36.4 21L36.4 -21" />
-    </svg>
-  );
-}
-
 /**
- * Feature hero for the next live event: a dark card on a white band, above the default hero.
- * Brand: one dark ground, one red primary button, a red full stop and bullet dots, mono for the time.
- * Reusable for any urgent or featured announcement.
+ * A featured live event above the default hero: the Session block on a white band.
+ * Set `upcoming` in the offer's content file (same fields as the Session block); remove it when there is no event.
  */
 export function UpcomingEvent({ event }: { event: NonNullable<Offer["upcoming"]> }) {
-  const title = event.title.replace(/\.$/, "");
   return (
-    <section aria-label={event.label} className="w-full border-b border-line bg-surface pb-10 pt-8 md:pb-14 md:pt-12">
+    <section className="w-full border-b border-line bg-surface pb-10 pt-8 md:pb-14 md:pt-12">
       <div className="container-bb">
-        <div
-          className="relative grid overflow-hidden rounded-[14px] md:grid-cols-[minmax(0,320px)_1fr]"
-          style={{ background: "var(--surface-inverse)", color: "var(--on-inverse)", boxShadow: "var(--shadow)" }}
-        >
-          <AsteriskMark />
-
-          {/* Date and time frame */}
-          <time
-            dateTime={event.iso}
-            className="relative flex flex-col justify-center gap-6 border-b p-6 md:border-b-0 md:border-r md:p-9"
-            style={{ borderColor: "var(--on-inverse-line)" }}
-          >
-            <span className="flex items-end gap-5 md:block">
-              <span className="block font-extrabold leading-[0.85] tracking-[-0.03em]" style={{ fontSize: "clamp(88px, 14vw, 132px)" }}>
-                {event.day}
-                <span className="text-brand">.</span>
-              </span>
-              <span className="block pb-1 md:mt-5 md:pb-0">
-                <span className="block text-[13px] font-bold uppercase leading-[1.4] tracking-[0.14em]" style={{ color: "var(--on-inverse-accent)" }}>
-                  {event.weekday}
-                </span>
-                <span className="mt-1 block text-[20px] font-bold leading-[1.3]">
-                  {event.month} {event.year}
-                </span>
-              </span>
-            </span>
-            <span className="block border-t pt-5" style={{ borderColor: "var(--on-inverse-line)" }}>
-              <span className="block font-mono text-[26px] font-medium leading-none">{clock(event.time)}</span>
-              <span className="mt-2 block font-mono text-[11px] font-medium uppercase tracking-[0.04em]" style={{ color: "var(--on-inverse-muted)" }}>
-                {event.zone}
-              </span>
-            </span>
-          </time>
-
-          {/* Announcement */}
-          <div className="relative p-6 md:p-9 lg:p-11">
-            {event.image && (
-              <img
-                src={event.image.src}
-                width={event.image.width}
-                height={event.image.height}
-                alt={event.image.alt}
-                className="mb-6 h-auto w-full rounded-[8px]"
-                decoding="async"
-              />
-            )}
-            <p className="m-0 text-[13px] font-bold uppercase leading-[1.4] tracking-[0.14em]" style={{ color: "var(--on-inverse-accent)" }}>
-              {event.label}
-            </p>
-            <h2 className="mt-3 max-w-[22ch] font-extrabold leading-[1.15] tracking-[-0.02em]" style={{ fontSize: "clamp(28px, 3.5vw, 44px)" }}>
-              {title}
-              <span className="text-brand">.</span>
-            </h2>
-            {event.subtitle && (
-              <p className="mt-4 max-w-[40ch] font-light leading-[1.3] tracking-[-0.01em]" style={{ fontSize: "clamp(18px, 2vw, 22px)", color: "var(--on-inverse-muted)" }}>
-                {event.subtitle}
-              </p>
-            )}
-            {event.text && (
-              <p className="mt-5 max-w-[52ch] text-[16px] leading-[1.65]" style={{ color: "var(--on-inverse)" }}>
-                {event.text}
-              </p>
-            )}
-            {event.bullets && event.bullets.length > 0 && (
-              <ul className="m-0 mt-5 grid list-none gap-2.5 p-0">
-                {event.bullets.map((b) => (
-                  <li key={b} className="flex items-center gap-3 text-[14px] leading-[1.6]">
-                    <span aria-hidden className="h-1.5 w-1.5 shrink-0 rounded-full bg-brand" />
-                    {b}
-                  </li>
-                ))}
-              </ul>
-            )}
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <a href={event.signupUrl} {...(event.signupUrl.startsWith("/") ? {} : { target: "_blank", rel: "noopener noreferrer" })} className="bb-btn bb-btn-primary">
-                {event.signupLabel}
-              </a>
-              {event.secondary && (
-                <a href={event.secondary.href} className="bb-btn bb-btn-inverse">
-                  {event.secondary.label}
-                </a>
-              )}
-            </div>
-          </div>
-        </div>
+        <SessionCard data={event} />
       </div>
     </section>
   );

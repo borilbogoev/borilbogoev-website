@@ -2729,3 +2729,8 @@
 .pr-gallery--tile .pr-fit--cover img {
   aspect-ratio: 2.8 / 1;
 }
+
+/* The Session block is sized in em: here it follows the slide's own type scale. */
+.pr-el--session .sc {
+  font-size: 0.62em;
+}

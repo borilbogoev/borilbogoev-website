@@ -29,6 +29,7 @@ export type ElementType =
   | "person"
   | "button"
   | "form"
+  | "session"
   | "divider"
   | "spacer";
 
@@ -65,7 +66,7 @@ const placement = (col = "1"): Control[] => [
 const ratioChoices = { "16:9": "Wide 16:9", "4:3": "Classic 4:3", "1:1": "Square", "9:16": "Vertical 9:16" };
 
 /** A content block of the Forms module, reused: same fields, no form logic. */
-function shared(key: "divider" | "spacer", desc: string): ElementDef {
+function shared(key: "session" | "divider" | "spacer", desc: string): ElementDef {
   const def = FORM_BLOCKS[key];
   return { label: def.label, group: "layout", icon: def.icon, desc, shared: true, controls: [...def.controls.filter((c) => c.type !== "logic"), ...placement("all").filter((c) => c.key !== "align")] };
 }
@@ -426,6 +427,7 @@ export const ELEMENTS: Record<ElementType, ElementDef> = {
     ],
   },
   divider: shared("divider", "A line, dots or the short red bar."),
+  session: { ...shared("session", "A dated live event: a dark card with the date, time, details and a sign-up button."), group: "action" },
   spacer: shared("spacer", "Empty vertical space."),
 };
 

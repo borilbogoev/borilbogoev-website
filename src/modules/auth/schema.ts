@@ -1,6 +1,6 @@
 import { pgTable, uuid, text, timestamp, integer, uniqueIndex } from "drizzle-orm/pg-core";
 
-// People who can sign in to /admin. There is no sign-up: an owner or admin creates the account.
+// People who can sign in: staff to /admin, everyone else to their own area at /account. An owner or admin creates accounts; students may also sign up when School sign-up is open.
 // `role` is one of the keys in ./roles.ts and is always read from here, never from the session cookie.
 export const users = pgTable(
   "users",
@@ -8,6 +8,14 @@ export const users = pgTable(
     id: uuid("id").primaryKey().defaultRandom(),
     email: text("email").notNull(), // stored lowercase
     name: text("name").notNull().default(""),
+    username: text("username"), // stored lowercase, unique; null until the person picks one
+    avatarUrl: text("avatar_url"), // served through /api/account/avatar/...
+    phone: text("phone"),
+    company: text("company"),
+    jobTitle: text("job_title"),
+    country: text("country"),
+    timezone: text("timezone"),
+    bio: text("bio"),
     role: text("role").notNull().default("viewer"),
     status: text("status").notNull().default("active"), // active | disabled
     passwordHash: text("password_hash"), // null: signs in with Google only
@@ -18,7 +26,7 @@ export const users = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
-  (t) => [uniqueIndex("users_email_idx").on(t.email)],
+  (t) => [uniqueIndex("users_email_idx").on(t.email), uniqueIndex("users_username_idx").on(t.username)],
 );
 
 export type User = typeof users.$inferSelect;
