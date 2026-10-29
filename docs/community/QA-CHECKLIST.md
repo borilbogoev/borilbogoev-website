@@ -60,6 +60,10 @@ Setup: `docs/community/README.md` has the local database steps. In the control p
    - [ ] A person who does not moderate anything gets "not found" on `/community/moderate`.
 13. Mobile (about 390 px wide)
    - [ ] Composer, feed, a thread and the admin tables are usable (tables scroll sideways).
+15. Likes
+   - [ ] A likes B's post and a comment: the count goes up once, a second click removes it.
+   - [ ] Liking still works while posting is paused, and not in an archived community.
+
 14. Keyboard only
    - [ ] Write a post, type `@`, pick a person with the arrow keys and Enter.
    - [ ] Open an image, close it with Escape.

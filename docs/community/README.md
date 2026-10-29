@@ -64,7 +64,7 @@ Mentions and reports point at posts, comments, messages or users by `source_type
 
 ## Migrations
 
-One file: `drizzle/0006_community_module.sql` (all tables, indexes and the idempotent seed: default community "Community" and the settings row).
+Two files, in order: `drizzle/0006_community_module.sql` (all tables, indexes and the idempotent seed: default community "Community" and the settings row) and `drizzle/0007_community_likes.sql` (likes table and `like_count` columns).
 
 ```bash
 # local: in-memory Postgres, applies drizzle/*.sql on start (see scripts/local-db/README.md)
@@ -78,7 +78,7 @@ npm run db:migrate
 ## Tests
 
 ```bash
-npm run test:community   # 21 tests: permissions, cursors, text/mention parsing, and the services against real SQL (PGlite)
+npm run test:community   # 22 tests: permissions, cursors, text/mention parsing, and the services against real SQL (PGlite)
 ```
 
 ## How polling works
@@ -126,7 +126,7 @@ Also: banned members are read only in that community. An archived community is r
 
 ## How to extend
 
-- **Likes:** add `community_reactions (id, user_id, target_type, target_id, kind, created_at)` with a unique `(user_id, target_type, target_id)`, a `like_count` on posts and comments updated in one CTE like `comment_count`, one route `POST/DELETE /api/community/reactions`, and a button in `PostCard` and `CommentItem`. Add the viewer's own flag to the feed query as a `left join`, not a second query per post.
+- **More reactions:** likes exist (`community_likes`, `like_count` on posts and comments, `server/likes.ts`, `POST /api/community/likes`). For other kinds add a `kind` column to `community_likes`, widen the unique index to include it and keep one counter per kind.
 - **Realtime:** replace the body of `usePolling` call sites with a subscription (keep the same callbacks). The `updates` endpoints can stay as the catch-up path.
 - **Regions:** `community_communities.region_id` exists and is unused. Filter `listCommunities` by the viewer's region, and add the field to the admin form.
 - **Group chat:** conversations already use a participants table. Allow `type = 'group'`, drop the `dm_key` check for it, and extend `listConversations` to show several people.

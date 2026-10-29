@@ -51,6 +51,9 @@ function canWrite(a: A, m: MemberState, c: CommunityState, g: GlobalState, opts:
 export const canPost = (a: A, m: MemberState, c: CommunityState, g: GlobalState) => canWrite(a, m, c, g, { paused: true });
 export const canComment = canPost;
 
+/** Liking: the same rules as writing, but allowed while posting is paused. */
+export const canReact = (a: A, m: MemberState, c: CommunityState, g: GlobalState) => canWrite(a, m, c, g, { paused: false });
+
 /** Own posts and comments: editing or deleting. Authors only; the same read-only rules apply. */
 export function canEditOwn(a: A, m: MemberState, c: CommunityState, g: GlobalState, authorId: string): Decision {
   if (!a) return no("signin", "Please sign in.");

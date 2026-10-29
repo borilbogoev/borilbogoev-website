@@ -10,6 +10,7 @@ export const t = {
     join: "Join", leave: "Leave", comment: "Comment", reply: "Reply", send: "Send", sending: "Sending...", retry: "Try again", close: "Close", message: "Message", block: "Block", unblock: "Unblock",
     addImages: "Add images", removeImage: "Remove image", markAllRead: "Mark all as read", loadMore: "Load more", more: "More", openCommunity: "Open",
   },
+  like: { like: "Like", liked: "Liked", count: (n: number) => (n === 1 ? "1 like" : `${n} likes`) },
   composer: { placeholder: "Write something. Type @ to mention a member.", commentPlaceholder: "Write a comment. Type @ to mention a member.", messagePlaceholder: "Write a message", altPlaceholder: "Describe this image (optional)", count: (n: number, max: number) => `${n} / ${max}` },
   post: { edited: "edited", deleted: "This post was deleted.", hidden: "Hidden by a moderator", comments: (n: number) => (n === 1 ? "1 comment" : `${n} comments`), confirmDelete: "Delete this post? This cannot be undone." },
   comment: { deleted: "This comment was deleted.", hidden: "Hidden by a moderator", none: "No comments yet. Start the conversation.", confirmDelete: "Delete this comment?" },

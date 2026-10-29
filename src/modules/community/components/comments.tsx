@@ -8,6 +8,7 @@ import { LIMITS, POLL } from "../lib/constants";
 import { usePolling } from "../hooks/use-polling";
 import { toEditable } from "../lib/text";
 import { t } from "../strings";
+import { LikeButton } from "./like-button";
 import { MentionText } from "./mention-text";
 import { emptyMention, MentionTextarea, stored, type MentionValue } from "./mention-textarea";
 import { Menu, type MenuItem } from "./menu";
@@ -102,7 +103,7 @@ export function CommentSection({
   async function create(v: MentionValue, requestId: string) {
     const body = stored(v);
     const tempId = -Date.now();
-    const temp: Row = { id: tempId, postId, author: me, body, createdAt: new Date().toISOString(), editedAt: null, status: "published", cursor: "", mine: true, canEdit: false, canDelete: false, canModerate: false, pending: true };
+    const temp: Row = { id: tempId, postId, author: me, body, createdAt: new Date().toISOString(), editedAt: null, likeCount: 0, liked: false, status: "published", cursor: "", mine: true, canEdit: false, canDelete: false, canModerate: false, pending: true };
     setPeople((p) => ({ ...p, ...Object.fromEntries(v.picks.map((k) => [k.userId, { id: k.userId, name: k.name, username: "", avatarUrl: "" }])), [me.id]: me }));
     setItems((cur) => [...cur, temp]);
     requestAnimationFrame(() => endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" }));
@@ -236,6 +237,7 @@ function CommentItem({ c, people, communityId, onRemoved, onChanged }: { c: Row;
         ) : (
           <MentionText body={c.body} people={localPeople} />
         )}
+        {c.pending || editing ? null : <div className="cm-comment__foot"><LikeButton type="comment" id={c.id} liked={c.liked} count={c.likeCount} /></div>}
       </div>
       <ReportDialog target={report ? { type: "comment", id: c.id } : null} onClose={() => setReport(false)} />
     </li>

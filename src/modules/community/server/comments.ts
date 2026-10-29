@@ -21,6 +21,8 @@ export type CommentDTO = {
   body: string;
   createdAt: string;
   editedAt: string | null;
+  likeCount: number;
+  liked: boolean;
   status: "published" | "hidden_by_mod";
   cursor: string;
   mine: boolean;
@@ -40,17 +42,19 @@ function flags(scope: Scope, authorId: string, status: string) {
   return { mine, canEdit: own && status === "published", canDelete: own || mod, canModerate: mod };
 }
 
-async function toDTOs(scope: Scope, rows: { comment: CommentRow }[]): Promise<{ items: CommentDTO[]; people: People }> {
+async function toDTOs(scope: Scope, rows: { comment: CommentRow; liked?: boolean }[]): Promise<{ items: CommentDTO[]; people: People }> {
   const people = await loadPeopleFor(rows.map((r) => r.comment.authorId), rows.map((r) => r.comment.body));
   return {
     people,
-    items: rows.map(({ comment: c }) => ({
+    items: rows.map(({ comment: c, liked }) => ({
       id: c.id,
       postId: c.postId,
       author: people[c.authorId],
       body: c.body,
       createdAt: c.createdAt.toISOString(),
       editedAt: c.editedAt ? c.editedAt.toISOString() : null,
+      likeCount: c.likeCount,
+      liked: !!liked,
       status: c.status as CommentDTO["status"],
       cursor: encodeCursor(c),
       ...flags(scope, c.authorId, c.status),
@@ -64,7 +68,7 @@ const visible = (scope: Scope) => or(eq(C.status, "published"), and(eq(C.status,
 export async function listComments(scope: Scope, postId: number, afterRaw: string | null, limit: number = LIMITS.commentPage) {
   const after = decodeCursor(afterRaw);
   const rows = await db()
-    .select({ comment: C })
+    .select({ comment: C, liked: sql<boolean>`exists (select 1 from community_likes l where l.user_id = ${scope.viewer.user.id} and l.target_type = 'comment' and l.target_id = ${C.id})` })
     .from(C)
     .innerJoin(users, eq(users.id, C.authorId))
     .where(and(eq(C.postId, postId), visible(scope), after ? or(gt(C.createdAt, after.at), and(eq(C.createdAt, after.at), gt(C.id, after.id))) : undefined))

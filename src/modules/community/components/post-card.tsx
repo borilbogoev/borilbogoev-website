@@ -7,6 +7,7 @@ import { del, message, patch, type People, type Post } from "../lib/client";
 import { LIMITS } from "../lib/constants";
 import { toEditable } from "../lib/text";
 import { t } from "../strings";
+import { LikeButton } from "./like-button";
 import { ImageGrid } from "./image-grid";
 import { MentionText } from "./mention-text";
 import { emptyMention, MentionTextarea, stored, type MentionValue } from "./mention-textarea";
@@ -124,6 +125,7 @@ export function PostCard({
       ) : null}
       <ImageGrid media={post.media} />
       <div className="cm-post__foot">
+        <LikeButton type="post" id={post.id} liked={post.liked} count={post.likeCount} />
         {detail ? (
           <span className="cm-muted">{t.post.comments(post.commentCount)}</span>
         ) : (

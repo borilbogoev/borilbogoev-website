@@ -23,6 +23,8 @@ export type PostDTO = {
   createdAt: string;
   editedAt: string | null;
   commentCount: number;
+  likeCount: number;
+  liked: boolean;
   status: "published" | "hidden_by_mod";
   media: MediaDTO[];
   cursor: string;
@@ -62,11 +64,11 @@ export async function mediaFor(postIds: number[]): Promise<Map<number, MediaDTO[
   return out;
 }
 
-type Joined = { post: PostRow; author: { id: string; name: string; username: string | null; avatarUrl: string | null } };
+type Joined = { post: PostRow; liked: boolean; author: { id: string; name: string; username: string | null; avatarUrl: string | null } };
 
 async function toDTOs(scope: Scope, rows: Joined[]): Promise<{ items: PostDTO[]; people: People }> {
   const [media, people] = await Promise.all([mediaFor(rows.map((r) => r.post.id)), loadPeopleFor(rows.map((r) => r.author.id), rows.map((r) => r.post.body))]);
-  const items = rows.map(({ post }) => ({
+  const items = rows.map(({ post, liked }) => ({
     id: post.id,
     communityId: post.communityId,
     author: people[post.authorId],
@@ -74,6 +76,8 @@ async function toDTOs(scope: Scope, rows: Joined[]): Promise<{ items: PostDTO[];
     createdAt: post.createdAt.toISOString(),
     editedAt: post.editedAt ? post.editedAt.toISOString() : null,
     commentCount: post.commentCount,
+    likeCount: post.likeCount,
+    liked: !!liked,
     status: post.status as PostDTO["status"],
     media: media.get(post.id) ?? [],
     cursor: encodeCursor(post),
@@ -90,7 +94,7 @@ export async function listFeed(scope: Scope, opts: { cursor?: string | null; aft
   const cur = decodeCursor(opts.cursor);
   const limit = after ? 50 : LIMITS.postPage;
   const rows = await db()
-    .select({ post: P, author: { id: users.id, name: users.name, username: users.username, avatarUrl: users.avatarUrl } })
+    .select({ post: P, liked: sql<boolean>`exists (select 1 from community_likes l where l.user_id = ${scope.viewer.user.id} and l.target_type = 'post' and l.target_id = ${P.id})`, author: { id: users.id, name: users.name, username: users.username, avatarUrl: users.avatarUrl } })
     .from(P)
     .innerJoin(users, eq(users.id, P.authorId))
     .where(
@@ -130,7 +134,7 @@ export async function getPostRow(id: number): Promise<PostRow | null> {
 /** A single post for its page. Deleted posts and other people's hidden posts are not found. */
 export async function getPost(scope: Scope, id: number): Promise<{ item: PostDTO; people: People } | null> {
   const [row] = await db()
-    .select({ post: P, author: { id: users.id, name: users.name, username: users.username, avatarUrl: users.avatarUrl } })
+    .select({ post: P, liked: sql<boolean>`exists (select 1 from community_likes l where l.user_id = ${scope.viewer.user.id} and l.target_type = 'post' and l.target_id = ${P.id})`, author: { id: users.id, name: users.name, username: users.username, avatarUrl: users.avatarUrl } })
     .from(P)
     .innerJoin(users, eq(users.id, P.authorId))
     .where(and(eq(P.id, id), eq(P.communityId, scope.community.id), visibleToViewer(scope)))

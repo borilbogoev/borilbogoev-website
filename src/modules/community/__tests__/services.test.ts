@@ -18,6 +18,7 @@ import * as safety from "../server/safety";
 import * as admin from "../server/admin";
 import * as profile from "../server/profile";
 import * as coms from "../server/communities";
+import { setLike } from "../server/likes";
 import { clearSettingsCache } from "../server/settings";
 
 const ids = { A: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa", B: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb", M: "cccccccc-cccc-4ccc-8ccc-cccccccccccc", S: "dddddddd-dddd-4ddd-8ddd-dddddddddddd", X: "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee" };
@@ -247,4 +248,26 @@ test("join and leave", async () => {
   await coms.leaveCommunity(s2);
   await assert.rejects(async () => coms.leaveCommunity(await scope("X")), /default/);
   await db().execute(sql`select 1`);
+});
+
+test("likes: once per person, counters, flags, rules", async () => {
+  const p = (await posts.createPost(await scope("A"), { body: "Like me" })).item;
+  const c = (await comments.createComment(await scope("B"), p.id, { body: "c" })).item;
+  assert.deepEqual(await setLike(V.B, "post", p.id, true), { liked: true, likeCount: 1 });
+  assert.equal((await setLike(V.B, "post", p.id, true)).likeCount, 1, "a second like does not count twice");
+  assert.equal((await setLike(V.A, "post", p.id, true)).likeCount, 2);
+  assert.equal((await posts.listFeed(await scope("B"), {})).items.find((i) => i.id === p.id)?.liked, true);
+  assert.equal((await posts.listFeed(await scope("X"), {})).items.find((i) => i.id === p.id)?.liked, false);
+  assert.equal((await setLike(V.B, "post", p.id, false)).likeCount, 1);
+  assert.equal((await setLike(V.B, "post", p.id, false)).likeCount, 1, "unliking twice does not go below");
+  assert.equal((await setLike(V.A, "comment", c.id, true)).likeCount, 1);
+  assert.equal((await comments.listComments(await scope("A"), p.id, null)).items.find((i) => i.id === c.id)?.liked, true);
+  await admin.updateSettings(V.S, { postingPaused: true });
+  clearSettingsCache();
+  await assert.doesNotReject(() => setLike(V.B, "post", p.id, true), "liking works while posting is paused");
+  await admin.updateSettings(V.S, { postingPaused: false });
+  clearSettingsCache();
+  await assert.rejects(() => setLike(V.A, "post", 99999, true), /Not found/);
+  await posts.setPostStatus(await scope("A"), (await posts.getPostRow(p.id))!, "deleted");
+  await assert.rejects(() => setLike(V.B, "post", p.id, true), /Not found/);
 });

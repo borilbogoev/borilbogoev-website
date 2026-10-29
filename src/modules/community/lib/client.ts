@@ -40,11 +40,11 @@ export type Person = { id: string; name: string; username: string; avatarUrl: st
 export type People = Record<string, Person>;
 export type Media = { id: number; url: string; width: number; height: number; alt: string };
 export type Post = {
-  id: number; communityId: number; author: Person; body: string; createdAt: string; editedAt: string | null; commentCount: number; status: "published" | "hidden_by_mod";
+  id: number; communityId: number; author: Person; body: string; createdAt: string; editedAt: string | null; commentCount: number; likeCount: number; liked: boolean; status: "published" | "hidden_by_mod";
   media: Media[]; cursor: string; mine: boolean; canEdit: boolean; canDelete: boolean; canModerate: boolean;
 };
 export type Comment = {
-  id: number; postId: number; author: Person; body: string; createdAt: string; editedAt: string | null; status: "published" | "hidden_by_mod"; cursor: string;
+  id: number; postId: number; author: Person; body: string; createdAt: string; editedAt: string | null; likeCount: number; liked: boolean; status: "published" | "hidden_by_mod"; cursor: string;
   mine: boolean; canEdit: boolean; canDelete: boolean; canModerate: boolean;
 };
 export type Message = { id: number; conversationId: number; senderId: string; body: string; deleted: boolean; createdAt: string; cursor: string; mine: boolean };

@@ -63,6 +63,7 @@ export const communityPosts = pgTable(
     authorId: userRef("author_id").notNull(),
     body: text("body").notNull().default(""), // plain text with mention tokens, max 5000
     commentCount: integer("comment_count").notNull().default(0), // published comments only
+    likeCount: integer("like_count").notNull().default(0),
     status: text("status").notNull().default("published"), // published | hidden_by_mod | deleted
     requestId: text("request_id"), // client-generated, makes a double submit harmless
     editedAt: at("edited_at"),
@@ -104,6 +105,7 @@ export const communityComments = pgTable(
     communityId: integer("community_id").notNull().references(() => communities.id, { onDelete: "cascade" }),
     authorId: userRef("author_id").notNull(),
     body: text("body").notNull(), // plain text with mention tokens, max 2000
+    likeCount: integer("like_count").notNull().default(0),
     status: text("status").notNull().default("published"), // published | hidden_by_mod | deleted
     requestId: text("request_id"),
     editedAt: at("edited_at"),
@@ -115,6 +117,18 @@ export const communityComments = pgTable(
     index("community_comments_author_idx").on(t.authorId, t.createdAt.desc()),
     uniqueIndex("community_comments_request_idx").on(t.authorId, t.requestId).where(sql`request_id is not null`),
   ],
+);
+
+export const communityLikes = pgTable(
+  "community_likes",
+  {
+    id: serial("id").primaryKey(),
+    userId: userRef("user_id").notNull(),
+    targetType: text("target_type").notNull(), // post | comment
+    targetId: integer("target_id").notNull(),
+    createdAt: at("created_at").notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex("community_likes_once_idx").on(t.userId, t.targetType, t.targetId), index("community_likes_target_idx").on(t.targetType, t.targetId)],
 );
 
 export const communityMentions = pgTable(
