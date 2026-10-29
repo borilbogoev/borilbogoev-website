@@ -156,8 +156,8 @@ export function PlayerShell({ course, modules, children }: { course: ShellCourse
                 Preview
               </span>
             ) : state.signedIn ? (
-              <Link className="cr-bar__link" href="/school/my">
-                My courses
+              <Link className="cr-bar__link" href="/account">
+                My account
               </Link>
             ) : state.loaded && !course.preview ? (
               <Link className="cr-bar__link" href={signInHref}>
