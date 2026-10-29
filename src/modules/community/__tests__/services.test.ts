@@ -78,7 +78,7 @@ test("comments: counts, notification, mentions, polling cursor", async () => {
   const c1 = await comments.createComment(sb, post.id, { body: `Nice ${tok("A")}`, requestId: "c1" });
   assert.equal((await comments.createComment(sb, post.id, { body: `Nice ${tok("A")}`, requestId: "c1" })).duplicate, true);
   const c2 = await comments.createComment(sb, post.id, { body: "Second" });
-  assert.equal((await posts.getPostRow(post.id))!.comment_count ?? (await posts.getPostRow(post.id))!.commentCount, 2);
+  assert.equal((await posts.getPostRow(post.id))!.commentCount, 2);
   // A is the post author and was mentioned in c1: exactly one notification for that comment, none doubled
   const list = await notes.listNotifications(ids.A);
   assert.equal(list.items.length, 1);

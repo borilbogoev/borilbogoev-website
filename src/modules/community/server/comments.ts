@@ -61,7 +61,7 @@ async function toDTOs(scope: Scope, rows: { comment: CommentRow }[]): Promise<{ 
 const visible = (scope: Scope) => or(eq(C.status, "published"), and(eq(C.status, "hidden_by_mod"), eq(C.authorId, scope.viewer.user.id)));
 
 /** Oldest first. `after` is both the page cursor and the polling cursor. */
-export async function listComments(scope: Scope, postId: number, afterRaw: string | null, limit = LIMITS.commentPage) {
+export async function listComments(scope: Scope, postId: number, afterRaw: string | null, limit: number = LIMITS.commentPage) {
   const after = decodeCursor(afterRaw);
   const rows = await db()
     .select({ comment: C })
