@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { site, type NavItem } from "@/content/site";
+import { AccountBar } from "./account-bar";
 import { CloseIcon, ExternalIcon, MenuIcon } from "./icons";
 import { Monogram } from "./monogram";
 import { PortraitMark } from "./portrait-mark";
@@ -127,6 +128,7 @@ export function HeaderNav({ items }: { items: NavItem[] }) {
           {open ? <CloseIcon size={24} /> : <MenuIcon size={24} />}
         </button>
       </div>
+      <AccountBar />
     </header>
 
       {/* Mobile drawer: full width, 56px rows, thumb-sized targets.
