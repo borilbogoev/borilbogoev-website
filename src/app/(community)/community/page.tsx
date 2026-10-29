@@ -5,9 +5,9 @@ import { pageScopeById, requireViewer } from "@/modules/community/server/page";
 
 export const metadata = { title: "Feed" };
 
-export default async function CommunityHome() {
+export default async function CommunityHome({ searchParams }: { searchParams: Promise<{ category?: string; sort?: string }> }) {
   const viewer = await requireViewer();
   const def = await getDefaultCommunity();
   if (!def) notFound();
-  return <CommunityView scope={await pageScopeById(viewer, def.id)} />;
+  return <CommunityView scope={await pageScopeById(viewer, def.id)} searchParams={await searchParams} />;
 }

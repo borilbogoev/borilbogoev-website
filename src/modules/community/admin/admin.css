@@ -21,3 +21,7 @@
 .cm-adm-wrap { overflow-x: auto; }
 .cm-adm-item { display: flex; gap: 12px; align-items: flex-start; }
 .cm-adm-thumb { flex: none; width: 56px; height: 56px; object-fit: cover; border-radius: 8px; background: var(--bbfa-bg, #f7f7f7); }
+.cm-adm-hl { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.cm-adm-hl span { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--bbfa-soft, #fbeded); color: var(--bbfa-accent, #c72c2c); }
+.cm-rich-meta { max-width: none; margin: 8px 0; }
+.cm-rich-meta textarea { min-height: 56px; }

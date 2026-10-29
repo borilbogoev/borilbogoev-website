@@ -24,6 +24,7 @@ export function CommunityTabs({ items }: { items: { href: string; label: string 
 export const ADMIN_TABS = [
   { href: "/admin/communities", label: "Overview" },
   { href: "/admin/communities/list", label: "Communities" },
+  { href: "/admin/communities/posts", label: "Rich posts" },
   { href: "/admin/communities/moderation", label: "Moderation" },
   { href: "/admin/communities/content", label: "Content" },
   { href: "/admin/communities/suspensions", label: "Suspensions" },

@@ -57,6 +57,13 @@
       "when": 1793282174069,
       "tag": "0007_community_likes",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1793288318796,
+      "tag": "0008_community_rich_posts",
+      "breakpoints": true
     }
   ]
 }

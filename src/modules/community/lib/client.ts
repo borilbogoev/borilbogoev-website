@@ -39,9 +39,12 @@ export const message = (e: unknown) => (e instanceof ApiError || e instanceof Er
 export type Person = { id: string; name: string; username: string; avatarUrl: string };
 export type People = Record<string, Person>;
 export type Media = { id: number; url: string; width: number; height: number; alt: string };
+export type Highlight = { label: string; icon: string };
+export type Category = { id: number; communityId: number; name: string; slug: string; status: "draft" | "published"; sortRule: "default" | "new" | "top"; position: number };
 export type Post = {
-  id: number; communityId: number; author: Person; body: string; createdAt: string; editedAt: string | null; commentCount: number; likeCount: number; liked: boolean; status: "published" | "hidden_by_mod";
-  media: Media[]; cursor: string; mine: boolean; canEdit: boolean; canDelete: boolean; canModerate: boolean;
+  id: number; communityId: number; kind: "post" | "rich"; title: string; author: Person; body: string; createdAt: string; editedAt: string | null; commentCount: number; likeCount: number; liked: boolean;
+  status: "published" | "hidden_by_mod"; media: Media[]; categoryId: number | null; pinned: boolean; commentsLocked: boolean; cover: string; highlights: Highlight[];
+  cursor: string; sortCursor: string; mine: boolean; canEdit: boolean; canDelete: boolean; canModerate: boolean; canPin: boolean; canLock: boolean; canCategory: boolean; canBan: boolean; builderHref: string;
 };
 export type Comment = {
   id: number; postId: number; author: Person; body: string; createdAt: string; editedAt: string | null; likeCount: number; liked: boolean; status: "published" | "hidden_by_mod"; cursor: string;
@@ -51,13 +54,15 @@ export type Message = { id: number; conversationId: number; senderId: string; bo
 export type Page<T> = { items: T[]; people: People; nextCursor: string | null };
 
 export const api = {
-  feed: (slug: string, q: { cursor?: string | null; after?: string | null }, signal?: AbortSignal) => {
+  feed: (slug: string, q: { cursor?: string | null; after?: string | null; sort?: string; categoryId?: number | null }, signal?: AbortSignal) => {
     const p = new URLSearchParams();
+    if (q.sort) p.set("sort", q.sort);
+    if (q.categoryId) p.set("categoryId", String(q.categoryId));
     if (q.cursor) p.set("cursor", q.cursor);
     if (q.after) p.set("after", q.after);
     return get<Page<Post>>(`/api/community/${slug}/posts?${p}`, signal);
   },
-  feedUpdates: (slug: string, after: string, signal?: AbortSignal) => get<{ newCount: number; newestCursor: string | null }>(`/api/community/${slug}/posts/updates?after=${encodeURIComponent(after)}`, signal),
+  feedUpdates: (slug: string, after: string, categoryId?: number | null, signal?: AbortSignal) => get<{ newCount: number; newestCursor: string | null }>(`/api/community/${slug}/posts/updates?after=${encodeURIComponent(after)}${categoryId ? `&categoryId=${categoryId}` : ""}`, signal),
   comments: (postId: number, cursor?: string | null) => get<Page<Comment>>(`/api/community/posts/${postId}/comments${cursor ? `?cursor=${encodeURIComponent(cursor)}` : ""}`),
   commentUpdates: (postId: number, after: string | null, signal?: AbortSignal) => get<{ items: Comment[]; people: People; commentCount: number }>(`/api/community/posts/${postId}/comments/updates${after ? `?after=${encodeURIComponent(after)}` : ""}`, signal),
   unreadNotifications: (signal?: AbortSignal) => get<{ count: number }>("/api/community/notifications/unread-count", signal),

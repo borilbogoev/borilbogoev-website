@@ -48,3 +48,8 @@ export function toId(v: unknown): number | null {
 
 /** Postgres returns timestamps as strings through `execute`; the typed builder returns Dates. */
 export const asDate = (v: unknown): Date => (v instanceof Date ? v : new Date(String(v)));
+
+/** Throws the right error for a refused permission decision. */
+export const unwrap = (d: { ok: true } | { ok: false; code: string; message: string }) => {
+  if (!d.ok) throw d.code === "not_found" ? notFound() : forbidden(d.message);
+};

@@ -3,7 +3,7 @@ import { schema } from "@/db";
 import { LIMITS } from "../lib/constants";
 import { decodeCursor, encodeCursor } from "../lib/cursor";
 import { cleanBody } from "../lib/text";
-import { db, invalid, isUniqueViolation, notFound, run } from "./core";
+import { db, forbidden, invalid, isUniqueViolation, notFound, run } from "./core";
 import { communityState, memberState, type Scope } from "./context";
 import { dropMentionsFor, resolveMentions, writeMentions } from "./mentions";
 import { dropNotificationsFor } from "./notifications";
@@ -88,6 +88,7 @@ export async function createComment(scope: Scope, postId: number, input: { body:
   const { viewer, community, settings } = scope;
   const post = await getPostRow(postId);
   if (!post || post.communityId !== community.id || post.status !== "published") throw notFound();
+  if (post.commentsLocked) throw forbidden("Comments are turned off for this post.");
   unwrap(canComment(viewer.actor, memberState(scope.membership), communityState(community), settings));
   const body = cleanBody(input.body);
   if (!body) throw invalid("Write something first.");
@@ -113,7 +114,7 @@ export async function createComment(scope: Scope, postId: number, input: { body:
         INSERT INTO community_comments (post_id, community_id, author_id, body, request_id, created_at)
         VALUES (${post.id}, ${community.id}, ${viewer.user.id}, ${mentions.body}, ${requestId}, ${now}) RETURNING id
       ), u AS (
-        UPDATE community_posts SET comment_count = comment_count + 1 WHERE id = ${post.id} RETURNING id
+        UPDATE community_posts SET comment_count = comment_count + 1, last_activity_at = ${now} WHERE id = ${post.id} RETURNING id
       )
       SELECT id FROM c`);
     id = row.id;
