@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { del, get, message, patch, post, request } from "../lib/client";
-import { REPORT_REASONS, RESERVED_SLUGS } from "../lib/constants";
+import { REPORT_REASONS, RESERVED_SLUGS, SORT_HELP, SORT_LABELS, SORT_RULES } from "../lib/constants";
 import { t } from "../strings";
 import { toast } from "../components/toast";
 
@@ -56,6 +56,7 @@ export function CommunitiesTable({ rows }: { rows: CommunityRowData[] }) {
                   <button className="bbfa-btn bbfa-btn--ghost bbfa-btn--sm" disabled={i === 0} onClick={() => move(i, -1)} aria-label={`Move ${r.name} up`}>↑</button>
                   <button className="bbfa-btn bbfa-btn--ghost bbfa-btn--sm" disabled={i === rows.length - 1} onClick={() => move(i, 1)} aria-label={`Move ${r.name} down`}>↓</button>
                   <Link className="bbfa-btn bbfa-btn--ghost bbfa-btn--sm" href={`/admin/communities/${r.id}`}>Edit</Link>
+                  <Link className="bbfa-btn bbfa-btn--ghost bbfa-btn--sm" href={`/admin/communities/${r.id}/categories`}>Categories</Link>
                   <Link className="bbfa-btn bbfa-btn--ghost bbfa-btn--sm" href={`/admin/communities/${r.id}/members`}>Members</Link>
                   {!r.isDefault ? <button className="bbfa-btn bbfa-btn--ghost bbfa-btn--sm" onClick={() => act(() => patch(`/api/admin/community/communities/${r.id}`, { setDefault: true }), "Default community changed.", refresh)}>Make default</button> : null}
                   {!r.isDefault ? <button className="bbfa-btn bbfa-btn--ghost bbfa-btn--sm" onClick={() => act(() => patch(`/api/admin/community/communities/${r.id}`, { status: r.status === "archived" ? "active" : "archived" }), r.status === "archived" ? "Community restored." : "Community archived.", refresh)}>{r.status === "archived" ? "Unarchive" : "Archive"}</button> : null}
@@ -69,7 +70,7 @@ export function CommunitiesTable({ rows }: { rows: CommunityRowData[] }) {
   );
 }
 
-export type CommunityFormData = { id?: number; slug: string; name: string; description: string; iconUrl: string; coverUrl: string; visibility: string; joinMode: string; status: string };
+export type CommunityFormData = { id?: number; slug: string; name: string; description: string; iconUrl: string; coverUrl: string; visibility: string; joinMode: string; status: string; defaultSort: string };
 
 export function CommunityForm({ initial }: { initial: CommunityFormData }) {
   const router = useRouter();
@@ -126,6 +127,7 @@ export function CommunityForm({ initial }: { initial: CommunityFormData }) {
         <label><span className="cm-adm-label">Visibility</span><select value={v.visibility} onChange={(e) => set({ visibility: e.target.value })}><option value="listed">Listed: everyone can see it</option><option value="hidden">Hidden: only members see it</option></select></label>
         <label><span className="cm-adm-label">Join mode</span><select value={v.joinMode} onChange={(e) => set({ joinMode: e.target.value })}><option value="open">Open: anyone signed in can join</option><option value="closed">Closed: an admin adds members</option></select></label>
       </div>
+      <label><span className="cm-adm-label">Sorting of the &ldquo;All&rdquo; feed</span><select value={v.defaultSort} onChange={(e) => set({ defaultSort: e.target.value })}>{SORT_RULES.map((r) => <option key={r} value={r}>{SORT_LABELS[r]}: {SORT_HELP[r].toLowerCase()}</option>)}</select><small className="bbfa-muted">Each category has its own rule on the Categories page. Members can still pick another order from the sort menu.</small></label>
       <label><span className="cm-adm-label">Status</span><select value={v.status} onChange={(e) => set({ status: e.target.value })}><option value="active">Active</option><option value="archived">Archived: read only</option></select></label>
       {error ? <p className="bbfa-login__error" role="alert">{error}</p> : null}
       <div><button type="submit" className="bbfa-btn" disabled={busy}>{busy ? "Saving..." : editing ? "Save changes" : "Create community"}</button> <Link href="/admin/communities/list" className="bbfa-btn bbfa-btn--ghost">Cancel</Link></div>

@@ -2,22 +2,21 @@
 // Each function checks the actor itself (never trust the page that called it) and writes to community_admin_log.
 import { and, asc, count, desc, eq, gte, ilike, inArray, ne, or } from "drizzle-orm";
 import { schema } from "@/db";
-import { RESERVED_SLUGS, JOIN_MODES, VISIBILITY, COMMUNITY_STATUS, REPORT_ACTIONS, type ReportAction } from "../lib/constants";
+import { RESERVED_SLUGS, SORT_RULES, JOIN_MODES, VISIBILITY, COMMUNITY_STATUS, REPORT_ACTIONS, type ReportAction } from "../lib/constants";
 import { snippet } from "../lib/text";
-import { CommunityError, db, forbidden, invalid, isUniqueViolation, isUuid, notFound } from "./core";
+import { log } from "./audit";
+import { CommunityError, db, forbidden, invalid, isUniqueViolation, isUuid, notFound, unwrap } from "./core";
 import { getCommunityById, getMembership, memberState, communityState, scopeById, type CommunityRow, type Viewer } from "./context";
 import { canAssignModerators, canBan, canManageCommunities, canManageGlobal, canSeeReports } from "./permissions";
 import { clearMemberCounts, memberCounts } from "./communities";
 import { clearSettingsCache, getSettings } from "./settings";
 import { getCommentRow, setCommentStatus } from "./comments";
-import { getPostRow, mediaFor, setPostStatus, unwrap } from "./posts";
+import { getPostRow, mediaFor, setPostStatus } from "./posts";
 import { suspendUser } from "./safety";
 
 const { communities, communityMembers: Mem, communityPosts: P, communityComments: C, communityReports: R, communitySettings: Set_, communityAdminLog: Log, communityMessages: Msg, users } = schema;
 
-export async function log(actorId: string, action: string, targetType: string, targetId: string | number, meta: Record<string, unknown> = {}) {
-  await db().insert(Log).values({ actorId, action, targetType, targetId: String(targetId), meta, createdAt: new Date() });
-}
+export { log };
 
 /** Communities the viewer moderates: all of them for the SuperAdmin. */
 export async function moderatedIds(viewer: Viewer): Promise<number[] | "all"> {
@@ -62,7 +61,7 @@ export async function listAdminCommunities(viewer: Viewer): Promise<AdminCommuni
   return rows.map((c) => ({ ...c, members: counts.get(c.id) ?? 0, posts: pc.get(c.id) ?? 0 }));
 }
 
-export type CommunityInput = { slug?: unknown; name?: unknown; description?: unknown; iconUrl?: unknown; coverUrl?: unknown; visibility?: unknown; joinMode?: unknown; status?: unknown };
+export type CommunityInput = { slug?: unknown; name?: unknown; description?: unknown; iconUrl?: unknown; coverUrl?: unknown; visibility?: unknown; joinMode?: unknown; status?: unknown; defaultSort?: unknown };
 
 const str = (v: unknown, max: number) => (typeof v === "string" ? v.trim().slice(0, max) : "");
 const oneOf = <T extends string>(v: unknown, list: readonly T[], fallback: T): T => (list.includes(v as T) ? (v as T) : fallback);
@@ -118,6 +117,7 @@ export async function updateCommunity(viewer: Viewer, id: number, input: Communi
   if (input.iconUrl !== undefined) set.iconUrl = mediaUrl(input.iconUrl);
   if (input.coverUrl !== undefined) set.coverUrl = mediaUrl(input.coverUrl);
   if (input.visibility !== undefined) set.visibility = oneOf(input.visibility, VISIBILITY, c.visibility as "listed");
+  if (input.defaultSort !== undefined && (SORT_RULES as readonly string[]).includes(input.defaultSort as string)) set.defaultSort = input.defaultSort as string;
   if (input.joinMode !== undefined) set.joinMode = oneOf(input.joinMode, JOIN_MODES, c.joinMode as "open");
   if (input.status !== undefined) {
     const status = oneOf(input.status, COMMUNITY_STATUS, c.status as "active");

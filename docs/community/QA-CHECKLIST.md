@@ -69,3 +69,15 @@ Setup: `docs/community/README.md` has the local database steps. In the control p
    - [ ] Open an image, close it with Escape.
    - [ ] Open a conversation and send a message with the keyboard.
    - [ ] Every control shows a visible focus ring.
+
+16. Rich content (SuperAdmin)
+   - [ ] Create categories (Categories page); published ones show as tabs after "All".
+   - [ ] A member posts into a category and sees it only under that tab and "All".
+   - [ ] Build a rich post with a hero, a form and a countdown; publish it. It shows as a dark snippet with chips and a picture.
+   - [ ] Open it: the built page shows, with likes and comments below.
+   - [ ] Pin it: it stays first under Default, New and Top, and in its own category. Unpin it.
+   - [ ] Turn comments off: the composer is replaced by a note and the API refuses new comments. Turn them on.
+   - [ ] Change a member's post category, edit a member's text post, ban its author from the post menu.
+   - [ ] Set a category's sorting to Top and "All" to New; the feed follows without picking a sort. The sort menu still switches to Unread.
+   - [ ] "Build a rich post" in the feed opens the builder on the right community and category.
+   - [ ] A normal member sees none of: Build a rich post, Pin, Turn off comments, drafts.

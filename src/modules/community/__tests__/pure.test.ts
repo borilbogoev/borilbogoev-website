@@ -3,6 +3,7 @@ import { test } from "node:test";
 import { decodeCursor, encodeCursor, isAfter } from "../lib/cursor";
 import { neutralizeMentions, parseMentions, plainText, tokenize, toEditable, toStored } from "../lib/text";
 import * as p from "../server/permissions";
+import { coverOf, highlightsOf } from "../lib/rich";
 
 const U1 = "11111111-1111-4111-8111-111111111111";
 const U2 = "22222222-2222-4222-8222-222222222222";
@@ -109,4 +110,29 @@ test("permissions: direct messages, leave", () => {
   assert.equal(p.canDirectMessage(null, { id: U2 }, { blockedByTarget: false }).ok, false);
   assert.equal(p.canLeave(member, { isDefault: true }).ok, false);
   assert.equal(p.canLeave(member, { isDefault: false }).ok, true);
+});
+
+test("rich posts: highlights and cover", () => {
+  const blocks = [
+    { type: "hero", settings: { headline: "x" } },
+    { type: "form", settings: {} },
+    { type: "cards", settings: { items: [{ image: { url: "/a.webp", variants: [{ w: 480, url: "/a-480.webp" }] } }] } },
+    { type: "countdown", settings: {} },
+    { type: "form", settings: {} },
+  ];
+  assert.deepEqual(highlightsOf(blocks).map((h) => h.label), ["Form", "Countdown"]);
+  assert.equal(coverOf(blocks), "/a-480.webp");
+  assert.equal(coverOf([{ type: "text", settings: {} }]), "");
+});
+
+test("permissions: pin, comments off, category, rich", () => {
+  const su = actor({ superAdmin: true });
+  assert.equal(p.canPin(actor()).ok, false);
+  assert.equal(p.canPin(su).ok, true);
+  assert.equal(p.canBuildRich(actor()).ok, false);
+  assert.equal(p.canLockComments(su).ok, true);
+  assert.equal(p.canChangeCategory(actor(), member, comm(), live, U1).ok, true, "author");
+  assert.equal(p.canChangeCategory(actor(), member, comm(), live, U2).ok, false, "someone else");
+  assert.equal(p.canChangeCategory(su, null, comm(), live, U2).ok, true, "SuperAdmin");
+  assert.equal(p.canReact(actor(), member, comm(), { postingPaused: true }).ok, true);
 });

@@ -61,6 +61,20 @@ export function canEditOwn(a: A, m: MemberState, c: CommunityState, g: GlobalSta
   return canWrite(a, m, c, g, { paused: false });
 }
 
+/** Pinning, turning comments off, building rich posts, editing any member's post: SuperAdmin only. Everything here still respects archived communities for the writes that change content. */
+export function canPin(a: A): Decision {
+  return a?.superAdmin ? yes : no("forbidden", "You can't do that.");
+}
+export const canLockComments = canPin;
+export const canBuildRich = canPin;
+export const canEditAnyPost = canPin;
+
+/** Moving a post to another category: its author, or the SuperAdmin. */
+export function canChangeCategory(a: A, m: MemberState, c: CommunityState, g: GlobalState, authorId: string): Decision {
+  if (a?.superAdmin) return yes;
+  return canEditOwn(a, m, c, g, authorId);
+}
+
 /** Hiding or deleting someone else's post or comment. Archived communities are read only, except for the SuperAdmin. */
 export function canModerateContent(a: A, m: MemberState, c: CommunityState): Decision {
   if (!a) return no("signin", "Please sign in.");

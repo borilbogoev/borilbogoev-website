@@ -27,6 +27,16 @@ export const REPORT_REASONS = ["spam", "abuse", "inappropriate", "other"] as con
 export const REPORT_STATUS = ["open", "resolved", "dismissed"] as const;
 export const REPORT_ACTIONS = ["dismiss", "hide", "delete", "ban", "suspend"] as const;
 
+/** Feed orders. "unread" is a viewer filter only; communities and categories use the first three. */
+export const SORT_RULES = ["default", "new", "top"] as const;
+export const SORTS = ["default", "new", "top", "unread"] as const;
+export type SortRule = (typeof SORT_RULES)[number];
+export type Sort = (typeof SORTS)[number];
+export const SORT_LABELS: Record<Sort, string> = { default: "Default", new: "New", top: "Top", unread: "Unread" };
+export const SORT_HELP: Record<Sort, string> = { default: "Pinned first, then the latest activity", new: "Pinned first, then the newest posts", top: "Pinned first, then the most liked", unread: "Only posts you have not opened" };
+export const POST_KINDS = ["post", "rich"] as const;
+export const MAX_RICH_BLOCKS = 60;
+
 export type Visibility = (typeof VISIBILITY)[number];
 export type JoinMode = (typeof JOIN_MODES)[number];
 export type CommunityStatus = (typeof COMMUNITY_STATUS)[number];

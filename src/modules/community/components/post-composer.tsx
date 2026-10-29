@@ -1,7 +1,8 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { ApiError, del, message, newRequestId, post as postJson, request, type Media, type People, type Post } from "../lib/client";
+import Link from "next/link";
+import { ApiError, del, message, newRequestId, post as postJson, request, type Category, type Media, type People, type Post } from "../lib/client";
 import { IMAGE_TYPES, LIMITS } from "../lib/constants";
 import { t } from "../strings";
 import { emptyMention, MentionTextarea, stored, type MentionValue } from "./mention-textarea";
@@ -12,12 +13,18 @@ type Draft = { id: number; url: string; alt: string };
 export function PostComposer({
   communityId,
   slug,
+  categories = [],
+  defaultCategoryId = null,
+  richHref = "",
   maxImages,
   maxImageMb,
   onCreated,
 }: {
   communityId: number;
   slug: string;
+  categories?: Category[];
+  defaultCategoryId?: number | null;
+  richHref?: string;
   maxImages: number;
   maxImageMb: number;
   onCreated: (post: Post, people: People) => void;
@@ -27,6 +34,7 @@ export function PostComposer({
   const [uploading, setUploading] = useState(0);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [category, setCategory] = useState(String(defaultCategoryId ?? ""));
   const requestId = useRef(newRequestId());
   const fileInput = useRef<HTMLInputElement>(null);
 
@@ -73,7 +81,7 @@ export function PostComposer({
     setBusy(true);
     setError("");
     try {
-      const res = await postJson<{ item: Post; people: People }>(`/api/community/${slug}/posts`, { body, mediaIds: images.map((i) => i.id), alts: Object.fromEntries(images.map((i) => [i.id, i.alt])), requestId: requestId.current });
+      const res = await postJson<{ item: Post; people: People }>(`/api/community/${slug}/posts`, { body, mediaIds: images.map((i) => i.id), alts: Object.fromEntries(images.map((i) => [i.id, i.alt])), categoryId: category ? Number(category) : null, requestId: requestId.current });
       onCreated(res.item, res.people);
       setValue(emptyMention());
       setImages([]);
@@ -122,9 +130,21 @@ export function PostComposer({
             {t.composer.count(value.text.length, LIMITS.postBody)}
           </span>
         </div>
-        <button type="submit" className="bb-btn bb-btn-primary" disabled={!canSubmit}>
-          {busy ? t.action.posting : t.action.post}
-        </button>
+        <div className="cm-composer__tools">
+          {categories.length ? (
+            <label className="cm-sr" htmlFor={`cat-${communityId}`}>Category</label>
+          ) : null}
+          {categories.length ? (
+            <select id={`cat-${communityId}`} className="cm-select" value={category} onChange={(e) => setCategory(e.target.value)}>
+              <option value="">No category</option>
+              {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+            </select>
+          ) : null}
+          {richHref ? <Link href={richHref} className="bb-btn bb-btn-outline cm-btn-sm">{t.rich.build}</Link> : null}
+          <button type="submit" className="bb-btn bb-btn-primary" disabled={!canSubmit}>
+            {busy ? t.action.posting : t.action.post}
+          </button>
+        </div>
       </div>
     </form>
   );

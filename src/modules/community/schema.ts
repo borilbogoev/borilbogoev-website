@@ -32,11 +32,29 @@ export const communities = pgTable(
     isDefault: boolean("is_default").notNull().default(false),
     regionId: text("region_id"), // reserved, unused in v1
     sortOrder: integer("sort_order").notNull().default(0),
+    defaultSort: text("default_sort").notNull().default("default"), // sort rule of the "All" feed: default | new | top
     createdBy: userRefKeep("created_by"),
     createdAt: at("created_at").notNull().defaultNow(),
     updatedAt: at("updated_at").notNull().defaultNow(),
   },
   (t) => [uniqueIndex("community_communities_slug_idx").on(t.slug), uniqueIndex("community_communities_default_idx").on(t.isDefault).where(sql`is_default`)],
+);
+
+// Categories inside a community. Published ones are tabs in its feed; `sortRule` is the default order of that tab.
+export const communityCategories = pgTable(
+  "community_categories",
+  {
+    id: serial("id").primaryKey(),
+    communityId: integer("community_id").notNull().references(() => communities.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    slug: text("slug").notNull(),
+    status: text("status").notNull().default("draft"), // draft | published
+    sortRule: text("sort_rule").notNull().default("default"), // default | new | top
+    position: integer("position").notNull().default(0),
+    createdAt: at("created_at").notNull().defaultNow(),
+    updatedAt: at("updated_at").notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex("community_categories_slug_idx").on(t.communityId, t.slug), index("community_categories_pos_idx").on(t.communityId, t.position)],
 );
 
 export const communityMembers = pgTable(
@@ -64,7 +82,14 @@ export const communityPosts = pgTable(
     body: text("body").notNull().default(""), // plain text with mention tokens, max 5000
     commentCount: integer("comment_count").notNull().default(0), // published comments only
     likeCount: integer("like_count").notNull().default(0),
-    status: text("status").notNull().default("published"), // published | hidden_by_mod | deleted
+    kind: text("kind").notNull().default("post"), // post | rich (a post built from blocks, SuperAdmin only)
+    title: text("title"), // rich posts
+    blocks: jsonb("blocks").notNull().default(sql`'[]'::jsonb`), // rich posts: [{ type, settings }]
+    categoryId: integer("category_id").references(() => communityCategories.id, { onDelete: "set null" }),
+    pinnedAt: at("pinned_at"),
+    commentsLocked: boolean("comments_locked").notNull().default(false),
+    lastActivityAt: at("last_activity_at").notNull().defaultNow(), // newest of: the post, its latest comment
+    status: text("status").notNull().default("published"), // published | hidden_by_mod | deleted | draft (rich posts only)
     requestId: text("request_id"), // client-generated, makes a double submit harmless
     editedAt: at("edited_at"),
     deletedAt: at("deleted_at"),
@@ -74,6 +99,10 @@ export const communityPosts = pgTable(
   (t) => [
     index("community_posts_feed_idx").on(t.communityId, t.createdAt.desc(), t.id.desc()).where(sql`status = 'published'`),
     index("community_posts_author_idx").on(t.authorId, t.createdAt.desc()),
+    index("community_posts_category_idx").on(t.communityId, t.categoryId, t.createdAt.desc(), t.id.desc()).where(sql`status = 'published'`),
+    index("community_posts_activity_idx").on(t.communityId, t.lastActivityAt.desc(), t.id.desc()).where(sql`status = 'published'`),
+    index("community_posts_top_idx").on(t.communityId, t.likeCount.desc(), t.createdAt.desc(), t.id.desc()).where(sql`status = 'published'`),
+    index("community_posts_pinned_idx").on(t.communityId, t.pinnedAt).where(sql`pinned_at is not null`),
     uniqueIndex("community_posts_request_idx").on(t.authorId, t.requestId).where(sql`request_id is not null`),
   ],
 );
@@ -117,6 +146,17 @@ export const communityComments = pgTable(
     index("community_comments_author_idx").on(t.authorId, t.createdAt.desc()),
     uniqueIndex("community_comments_request_idx").on(t.authorId, t.requestId).where(sql`request_id is not null`),
   ],
+);
+
+// Which posts a person has opened, for the "Unread" filter.
+export const communityPostReads = pgTable(
+  "community_post_reads",
+  {
+    userId: userRef("user_id").notNull(),
+    postId: integer("post_id").notNull().references(() => communityPosts.id, { onDelete: "cascade" }),
+    readAt: at("read_at").notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex("community_post_reads_pair_idx").on(t.userId, t.postId), index("community_post_reads_post_idx").on(t.postId)],
 );
 
 export const communityLikes = pgTable(

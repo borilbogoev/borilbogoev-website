@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { api, message, type People, type Post } from "../lib/client";
+import { api, message, type Category, type People, type Post } from "../lib/client";
 import { POLL } from "../lib/constants";
 import { usePolling } from "../hooks/use-polling";
 import { t } from "../strings";
@@ -21,6 +21,10 @@ export function Feed({
   initialPeople,
   initialNext,
   composer,
+  categories,
+  categoryId,
+  sort,
+  richHref,
 }: {
   slug: string;
   communityId: number;
@@ -29,6 +33,12 @@ export function Feed({
   initialPeople: People;
   initialNext: string | null;
   composer: ComposerConfig | null;
+  /** Every category the viewer may use (the SuperAdmin also gets drafts). */
+  categories: Category[];
+  categoryId: number | null;
+  sort: string;
+  /** SuperAdmin only: where the rich post builder opens. */
+  richHref: string;
 }) {
   const [items, setItems] = useState(initial);
   const [people, setPeople] = useState(initialPeople);
@@ -43,16 +53,16 @@ export function Feed({
 
   usePolling(
     async (signal) => {
-      const r = await api.feedUpdates(slug, newest.current, signal);
+      const r = await api.feedUpdates(slug, newest.current, categoryId, signal);
       setPending(r.newCount);
     },
-    { intervalMs: POLL.feed, key: slug },
+    { intervalMs: POLL.feed, key: `${slug}-${categoryId}` },
   );
 
   async function showNew() {
     setFetching(true);
     try {
-      const r = await api.feed(slug, { after: newest.current });
+      const r = await api.feed(slug, { after: newest.current, categoryId, sort });
       if (r.items.length) {
         newest.current = r.items.reduce((a, b) => (b.cursor > a ? b.cursor : a), newest.current);
         setItems((cur) => {
@@ -75,7 +85,7 @@ export function Feed({
     setLoadingMore(true);
     setError("");
     try {
-      const r = await api.feed(slug, { cursor: next });
+      const r = await api.feed(slug, { cursor: next, categoryId, sort });
       setItems((cur) => {
         const have = new Set(cur.map((p) => p.id));
         return [...cur, ...r.items.filter((p) => !have.has(p.id))];
@@ -103,6 +113,9 @@ export function Feed({
         <PostComposer
           communityId={communityId}
           slug={slug}
+          categories={categories.filter((c) => c.status === "published")}
+          defaultCategoryId={categoryId}
+          richHref={richHref}
           maxImages={composer.maxImages}
           maxImageMb={composer.maxImageMb}
           onCreated={(post, p) => {
@@ -119,7 +132,7 @@ export function Feed({
       ) : (
         <div className="cm-stack">
           {items.map((p) => (
-            <PostCard key={p.id} post={p} people={people} slug={slug} communityId={communityId} meId={meId} onRemoved={(id) => setItems((cur) => cur.filter((x) => x.id !== id))} />
+            <PostCard key={p.id} post={p} people={people} slug={slug} communityId={communityId} meId={meId} categories={categories} onRemoved={(id) => setItems((cur) => cur.filter((x) => x.id !== id))} />
           ))}
         </div>
       )}

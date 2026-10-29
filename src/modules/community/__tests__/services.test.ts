@@ -19,6 +19,8 @@ import * as admin from "../server/admin";
 import * as profile from "../server/profile";
 import * as coms from "../server/communities";
 import { setLike } from "../server/likes";
+import * as cats from "../server/categories";
+import * as rich from "../server/rich";
 import { clearSettingsCache } from "../server/settings";
 
 const ids = { A: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa", B: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb", M: "cccccccc-cccc-4ccc-8ccc-cccccccccccc", S: "dddddddd-dddd-4ddd-8ddd-dddddddddddd", X: "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee" };
@@ -51,7 +53,7 @@ test("seed: one default community, settings row", async () => {
   const [d] = await db().select().from(schema.communities).where(eq(schema.communities.isDefault, true));
   assert.equal(d.slug, "community");
   assert.equal((await db().select().from(schema.communitySettings)).length, 1);
-  await assert.rejects(() => db().insert(schema.communities).values({ slug: "dup-default", name: "x", isDefault: true }));
+  await assert.rejects(async () => db().insert(schema.communities).values({ slug: "dup-default", name: "x", isDefault: true }));
 });
 
 test("post, idempotent request id, feed, edit, delete", async () => {
@@ -63,7 +65,7 @@ test("post, idempotent request id, feed, edit, delete", async () => {
   const feed = await posts.listFeed(await scope("B"), {});
   assert.equal(feed.items.length, 1);
   assert.equal(feed.items[0].canEdit, false);
-  await assert.rejects(() => posts.createPost(s, { body: "   " }), /Write something/);
+  await assert.rejects(async () => posts.createPost(s, { body: "   " }), /Write something/);
   const edited = await posts.editPost(s, (await posts.getPostRow(a.item.id))!, "Edited");
   assert.equal(edited.item.body, "Edited");
   assert.ok(edited.item.editedAt);
@@ -122,7 +124,7 @@ test("reports: once per target; moderator hides; author still sees it; ban block
   const sa = await scope("A");
   const p = (await posts.createPost(sa, { body: "Report me" })).item;
   await safety.createReport(V.B, { targetType: "post", targetId: p.id, reason: "spam" });
-  await assert.rejects(() => safety.createReport(V.B, { targetType: "post", targetId: p.id, reason: "spam" }), /already reported/);
+  await assert.rejects(async () => safety.createReport(V.B, { targetType: "post", targetId: p.id, reason: "spam" }), /already reported/);
   const [rep] = await admin.listReports(V.M, { status: "open" });
   await admin.resolveReport(V.M, rep.id, "hide", "");
   assert.equal((await posts.listFeed(await scope("B"), {})).items.some((i) => i.id === p.id), false);
@@ -134,7 +136,7 @@ test("reports: once per target; moderator hides; author still sees it; ban block
   await admin.unbanMember(V.M, 1, ids.B);
   // moderator cannot act outside their community
   const other = await admin.createCommunity(V.S, { slug: "third", name: "Third" });
-  await assert.rejects(() => admin.listMembers(V.M, other.id, {}), /can't do that/);
+  await assert.rejects(async () => admin.listMembers(V.M, other.id, {}), /can't do that/);
 });
 
 test("pause and archive block writes; default swap keeps one default", async () => {
@@ -157,10 +159,10 @@ test("rate limit returns 429 with retryAfter; superadmin exempt", async () => {
   clearSettingsCache();
   const sx = await ctx.scopeBySlug(V.X, "community");
   await posts.createPost(sx, { body: "one" });
-  await assert.rejects(() => posts.createPost(sx, { body: "two" }), (e: { status?: number; extra?: { retryAfter?: number } }) => e.status === 429 && (e.extra?.retryAfter ?? 0) > 0);
+  await assert.rejects(async () => posts.createPost(sx, { body: "two" }), (e: { status?: number; extra?: { retryAfter?: number } }) => e.status === 429 && (e.extra?.retryAfter ?? 0) > 0);
   const ss = await scope("S");
   await posts.createPost(ss, { body: "admin one" });
-  await assert.doesNotReject(() => posts.createPost(ss, { body: "admin two" }));
+  await assert.doesNotReject(async () => posts.createPost(ss, { body: "admin two" }));
   await admin.updateSettings(V.S, { ratePostPerHour: 10 });
   clearSettingsCache();
 });
@@ -170,7 +172,7 @@ test("chat: one conversation under a race, privacy, unread, blocks, mentions", a
   assert.equal(c1, c2);
   assert.equal((await db().select().from(schema.communityConversations)).length, 1);
   assert.equal((await db().select().from(schema.communityParticipants)).length, 2);
-  await assert.rejects(() => chat.openConversation(V.A, ids.A), /yourself/);
+  await assert.rejects(async () => chat.openConversation(V.A, ids.A), /yourself/);
   await chat.sendMessage(V.A, c1, { body: `hello ${tok("B")} and ${tok("S")}`, requestId: "m1" });
   assert.equal((await chat.sendMessage(V.A, c1, { body: "x", requestId: "m1" })).duplicate, true);
   assert.equal(await chat.unreadConversations(V.B), 1);
@@ -179,23 +181,23 @@ test("chat: one conversation under a race, privacy, unread, blocks, mentions", a
   await chat.markConversationRead(V.B, c1);
   assert.equal(await chat.unreadConversations(V.B), 0);
   // nobody else can read it, not even the SuperAdmin
-  await assert.rejects(() => chat.listMessages(V.X, c1, {}), /Not found/);
-  await assert.rejects(() => chat.listMessages(V.S, c1, {}), /Not found/);
-  await assert.rejects(() => chat.sendMessage(V.X, c1, { body: "hi" }), /Not found/);
+  await assert.rejects(async () => chat.listMessages(V.X, c1, {}), /Not found/);
+  await assert.rejects(async () => chat.listMessages(V.S, c1, {}), /Not found/);
+  await assert.rejects(async () => chat.sendMessage(V.X, c1, { body: "hi" }), /Not found/);
   // message mentions exist but produce no notifications
   assert.ok((await db().select().from(schema.communityMentions).where(eq(schema.communityMentions.sourceType, "message"))).length >= 1);
   assert.equal(await notes.unreadCount(ids.B), (await db().select().from(schema.communityNotifications).where(eq(schema.communityNotifications.userId, ids.B))).filter((n) => !n.readAt).length);
   // reply, then block
   await chat.sendMessage(V.B, c1, { body: "hi back" });
   await safety.blockUser(V.B, ids.A);
-  await assert.rejects(() => chat.sendMessage(V.A, c1, { body: "still there?" }), /can't message this user/);
-  await assert.rejects(() => chat.openConversation(V.A, ids.B), /can't message this user/);
+  await assert.rejects(async () => chat.sendMessage(V.A, c1, { body: "still there?" }), /can't message this user/);
+  await assert.rejects(async () => chat.openConversation(V.A, ids.B), /can't message this user/);
   assert.equal((await chat.listMessages(V.B, c1, {})).items.length, 2, "the blocker keeps the history");
   await safety.unblockUser(V.B, ids.A);
   // report a message: snapshot copied, only the recipient may report
   const msgs = (await chat.listMessages(V.B, c1, {})).items;
   const fromA = msgs.find((m) => m.senderId === ids.A)!;
-  await assert.rejects(() => safety.createReport(V.X, { targetType: "message", targetId: fromA.id, reason: "abuse" }), /Not found/);
+  await assert.rejects(async () => safety.createReport(V.X, { targetType: "message", targetId: fromA.id, reason: "abuse" }), /Not found/);
   await safety.createReport(V.B, { targetType: "message", targetId: fromA.id, reason: "abuse" });
   const [rep] = (await admin.listReports(V.S, { type: "message" }));
   assert.ok(rep.snapshot.includes("hello"));
@@ -204,7 +206,7 @@ test("chat: one conversation under a race, privacy, unread, blocks, mentions", a
   const sus = await ctx.viewerFor(user("A"));
   assert.equal(sus.actor.suspended, true);
   await assert.rejects(async () => posts.createPost(await ctx.scopeBySlug(sus, "community"), { body: "no" }), /read only/);
-  await assert.rejects(() => chat.sendMessage(sus, c1, { body: "no" }), /can't message this user/);
+  await assert.rejects(async () => chat.sendMessage(sus, c1, { body: "no" }), /can't message this user/);
   V.A = sus;
   const [open] = await db().select().from(schema.communitySuspensions);
   await safety.liftSuspension(open.id);
@@ -220,7 +222,7 @@ test("profile: visibility, hidden and deleted content", async () => {
   assert.ok(own.items.some((i) => i.snippet === "secret post"));
   const seen = await profile.profilePosts({ viewer: V.B, targetId: ids.A });
   assert.ok(!seen.items.some((i) => i.snippet === "secret post"), "no leak to a non-member");
-  await assert.rejects(() => ctx.scopeBySlug(V.B, "secret"), /Not found/);
+  await assert.rejects(async () => ctx.scopeBySlug(V.B, "secret"), /Not found/);
   assert.ok(!(await coms.listCommunities(V.B)).some((c) => c.slug === "secret"));
   assert.ok((await profile.profilePosts({ viewer: V.S, targetId: ids.A })).items.some((i) => i.snippet === "secret post"));
   const mentions = await profile.profileMentions({ viewer: V.A, targetId: ids.A });
@@ -264,10 +266,136 @@ test("likes: once per person, counters, flags, rules", async () => {
   assert.equal((await comments.listComments(await scope("A"), p.id, null)).items.find((i) => i.id === c.id)?.liked, true);
   await admin.updateSettings(V.S, { postingPaused: true });
   clearSettingsCache();
-  await assert.doesNotReject(() => setLike(V.B, "post", p.id, true), "liking works while posting is paused");
+  await assert.doesNotReject(async () => setLike(V.B, "post", p.id, true), "liking works while posting is paused");
   await admin.updateSettings(V.S, { postingPaused: false });
   clearSettingsCache();
-  await assert.rejects(() => setLike(V.A, "post", 99999, true), /Not found/);
+  await assert.rejects(async () => setLike(V.A, "post", 99999, true), /Not found/);
   await posts.setPostStatus(await scope("A"), (await posts.getPostRow(p.id))!, "deleted");
-  await assert.rejects(() => setLike(V.B, "post", p.id, true), /Not found/);
+  await assert.rejects(async () => setLike(V.B, "post", p.id, true), /Not found/);
+});
+
+test("categories, rich posts, pin, sort rules, unread, comments off", async () => {
+  const comm = await admin.createCommunity(V.S, { slug: "rich-room", name: "Rich room" });
+  await admin.addMember(V.S, comm.id, ids.A);
+  await admin.addMember(V.S, comm.id, ids.B);
+  const sS = await ctx.scopeById(V.S, comm.id);
+  const sA = await ctx.scopeById(V.A, comm.id);
+  const sB = await ctx.scopeById(V.B, comm.id);
+
+  // categories: only the SuperAdmin manages them; drafts are not usable by members
+  await assert.rejects(async () => cats.createCategory(V.A, comm.id, { name: "Nope" }), /can't do that/);
+  const news = await cats.createCategory(V.S, comm.id, { name: "News", status: "published" });
+  const secret = await cats.createCategory(V.S, comm.id, { name: "Hidden tab", status: "draft" });
+  assert.deepEqual((await cats.listCategories(comm.id)).map((c) => c.name), ["News"]);
+  assert.equal((await cats.listCategories(comm.id, { all: true })).length, 2);
+  await assert.rejects(async () => posts.createPost(sA, { body: "x", categoryId: secret.id }), /not available/);
+
+  const p1 = (await posts.createPost(sA, { body: "first, in news", categoryId: news.id })).item;
+  const p2 = (await posts.createPost(sB, { body: "second, no category" })).item;
+  const p3 = (await posts.createPost(sA, { body: "third, in news" })).item;
+  assert.equal((await posts.listFeed(sB, { sort: "new", categoryId: news.id })).items.length, 1, "category tab shows only its posts");
+  assert.equal((await posts.listFeed(sB, { sort: "new" })).items.length, 3, "All shows everything");
+
+  // sorting
+  await setLike(V.B, "post", p1.id, true);
+  await setLike(V.S, "post", p1.id, true);
+  assert.equal((await posts.listFeed(sS, { sort: "top" })).items[0].id, p1.id, "top: most liked first");
+  assert.equal((await posts.listFeed(sS, { sort: "new" })).items[0].id, p3.id, "new: newest first");
+  await comments.createComment(sB, p2.id, { body: "bump" });
+  assert.equal((await posts.listFeed(sS, { sort: "default" })).items[0].id, p2.id, "default: latest activity first");
+  // top pagination does not repeat or skip
+  const all = new Set<number>();
+  let cursor: string | null = null;
+  for (let i = 0; i < 5; i++) {
+    const page = await posts.listFeed(sS, { sort: "top", cursor });
+    page.items.forEach((x) => all.add(x.id));
+    cursor = page.nextCursor;
+    if (!cursor) break;
+  }
+  assert.ok(all.has(p1.id) && all.has(p2.id) && all.has(p3.id));
+
+  // pin: SuperAdmin only, shown first under every sort, not repeated further down
+  await assert.rejects(async () => posts.updatePostMeta(sA, (await posts.getPostRow(p1.id))!, { pinned: true }), /can't do that/);
+  await posts.updatePostMeta(sS, (await posts.getPostRow(p2.id))!, { pinned: true });
+  for (const sort of ["new", "top", "default"] as const) {
+    const f = await posts.listFeed(sB, { sort });
+    assert.equal(f.items[0].id, p2.id, `pinned first under ${sort}`);
+    assert.equal(f.items.filter((x) => x.id === p2.id).length, 1);
+  }
+  assert.equal((await posts.listFeed(sB, { sort: "new", categoryId: news.id })).items.some((x) => x.id === p2.id), false, "pinned post stays in its own category");
+  await posts.updatePostMeta(sS, (await posts.getPostRow(p2.id))!, { pinned: false });
+  assert.equal((await posts.listFeed(sB, { sort: "new" })).items[0].id, p3.id);
+
+  // unread
+  assert.equal((await posts.listFeed(sB, { sort: "unread" })).items.some((x) => x.id === p2.id), false, "own posts are never unread");
+  const unreadBefore = (await posts.listFeed(sB, { sort: "unread" })).items.map((x) => x.id);
+  assert.ok(unreadBefore.includes(p1.id) && unreadBefore.includes(p3.id));
+  await posts.markPostRead(ids.B, p1.id);
+  assert.equal((await posts.listFeed(sB, { sort: "unread" })).items.some((x) => x.id === p1.id), false);
+
+  // change category: the author or the SuperAdmin, not someone else
+  await assert.rejects(async () => posts.updatePostMeta(sB, (await posts.getPostRow(p1.id))!, { categoryId: null }), /can't do that/);
+  await posts.updatePostMeta(sA, (await posts.getPostRow(p1.id))!, { categoryId: null });
+  assert.equal((await posts.getPostRow(p1.id))!.categoryId, null);
+
+  // comments off
+  await assert.rejects(async () => posts.updatePostMeta(sA, (await posts.getPostRow(p3.id))!, { commentsLocked: true }), /can't do that/);
+  await posts.updatePostMeta(sS, (await posts.getPostRow(p3.id))!, { commentsLocked: true });
+  await assert.rejects(async () => comments.createComment(sB, p3.id, { body: "blocked" }), /turned off/);
+  await posts.updatePostMeta(sS, (await posts.getPostRow(p3.id))!, { commentsLocked: false });
+  await assert.doesNotReject(async () => comments.createComment(sB, p3.id, { body: "ok again" }));
+
+  // the SuperAdmin may edit a member's text post; a member may not edit someone else's
+  const edited = await posts.editPost(sS, (await posts.getPostRow(p2.id))!, "tidied by the admin");
+  assert.equal(edited.item.body, "tidied by the admin");
+  await assert.rejects(async () => posts.editPost(sB, (await posts.getPostRow(p3.id))!, "hijack"), /can't do that/);
+
+  // rich posts
+  await assert.rejects(async () => rich.createRich(V.A, { communityId: comm.id }), /can't do that/);
+  const rid = await rich.createRich(V.S, { communityId: comm.id, categoryId: news.id, title: "Launch day" });
+  assert.equal((await posts.listFeed(sB, { sort: "new" })).items.some((x) => x.id === rid), false, "drafts are not in the feed");
+  assert.equal(await posts.getPost(sB, rid), null, "members cannot open a draft");
+  await assert.rejects(async () => rich.saveRich(V.S, rid, { status: "published" }), /at least one block/);
+  const saved = await rich.saveRich(V.S, rid, {
+    excerpt: "Everything you need.",
+    blocks: [
+      { type: "hero_image", settings: { headline: "Welcome", image: { id: 1, url: "/api/forms/media/images/x.webp" } } },
+      { type: "form", settings: { form_id: 1 } },
+      { type: "countdown", settings: { target: "2030-01-01T10:00:00Z" } },
+      { type: "not_a_block", settings: {} },
+    ],
+  });
+  assert.deepEqual(saved.blocks.map((b) => b.type), ["hero_image", "form", "countdown"], "unknown blocks are dropped");
+  await rich.saveRich(V.S, rid, { status: "published" });
+  const feed = (await posts.listFeed(sB, { sort: "new" })).items;
+  const card = feed.find((x) => x.id === rid)!;
+  assert.equal(card.kind, "rich");
+  assert.equal(card.title, "Launch day");
+  assert.equal(card.cover, "/api/forms/media/images/x.webp");
+  assert.deepEqual(card.highlights.map((h) => h.label), ["Form", "Countdown"]);
+  assert.equal(card.blocks, undefined, "blocks are not sent with the feed");
+  assert.equal(card.canEdit, false);
+  assert.equal(feed[0].id, rid, "newly published is newest");
+  const detail = await posts.getPost(sB, rid);
+  assert.equal(detail?.item.blocks?.length, 3);
+  // it behaves as a post: like, comment, pin, lock, hide
+  assert.equal((await setLike(V.B, "post", rid, true)).likeCount, 1);
+  assert.equal((await comments.createComment(sB, rid, { body: "great" })).item.postId, rid);
+  await posts.updatePostMeta(sS, (await posts.getPostRow(rid))!, { pinned: true });
+  assert.equal((await posts.listFeed(sB, { sort: "top" })).items[0].id, rid);
+  await assert.rejects(async () => posts.editPost(sS, (await posts.getPostRow(rid))!, "x"), /builder/);
+  assert.equal((await rich.listRich(V.S, {})).some((r) => r.id === rid && r.pinned && r.likes === 1), true);
+  await posts.setPostStatus(sS, (await posts.getPostRow(rid))!, "hidden_by_mod");
+  assert.equal((await posts.listFeed(sB, { sort: "new" })).items.some((x) => x.id === rid), false);
+  assert.equal((await posts.getPostRow(rid))!.pinnedAt, null, "hiding unpins");
+
+  // community sort rule and category sort rule apply when nothing is picked
+  await admin.updateCommunity(V.S, comm.id, { defaultSort: "top" });
+  assert.equal(await posts.effectiveSort(await ctx.scopeById(V.B, comm.id), null, null), "top");
+  await cats.updateCategory(V.S, news.id, { sortRule: "new" });
+  assert.equal(await posts.effectiveSort(await ctx.scopeById(V.B, comm.id), news.id, null), "new");
+  assert.equal(await posts.effectiveSort(await ctx.scopeById(V.B, comm.id), news.id, "unread"), "unread");
+  // deleting a category keeps its posts
+  await cats.deleteCategory(V.S, news.id);
+  assert.ok((await posts.getPostRow(p3.id)) && (await posts.getPostRow(p3.id))!.categoryId === null);
 });

@@ -17,7 +17,7 @@ export default async function EditCommunity({ params }: { params: Promise<{ id: 
   return (
     <>
       <AdminHead title={c.name} actions={<Link className="bbfa-btn bbfa-btn--ghost" href={`/admin/communities/${c.id}/members`}>Members</Link>} />
-      <CommunityForm initial={{ id: c.id, slug: c.slug, name: c.name, description: c.description ?? "", iconUrl: c.iconUrl ?? "", coverUrl: c.coverUrl ?? "", visibility: c.visibility, joinMode: c.joinMode, status: c.status }} />
+      <CommunityForm initial={{ id: c.id, slug: c.slug, name: c.name, description: c.description ?? "", iconUrl: c.iconUrl ?? "", coverUrl: c.coverUrl ?? "", visibility: c.visibility, joinMode: c.joinMode, status: c.status, defaultSort: c.defaultSort }} />
     </>
   );
 }
