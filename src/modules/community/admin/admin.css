@@ -19,3 +19,5 @@
 .cm-adm-results button { display: block; width: 100%; text-align: left; border: 0; background: none; padding: 10px 14px; font: inherit; cursor: pointer; }
 .cm-adm-results button:hover, .cm-adm-results button:focus-visible { background: var(--bbfa-soft, #fbeded); outline: 0; }
 .cm-adm-wrap { overflow-x: auto; }
+.cm-adm-item { display: flex; gap: 12px; align-items: flex-start; }
+.cm-adm-thumb { flex: none; width: 56px; height: 56px; object-fit: cover; border-radius: 8px; background: var(--bbfa-bg, #f7f7f7); }

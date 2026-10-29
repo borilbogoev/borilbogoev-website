@@ -28,6 +28,7 @@ export type ProfileItem = {
   snippet: string;
   commentCount?: number;
   imageCount?: number;
+  thumb?: string; // first image of a post
   by?: string; // mention: who mentioned
   href: string;
   cursor: string;
@@ -60,6 +61,7 @@ export async function profilePosts(q: ProfileQuery): Promise<ProfilePage> {
     snippet: snippet(r.post.body, 200),
     commentCount: r.post.commentCount,
     imageCount: media.get(r.post.id)?.length ?? 0,
+    thumb: media.get(r.post.id)?.[0]?.url,
     href: `/community/${r.slug}/post/${r.post.id}`,
     cursor: encodeCursor(r.post),
   }));
