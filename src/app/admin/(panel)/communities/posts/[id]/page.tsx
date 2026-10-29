@@ -25,7 +25,7 @@ export default async function RichBuilderPage({ params }: { params: Promise<{ id
   return (
     <RichPostBuilder
       postId={post.id}
-      initial={{ title: post.title, excerpt: post.excerpt, status: post.status, communityId: post.communityId, categoryId: post.categoryId, blocks: post.blocks as { type: string; settings: Record<string, never> }[] }}
+      initial={{ title: post.title, excerpt: post.excerpt, status: post.status, theme: post.theme, featured: post.featured as { image?: { id: number; url: string }; video?: string }, communityId: post.communityId, categoryId: post.categoryId, blocks: post.blocks as { type: string; settings: Record<string, never> }[] }}
       communities={communities.map((c) => ({ id: c.id, name: c.name, slug: c.slug }))}
       categories={categories.map((c) => ({ id: c.id, communityId: c.communityId, name: c.name, status: c.status }))}
       forms={forms}

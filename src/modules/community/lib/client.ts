@@ -43,7 +43,7 @@ export type Highlight = { label: string; icon: string };
 export type Category = { id: number; communityId: number; name: string; slug: string; status: "draft" | "published"; sortRule: "default" | "new" | "top"; position: number };
 export type Post = {
   id: number; communityId: number; kind: "post" | "rich"; title: string; author: Person; body: string; createdAt: string; editedAt: string | null; commentCount: number; likeCount: number; liked: boolean;
-  status: "published" | "hidden_by_mod"; media: Media[]; categoryId: number | null; pinned: boolean; commentsLocked: boolean; cover: string; highlights: Highlight[];
+  status: "published" | "hidden_by_mod"; media: Media[]; categoryId: number | null; pinned: boolean; commentsLocked: boolean; cover: string; coverVideo: boolean; theme: "ink" | "paper" | "signal" | "tint" | "frame"; highlights: Highlight[];
   cursor: string; sortCursor: string; mine: boolean; canEdit: boolean; canDelete: boolean; canModerate: boolean; canPin: boolean; canLock: boolean; canCategory: boolean; canBan: boolean; builderHref: string;
 };
 export type Comment = {

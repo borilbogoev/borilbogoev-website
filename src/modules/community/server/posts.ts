@@ -2,7 +2,7 @@ import { and, asc, desc, eq, gt, inArray, isNull, lt, ne, or, sql, type SQL } fr
 import { schema } from "@/db";
 import { LIMITS, SORT_RULES, type Sort, type SortRule } from "../lib/constants";
 import { decodeCursor, encodeCursor } from "../lib/cursor";
-import { coverOf, highlightsOf, type Highlight, type RichBlock } from "../lib/rich";
+import { highlightsOf, snippetCover, type Featured, type Highlight, type RichBlock, type Theme, isTheme } from "../lib/rich";
 import { cleanBody } from "../lib/text";
 import { db, forbidden, invalid, isUniqueViolation, notFound, run, intArray, unwrap } from "./core";
 import { getCategory } from "./categories";
@@ -37,6 +37,8 @@ export type PostDTO = {
   pinned: boolean;
   commentsLocked: boolean;
   cover: string;
+  coverVideo: boolean;
+  theme: Theme;
   highlights: Highlight[];
   /** Rich posts, post page only: the blocks to render. */
   blocks?: RichBlock[];
@@ -106,6 +108,7 @@ async function toDTOs(scope: Scope, rows: Joined[], sort: Sort = "new", withBloc
   const [media, people] = await Promise.all([mediaFor(rows.map((r) => r.post.id)), loadPeopleFor(rows.map((r) => r.author.id), rows.map((r) => r.post.body))]);
   const items = rows.map(({ post, liked }): PostDTO => {
     const blocks = asBlocks(post.blocks);
+    const cover = post.kind === "rich" ? snippetCover(blocks, post.featured as Featured) : { url: "", video: false };
     return {
       id: post.id,
       communityId: post.communityId,
@@ -123,7 +126,9 @@ async function toDTOs(scope: Scope, rows: Joined[], sort: Sort = "new", withBloc
       categoryId: post.categoryId,
       pinned: !!post.pinnedAt,
       commentsLocked: post.commentsLocked,
-      cover: post.kind === "rich" ? coverOf(blocks) : "",
+      cover: cover.url,
+      coverVideo: cover.video,
+      theme: isTheme(post.theme) ? post.theme : "ink",
       highlights: post.kind === "rich" ? highlightsOf(blocks) : [],
       ...(withBlocks && post.kind === "rich" ? { blocks } : {}),
       cursor: encodeCursor(post),

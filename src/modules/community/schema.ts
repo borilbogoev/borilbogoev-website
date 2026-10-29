@@ -85,6 +85,8 @@ export const communityPosts = pgTable(
     kind: text("kind").notNull().default("post"), // post | rich (a post built from blocks, SuperAdmin only)
     title: text("title"), // rich posts
     blocks: jsonb("blocks").notNull().default(sql`'[]'::jsonb`), // rich posts: [{ type, settings }]
+    theme: text("theme").notNull().default("ink"), // rich posts: look of the feed snippet (ink | paper | signal | tint | frame)
+    featured: jsonb("featured").notNull().default(sql`'{}'::jsonb`), // rich posts: { image?: {...}, video?: url } shown in the snippet
     categoryId: integer("category_id").references(() => communityCategories.id, { onDelete: "set null" }),
     pinnedAt: at("pinned_at"),
     commentsLocked: boolean("comments_locked").notNull().default(false),

@@ -4,7 +4,10 @@ import { and, desc, eq, ne } from "drizzle-orm";
 import { schema } from "@/db";
 import { isLandingBlockType, sanitizeLandingBlock } from "@/modules/landing/lib/blocks";
 import { MAX_RICH_BLOCKS } from "../lib/constants";
-import { coverOf, highlightsOf, type Highlight, type RichBlock } from "../lib/rich";
+import { highlightsOf, isTheme, snippetCover, type Featured, type Highlight, type RichBlock, type Theme } from "../lib/rich";
+import { sanitizeFor } from "@/modules/forms/lib/blocks";
+import { cleanUrl } from "@/modules/forms/lib/sanitize";
+import { parseVideo } from "@/modules/landing/lib/media";
 import { cleanBody } from "../lib/text";
 import { db, invalid, notFound, unwrap } from "./core";
 import { log } from "./audit";
@@ -26,7 +29,18 @@ export function sanitizeBlocks(input: unknown): RichBlock[] {
   return out;
 }
 
-export type RichInput = { communityId?: unknown; categoryId?: unknown; title?: unknown; excerpt?: unknown; blocks?: unknown; status?: unknown };
+export type RichInput = { theme?: unknown; featured?: unknown; communityId?: unknown; categoryId?: unknown; title?: unknown; excerpt?: unknown; blocks?: unknown; status?: unknown };
+
+/** The featured picture and video link of the snippet, cleaned. */
+export function sanitizeFeatured(input: unknown): Featured {
+  const raw = (input ?? {}) as { image?: unknown; video?: unknown };
+  const out: Featured = {};
+  const img = sanitizeFor([{ key: "image", type: "image", label: "", default: { id: 0, url: "" } }], { image: raw.image }).image as Featured["image"];
+  if (img?.url) out.image = img;
+  const v = typeof raw.video === "string" ? cleanUrl(raw.video) : "";
+  if (v && parseVideo(v)) out.video = v;
+  return out;
+}
 
 const title140 = (v: unknown) => (typeof v === "string" ? v.replace(/\s+/g, " ").trim().slice(0, 140) : "");
 
@@ -73,13 +87,15 @@ export type RichDTO = {
   status: string;
   pinned: boolean;
   commentsLocked: boolean;
+  theme: Theme;
+  featured: Featured;
 };
 
 export async function getRich(viewer: Viewer, id: number): Promise<RichDTO> {
   unwrap(canBuildRich(viewer.actor));
   const [p] = await db().select().from(P).where(and(eq(P.id, id), eq(P.kind, "rich"), ne(P.status, "deleted"))).limit(1);
   if (!p) throw notFound();
-  return { id: p.id, communityId: p.communityId, categoryId: p.categoryId, title: p.title ?? "", excerpt: p.body, blocks: (Array.isArray(p.blocks) ? p.blocks : []) as RichBlock[], status: p.status, pinned: !!p.pinnedAt, commentsLocked: p.commentsLocked };
+  return { id: p.id, communityId: p.communityId, categoryId: p.categoryId, title: p.title ?? "", excerpt: p.body, blocks: (Array.isArray(p.blocks) ? p.blocks : []) as RichBlock[], status: p.status, pinned: !!p.pinnedAt, commentsLocked: p.commentsLocked, theme: isTheme(p.theme) ? p.theme : "ink", featured: (p.featured ?? {}) as Featured };
 }
 
 /** Save from the builder. Publishing needs a title and at least one block; the first publish sets the date the feed sorts by. */
@@ -98,6 +114,8 @@ export async function saveRich(viewer: Viewer, id: number, input: RichInput): Pr
   }
   const now = new Date();
   const set: Partial<typeof P.$inferInsert> = { title: title || "Untitled post", body: excerpt, blocks, communityId, categoryId, updatedAt: now };
+  if (input.theme !== undefined && isTheme(input.theme)) set.theme = input.theme;
+  if (input.featured !== undefined) set.featured = sanitizeFeatured(input.featured);
   if (wantStatus !== cur.status && (wantStatus === "published" || wantStatus === "draft")) {
     set.status = wantStatus;
     if (cur.status === "draft" && wantStatus === "published") {
@@ -125,6 +143,8 @@ export type RichListRow = {
   likes: number;
   comments: number;
   cover: string;
+  coverVideo: boolean;
+  theme: Theme;
   highlights: Highlight[];
   blocks: number;
   updatedAt: string;
@@ -155,7 +175,9 @@ export async function listRich(viewer: Viewer, f: { communityId?: number | null;
       categoryName: kname ?? "",
       likes: p.likeCount,
       comments: p.commentCount,
-      cover: coverOf(blocks),
+      cover: snippetCover(blocks, p.featured as Featured).url,
+      coverVideo: snippetCover(blocks, p.featured as Featured).video,
+      theme: isTheme(p.theme) ? p.theme : "ink",
       highlights: highlightsOf(blocks, 4),
       blocks: blocks.length,
       updatedAt: p.updatedAt.toISOString(),
