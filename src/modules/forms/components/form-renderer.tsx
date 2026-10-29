@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type FormEvent, type KeyboardEvent, type ReactNode } from "react";
+import { SessionCard } from "@/components/session-card";
 import { isInput, logicVisible, type Block, type Settings } from "../lib/blocks";
 import { renderMarkdown } from "../lib/markdown";
 import type { PublicForm } from "../lib/public-types";
@@ -477,6 +478,12 @@ export function FormRenderer({ form, onSubmitted }: Props) {
           </figure>
         );
       }
+      case "session":
+        return (
+          <div key={b.id} className="bbf-block bbf-block--session" hidden={!visible.has(b.id)}>
+            <SessionCard data={s} />
+          </div>
+        );
       case "divider": {
         const sp = Number(s.spacing);
         if (s.style === "dots") {

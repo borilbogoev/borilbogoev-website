@@ -10,6 +10,7 @@ export type BlockType =
   | "heading"
   | "text"
   | "image"
+  | "session"
   | "short_text"
   | "long_text"
   | "email"
@@ -144,6 +145,24 @@ function q(question: string, extra: Control[] = []): Control[] {
   ];
 }
 
+/** The Session block (a dated live event card), defined once here and reused by Landing Pages, Presentations and School. The card is src/components/session-card.tsx. */
+export const SESSION_CONTROLS: Control[] = [
+  { key: "eyebrow", type: "text", label: "Eyebrow (small label above)", default: "Next Session" },
+  { key: "title", type: "text", label: "Title", default: "Title of the Session" },
+  { key: "subtitle", type: "text", label: "Subtitle", default: "" },
+  { key: "text", type: "textarea", label: "Text", default: "" },
+  { key: "bullets", type: "items", label: "Bullet points", default: [], fields: [{ key: "text", type: "text", label: "Bullet", default: "" }], item_label: "text", max: 6 },
+  { key: "date", type: "text", label: "Date", default: "", help: "Year-month-day, e.g. 2026-11-12. Leave empty for a card without the date frame." },
+  { key: "time", type: "text", label: "Start time (24 hours)", default: "", help: "e.g. 13:00" },
+  { key: "offset", type: "text", label: "UTC offset", default: "+04:00", help: "Dubai is +04:00, Sofia +02:00 (+03:00 in summer), UTC +00:00." },
+  { key: "zone", type: "text", label: "Time zone shown on the card", default: "Gulf Standard Time (Dubai)" },
+  { key: "button_label", type: "text", label: "Button label", default: "Sign up" },
+  { key: "button_url", type: "url", label: "Button link", default: "" },
+  { key: "secondary_label", type: "text", label: "Second button label (optional)", default: "" },
+  { key: "secondary_url", type: "url", label: "Second button link", default: "" },
+  { key: "image", type: "image", label: "Picture (optional)", default: { id: 0, url: "" } },
+];
+
 export const BLOCK_TYPES: Record<BlockType, BlockTypeDef> = {
   heading: {
     label: "Title",
@@ -183,6 +202,12 @@ export const BLOCK_TYPES: Record<BlockType, BlockTypeDef> = {
       align,
       logic,
     ],
+  },
+  session: {
+    label: "Session",
+    group: "content",
+    icon: "timer",
+    controls: [...SESSION_CONTROLS, logic],
   },
   short_text: {
     label: "Short Text",

@@ -31,6 +31,7 @@ export type LandingBlockType =
   | "bio"
   | "logos"
   | "countdown"
+  | "session"
   | "embed"
   | "heading"
   | "text"
@@ -120,7 +121,7 @@ const buttonFields: Control[] = [
 const imageSide = select("image_side", "Image position", "right", { right: "Right of the text", left: "Left of the text" });
 
 /** A content block of the Forms module, reused here: same fields, no form logic, plus the section controls. */
-function shared(key: "heading" | "text" | "image" | "divider" | "spacer", group: LandingGroup, desc: string, extra: Control[]): LandingBlockDef {
+function shared(key: "heading" | "text" | "image" | "session" | "divider" | "spacer", group: LandingGroup, desc: string, extra: Control[]): LandingBlockDef {
   const def = FORM_BLOCKS[key];
   return {
     label: def.label,
@@ -574,6 +575,7 @@ export const LANDING_BLOCKS: Record<LandingBlockType, LandingBlockDef> = {
       ...section("surface"),
     ],
   },
+  session: shared("session", "conversion", "A dated live event: a dark card with the date, time, details and a sign-up button.", section("surface")),
   embed: {
     label: "Embed",
     group: "media",

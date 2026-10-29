@@ -15,10 +15,10 @@ const ERRORS: Record<string, string> = {
   google_failed: "Google sign-in failed. Please try again.",
 };
 
-export function SignInForm({ googleEnabled }: { googleEnabled: boolean }) {
+export function SignInForm({ googleEnabled, defaultNext = "/school/my" }: { googleEnabled: boolean; defaultNext?: string }) {
   const params = useSearchParams();
   const raw = params.get("next") ?? "";
-  const next = raw.startsWith("/") && !raw.startsWith("//") ? raw : "/school/my";
+  const next = raw.startsWith("/") && !raw.startsWith("//") ? raw : defaultNext;
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [busy, setBusy] = useState(false);

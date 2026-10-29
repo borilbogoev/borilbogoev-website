@@ -4,6 +4,7 @@
 // (`editing`: interactive blocks are shown but save nothing). Content blocks are plain markup; the learning blocks
 // (checklist, question box, flashcards) keep the student's state through the context below.
 import { createContext, memo, useCallback, useContext, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { SessionCard } from "@/components/session-card";
 import { renderMarkdown } from "@/modules/forms/lib/markdown";
 import { LIcon } from "@/modules/landing/components/icons";
 import { embedAllowed, type BlockType, type Settings } from "../lib/blocks";
@@ -711,6 +712,7 @@ export const BlockView = memo(function BlockView({ block }: { block: PlayerBlock
     case "question": body = <QuestionBox id={id} s={s} ctx={ctx} />; break;
     case "poll": body = <Poll id={id} s={s} ctx={ctx} />; break;
     case "flashcards": body = <Flashcards id={id} s={s} ctx={ctx} />; break;
+    case "session": body = <SessionCard data={s} />; break;
     case "divider": body = <Divider s={s} />; break;
     case "spacer": return <div style={{ height: Math.max(0, Number(s.height) || 0) }} aria-hidden="true" />;
   }

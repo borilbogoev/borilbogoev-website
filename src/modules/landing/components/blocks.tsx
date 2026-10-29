@@ -1,5 +1,6 @@
 // Server renderers of every landing block. Pure HTML and CSS; interaction lives in client.tsx.
 import type { CSSProperties, ReactNode } from "react";
+import { SessionCard } from "@/components/session-card";
 import { renderMarkdown } from "@/modules/forms/lib/markdown";
 import { embedAllowed, type LandingBlock, type Settings } from "../lib/blocks";
 import { parseAudio, parseVideo, ratioPadding } from "../lib/media";
@@ -875,6 +876,14 @@ function CountdownBlock({ b }: { b: LandingBlock }) {
   );
 }
 
+function SessionBlock({ b }: { b: LandingBlock }) {
+  return (
+    <Sec b={b} cls="lp-sp-tight">
+      <SessionCard data={b.settings} />
+    </Sec>
+  );
+}
+
 /* -------------------------------------------------------------------------- */
 
 export function RenderBlock({ block, first }: { block: LandingBlock; first: boolean }) {
@@ -929,6 +938,8 @@ export function RenderBlock({ block, first }: { block: LandingBlock; first: bool
       return <Logos b={block} />;
     case "countdown":
       return <CountdownBlock b={block} />;
+    case "session":
+      return <SessionBlock b={block} />;
     case "embed":
       return <Embed b={block} />;
     case "heading":
