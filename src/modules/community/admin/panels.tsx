@@ -213,7 +213,7 @@ export function MembersManager({ communityId, initial, isSuper }: { communityId:
 
 export type ReportData = {
   id: number; status: string; targetType: string; targetId: string; communityId: number | null; communityName: string; reason: string; details: string; reporter: string; createdAt: string;
-  preview: string; href: string; targetStatus: string; targetUserId: string; targetUserName: string; snapshot: string; resolution: string; canAct: boolean;
+  preview: string; href: string; targetStatus: string; targetUserId: string; targetUserName: string; snapshot: string; resolution: string; canAct: boolean; thumb: string;
 };
 
 export function ReportsQueue({ initial, communities, isSuper }: { initial: ReportData[]; communities: { id: number; name: string }[]; isSuper: boolean }) {
@@ -254,7 +254,7 @@ export function ReportsQueue({ initial, communities, isSuper }: { initial: Repor
                   {r.resolution ? <div className="bbfa-sub">Resolution: {r.resolution}</div> : null}
                 </td>
                 <td>
-                  <p className="cm-adm-quote">{r.preview}</p>
+                  <div className="cm-adm-item">{r.thumb ? <img className="cm-adm-thumb" src={r.thumb} alt="" width={56} height={56} loading="lazy" /> : null}<p className="cm-adm-quote">{r.preview}</p></div>
                   <div className="bbfa-sub">{r.targetUserName ? `By ${r.targetUserName}` : ""}{r.targetStatus && r.targetStatus !== "published" ? ` · ${r.targetStatus.replace(/_/g, " ")}` : ""}</div>
                   {r.snapshot ? <p className="cm-adm-snapshot">{r.snapshot}</p> : null}
                   {r.href ? <Link href={r.href} target="_blank" className="bbfa-sub">Open ↗</Link> : null}
@@ -283,7 +283,7 @@ export function ReportsQueue({ initial, communities, isSuper }: { initial: Repor
 
 // ------------------------------------------------------------------ content tools
 
-type ContentRow = { kind: "post" | "comment"; id: number; postId: number; author: string; snippet: string; status: string; createdAt: string };
+type ContentRow = { kind: "post" | "comment"; id: number; postId: number; author: string; snippet: string; status: string; createdAt: string; thumb?: string; imageCount?: number };
 
 export function ContentTools({ communities }: { communities: { id: number; name: string; slug: string }[] }) {
   const [communityId, setCommunityId] = useState(String(communities[0]?.id ?? ""));
@@ -314,7 +314,7 @@ export function ContentTools({ communities }: { communities: { id: number; name:
               {rows.length === 0 ? <tr><td colSpan={5} className="bbfa-table-empty"><strong>Nothing found.</strong></td></tr> : null}
               {rows.map((r) => (
                 <tr key={`${r.kind}-${r.id}`}>
-                  <td><span className="bbfa-sub">{r.kind} #{r.id}</span><p className="cm-adm-quote">{r.snippet || "(no text)"}</p></td>
+                  <td><div className="cm-adm-item">{r.thumb ? <img className="cm-adm-thumb" src={r.thumb} alt="" width={56} height={56} loading="lazy" /> : null}<div><span className="bbfa-sub">{r.kind} #{r.id}{r.imageCount ? ` · ${r.imageCount} ${r.imageCount === 1 ? "image" : "images"}` : ""}</span><p className="cm-adm-quote">{r.snippet || "(no text)"}</p></div></div></td>
                   <td>{r.author}</td>
                   <td>{pill(r.status)}</td>
                   <td>{fmt(r.createdAt)}</td>

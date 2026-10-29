@@ -10,7 +10,7 @@ import { canAssignModerators, canBan, canManageCommunities, canManageGlobal, can
 import { clearMemberCounts, memberCounts } from "./communities";
 import { clearSettingsCache, getSettings } from "./settings";
 import { getCommentRow, setCommentStatus } from "./comments";
-import { getPostRow, setPostStatus, unwrap } from "./posts";
+import { getPostRow, mediaFor, setPostStatus, unwrap } from "./posts";
 import { suspendUser } from "./safety";
 
 const { communities, communityMembers: Mem, communityPosts: P, communityComments: C, communityReports: R, communitySettings: Set_, communityAdminLog: Log, communityMessages: Msg, users } = schema;
@@ -256,6 +256,7 @@ export type ReportDTO = {
   snapshot: string;
   resolution: string;
   canAct: boolean;
+  thumb: string;
 };
 
 export async function listReports(viewer: Viewer, f: { status?: string; type?: string; communityId?: number | null }): Promise<ReportDTO[]> {
@@ -280,6 +281,7 @@ export async function listReports(viewer: Viewer, f: { status?: string; type?: s
     msgIds.length ? db().select({ id: Msg.id, senderId: Msg.senderId, name: users.name }).from(Msg).innerJoin(users, eq(users.id, Msg.senderId)).where(inArray(Msg.id, msgIds)) : [],
     commIds.length ? db().select({ id: communities.id, name: communities.name, slug: communities.slug }).from(communities).where(inArray(communities.id, commIds)) : [],
   ]);
+  const media = await mediaFor(postIds);
   const pm = new Map(posts.map((x) => [x.id, x]));
   const cm = new Map(comments.map((x) => [x.id, x]));
   const um = new Map(targets.map((x) => [x.id, x]));
@@ -292,7 +294,9 @@ export async function listReports(viewer: Viewer, f: { status?: string; type?: s
     let targetStatus = "";
     let targetUserId = "";
     let targetUserName = "";
+    let thumb = "";
     if (r.targetType === "post") {
+      thumb = media.get(Number(r.targetId))?.[0]?.url ?? "";
       const p = pm.get(Number(r.targetId));
       preview = p ? snippet(p.body, 200) : "(removed)";
       targetStatus = p?.status ?? "deleted";
@@ -336,6 +340,7 @@ export async function listReports(viewer: Viewer, f: { status?: string; type?: s
       targetUserName,
       snapshot: viewer.actor.superAdmin ? (r.messageSnapshot ?? "") : "",
       resolution: r.resolutionNote ?? "",
+      thumb,
       canAct: r.status === "open",
     };
   });
@@ -395,7 +400,7 @@ export async function resolveReport(viewer: Viewer, reportId: number, action: Re
 
 // ---------------------------------------------------------------- content tools
 
-export type ContentRow = { kind: "post" | "comment"; id: number; postId: number; author: string; snippet: string; status: string; createdAt: string };
+export type ContentRow = { kind: "post" | "comment"; id: number; postId: number; author: string; snippet: string; status: string; createdAt: string; thumb?: string; imageCount?: number };
 
 export async function searchContent(viewer: Viewer, communityId: number, q: string): Promise<ContentRow[]> {
   await assertModerates(viewer, communityId);
@@ -416,8 +421,9 @@ export async function searchContent(viewer: Viewer, communityId: number, q: stri
     .where(and(eq(C.communityId, communityId), s ? or(id ? eq(C.id, id) : undefined, ilike(C.body, like)) : undefined))
     .orderBy(desc(C.createdAt))
     .limit(25);
+  const media = await mediaFor(posts.map((p) => p.id));
   return [
-    ...posts.map((p): ContentRow => ({ kind: "post", id: p.id, postId: p.id, author: p.name || "Member", snippet: snippet(p.body, 160), status: p.status, createdAt: p.createdAt.toISOString() })),
+    ...posts.map((p): ContentRow => ({ kind: "post", id: p.id, postId: p.id, author: p.name || "Member", snippet: snippet(p.body, 160), status: p.status, createdAt: p.createdAt.toISOString(), thumb: media.get(p.id)?.[0]?.url, imageCount: media.get(p.id)?.length ?? 0 })),
     ...comments.map((c): ContentRow => ({ kind: "comment", id: c.id, postId: c.postId, author: c.name || "Member", snippet: snippet(c.body, 160), status: c.status, createdAt: c.createdAt.toISOString() })),
   ].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }

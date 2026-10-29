@@ -215,3 +215,8 @@
 .cm-like:disabled { opacity: 0.5; cursor: default; }
 .cm-comment__foot { margin-top: 2px; }
 .cm-comment__foot .cm-like { min-height: 30px; padding: 0 10px; }
+
+/* profile rows with a picture */
+.cm-row.has-thumb { grid-template-columns: 72px minmax(0, 1fr); column-gap: 14px; }
+.cm-row.has-thumb > :not(.cm-row__thumb) { grid-column: 2; }
+.cm-row__thumb { grid-column: 1; grid-row: 1 / span 3; width: 72px; height: 72px; object-fit: cover; border-radius: var(--radius-sm); background: var(--photo-ground); }

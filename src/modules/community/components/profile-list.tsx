@@ -6,7 +6,7 @@ import { get, message, type People } from "../lib/client";
 import { t } from "../strings";
 import { RelativeTime } from "./relative-time";
 
-export type Item = { kind: "post" | "comment" | "mention"; id: number; communitySlug: string; communityName: string; postId: number; createdAt: string; snippet: string; commentCount?: number; imageCount?: number; by?: string; href: string; cursor: string };
+export type Item = { kind: "post" | "comment" | "mention"; id: number; communitySlug: string; communityName: string; postId: number; createdAt: string; snippet: string; commentCount?: number; imageCount?: number; thumb?: string; by?: string; href: string; cursor: string };
 
 export function ProfileList({ userId, section, communityId, initial, initialNext, initialPeople, empty }: { userId: string; section: string; communityId: number | null; initial: Item[]; initialNext: string | null; initialPeople: People; empty: string }) {
   const [items, setItems] = useState(initial);
@@ -39,7 +39,8 @@ export function ProfileList({ userId, section, communityId, initial, initialNext
       <ul className="cm-list">
         {items.map((i) => (
           <li key={`${i.kind}-${i.id}-${i.cursor}`}>
-            <Link href={i.href} className="cm-row">
+            <Link href={i.href} className={`cm-row${i.thumb ? " has-thumb" : ""}`}>
+              {i.thumb ? <img className="cm-row__thumb" src={i.thumb} alt="" width={72} height={72} loading="lazy" decoding="async" /> : null}
               <span className="cm-row__meta cm-muted">
                 {i.communityName} · <RelativeTime iso={i.createdAt} />
                 {i.kind === "mention" && i.by ? ` · ${t.profile.mentionedBy(people[i.by]?.name ?? "Member")}` : ""}
