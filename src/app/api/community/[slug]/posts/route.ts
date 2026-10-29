@@ -17,7 +17,7 @@ export async function POST(request: Request, ctx: Ctx<"slug">) {
     const scope = await scopeBySlug(viewer, (await ctx.params).slug);
     const b = await readBody(request);
     const mediaIds = Array.isArray(b.mediaIds) ? b.mediaIds.filter((x): x is number => Number.isInteger(x)).slice(0, 10) : [];
-    const res = await createPost(scope, { body: b.body, mediaIds, requestId: typeof b.requestId === "string" ? b.requestId : null });
+    const res = await createPost(scope, { body: b.body, mediaIds, alts: b.alts && typeof b.alts === "object" ? (b.alts as Record<string, unknown>) : undefined, requestId: typeof b.requestId === "string" ? b.requestId : null });
     return ok(res, res.duplicate ? 200 : 201);
   });
 }

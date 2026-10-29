@@ -140,7 +140,7 @@ export async function getPost(scope: Scope, id: number): Promise<{ item: PostDTO
   return { item: items[0], people };
 }
 
-export type PostInput = { body: unknown; mediaIds?: number[]; requestId?: string | null };
+export type PostInput = { body: unknown; mediaIds?: number[]; alts?: Record<string, unknown>; requestId?: string | null };
 
 export async function createPost(scope: Scope, input: PostInput): Promise<{ item: PostDTO; people: People; duplicate: boolean }> {
   const { viewer, community, settings } = scope;
@@ -162,6 +162,10 @@ export async function createPost(scope: Scope, input: PostInput): Promise<{ item
     if (own.length !== mediaIds.length) throw invalid("One of the images is not available. Upload it again.");
   }
 
+  for (const mid of mediaIds) {
+    const alt = input.alts?.[String(mid)];
+    if (typeof alt === "string") await db().update(M).set({ alt: alt.trim().slice(0, 300) || null }).where(and(eq(M.id, mid), eq(M.uploaderId, viewer.user.id), isNull(M.postId)));
+  }
   const mentions = await resolveMentions({ body, authorId: viewer.user.id, communityId: community.id });
   const now = new Date();
   let id: number;

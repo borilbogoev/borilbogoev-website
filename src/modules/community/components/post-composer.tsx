@@ -73,7 +73,7 @@ export function PostComposer({
     setBusy(true);
     setError("");
     try {
-      const res = await postJson<{ item: Post; people: People }>(`/api/community/${slug}/posts`, { body, mediaIds: images.map((i) => i.id), requestId: requestId.current });
+      const res = await postJson<{ item: Post; people: People }>(`/api/community/${slug}/posts`, { body, mediaIds: images.map((i) => i.id), alts: Object.fromEntries(images.map((i) => [i.id, i.alt])), requestId: requestId.current });
       onCreated(res.item, res.people);
       setValue(emptyMention());
       setImages([]);
@@ -92,10 +92,14 @@ export function PostComposer({
         <ul className="cm-previews" aria-label="Images">
           {images.map((img, i) => (
             <li key={img.id}>
-              <img src={img.url} alt={img.alt || `Image ${i + 1}`} />
-              <button type="button" className="cm-previews__x" onClick={() => remove(img.id)} aria-label={`${t.action.removeImage} ${i + 1}`}>
-                ×
-              </button>
+              <div className="cm-previews__img">
+                <img src={img.url} alt={img.alt || `Image ${i + 1}`} />
+                <button type="button" className="cm-previews__x" onClick={() => remove(img.id)} aria-label={`${t.action.removeImage} ${i + 1}`}>
+                  ×
+                </button>
+              </div>
+              <label className="cm-sr" htmlFor={`alt-${img.id}`}>{`Description of image ${i + 1}`}</label>
+              <input id={`alt-${img.id}`} className="cm-alt" type="text" maxLength={300} placeholder={t.composer.altPlaceholder} value={img.alt} onChange={(e) => setImages((cur) => cur.map((x) => (x.id === img.id ? { ...x, alt: e.target.value } : x)))} />
             </li>
           ))}
           {Array.from({ length: uploading }).map((_, i) => (
