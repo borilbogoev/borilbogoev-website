@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { GlobalSettings } from "../lib/settings";
 import { api, ApiError, Card, ColorField, SelectField, TextArea, TextField, Toggle, useToast } from "./ui";
@@ -78,10 +79,10 @@ export function GlobalSettingsEditor({ initial, tables, timeZones, storageReady,
           <TextArea label="Default closed message (Markdown)" value={s.closed_message} onChange={(v) => set("closed_message", v)} rows={2} />
         </Card>
 
-        <Card id="sec-email" eyebrow="Email" title="Sender" desc={emailReady ? "Emails are sent through Resend." : "Email is off until RESEND_API_KEY is set in Vercel."}>
-          <TextField label="From name" value={s.email_from_name} onChange={(v) => set("email_from_name", v)} />
-          <TextField label="From email" type="email" value={s.email_from} onChange={(v) => set("email_from", v)} help="Use an address on a domain verified in Resend." />
-          <TextField label="Default notification recipients" value={s.email_admin} onChange={(v) => set("email_admin", v)} />
+        <Card id="sec-email" eyebrow="Email" title="Sender and Resend" desc={emailReady ? "Emails are sent through Resend." : "Email is off: no Resend API key is saved yet."}>
+          <p className="bbfa-field bbfa-field--wide">
+            The Resend key, the sender address and the default recipients are set in <Link href="/admin/settings/email">Settings &gt; Email</Link>, where you can also send a test email.
+          </p>
         </Card>
 
         <Card id="sec-security" eyebrow="Spam & security" title="Protection">

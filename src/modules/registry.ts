@@ -16,4 +16,4 @@ export const adminModules: AdminModule[] = [
 
 /** Admin-wide screens that are not modules. */
 export const adminCore: AdminModule[] = [
-  { key: "settings", label: "Settings", href: "/admin/settings", desc: "Site-wide settings. Menus: switch menu items on or off, add links, change the order.", permission: "settings.manage" },{ key: "users", label: "Users", href: "/admin/users", desc: "Who can sign in, and what they can do.", permission: "users.manage" }];
+  { key: "settings", label: "Settings", href: "/admin/settings", desc: "Site-wide settings. Menus: switch items on or off, add links, change the order. Email: the Resend key, sender and test emails.", permission: "settings.manage" },{ key: "users", label: "Users", href: "/admin/users", desc: "Who can sign in, and what they can do.", permission: "users.manage" }];

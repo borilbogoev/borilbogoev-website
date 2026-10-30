@@ -14,7 +14,8 @@
     "landing": "tsx scripts/landing.ts",
     "school": "tsx scripts/school.ts",
     "presentations": "tsx scripts/presentations.ts",
-    "test:community": "tsx --test \"src/modules/community/__tests__/*.test.ts\""
+    "test:community": "tsx --test \"src/modules/community/__tests__/*.test.ts\"",
+    "test:email": "tsx --test \"src/modules/email/__tests__/*.test.ts\""
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.2.0",

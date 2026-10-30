@@ -16,7 +16,7 @@ export default async function AccountLoginPage() {
         <h1 className="t-display-lg mt-3">
           Sign in<span className="accent">.</span>
         </h1>
-        <p className="t-subtitle mt-5 max-w-[48ch]">Enter your email and we send you a link, or use your password. Your courses, answers and details are inside.</p>
+        <p className="t-subtitle mt-5 max-w-[48ch]">New here? Create your account with an emailed link. Already have one? Sign in. Your courses, answers and details are inside.</p>
         <Suspense>
           <SignInForm googleEnabled={isGoogleConfigured()} defaultNext="/account" />
         </Suspense>

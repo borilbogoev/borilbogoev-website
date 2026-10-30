@@ -16,7 +16,8 @@ export async function getGlobalSettings(): Promise<GlobalSettings> {
 export async function saveGlobalSettings(input: unknown): Promise<GlobalSettings> {
   const current = await getGlobalSettings();
   const next = sanitizeGlobalSettings(input, current);
-  const known = Object.keys(globalDefaults()) as (keyof GlobalSettings)[];
+  // The sender and recipient belong to Admin > Settings > Email, which writes them. Saving Forms settings must not overwrite them.
+  const known = (Object.keys(globalDefaults()) as (keyof GlobalSettings)[]).filter((k) => !k.startsWith("email_"));
   for (const name of known) {
     await db().insert(table).values({ name, value: next[name] }).onConflictDoUpdate({ target: table.name, set: { value: next[name] } });
   }

@@ -479,7 +479,7 @@ export function Card({ id, eyebrow, title, desc, children }: { id?: string; eyeb
 
 type FieldProps = { label: string; help?: ReactNode; wide?: boolean };
 
-export function TextField({ label, help, wide, value, onChange, type = "text", placeholder, ...rest }: FieldProps & { value: string | number; onChange: (v: string) => void; type?: string; placeholder?: string; min?: number; max?: number; maxLength?: number }) {
+export function TextField({ label, help, wide, value, onChange, type = "text", placeholder, ...rest }: FieldProps & { value: string | number; onChange: (v: string) => void; type?: string; placeholder?: string; min?: number; max?: number; maxLength?: number; autoComplete?: string }) {
   return (
     <label className={`bbfa-field${wide ? " bbfa-field--wide" : ""}`}>
       <span className="bbfa-label">{label}</span>

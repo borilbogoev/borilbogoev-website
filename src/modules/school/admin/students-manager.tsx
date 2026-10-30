@@ -40,8 +40,9 @@ export function StudentsManager({ rows, courses, filters, canEnrol, between }: P
   const run = async (fn: () => Promise<unknown>, ok: string) => {
     setBusy(true);
     try {
-      await fn();
-      toast(ok);
+      const res = (await fn()) as { mail?: { sent: boolean; error?: string } } | undefined;
+      if (res?.mail && !res.mail.sent) toast(`${ok}, but the email to the student was not sent: ${res.mail.error ?? "unknown error"}`, "error");
+      else toast(res?.mail?.sent ? `${ok}. The student was emailed.` : ok);
       router.refresh();
       return true;
     } catch (e) {

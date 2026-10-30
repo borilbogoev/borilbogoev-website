@@ -120,7 +120,7 @@ Settings, Video: the **Library ID** and the **embed token key**. In the Bunny da
 
 ## Payments: bank transfer
 
-Settings, Payments: beneficiary, bank, IBAN, SWIFT and instructions. A paid course has a price and currency. A student who enrols sees the details and a payment reference (`CR-00012`), the enrolment is **pending**, and admins are emailed (Resend, as for Forms). When the transfer arrives, School, Students, **Confirm payment** opens the course. There are no online payments yet.
+Settings, Payments: beneficiary, bank, IBAN, SWIFT and instructions. A paid course has a price and currency. A student who enrols sees the details and a payment reference (`CR-00012`), the enrolment is **pending**, the student is emailed the bank details and reference, and admins are emailed (Resend, see `docs/email.md`). When the transfer arrives, School, Students, **Confirm payment** opens the course and emails the student. There are no online payments yet.
 
 ## Student sign-in
 

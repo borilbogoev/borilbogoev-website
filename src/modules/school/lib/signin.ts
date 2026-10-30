@@ -6,14 +6,14 @@ import { site } from "@/content/site";
 import { getBaseUrl } from "@/modules/auth/google";
 import { safeNext } from "@/modules/auth/redirect";
 import { createUser, getUserByEmail, normalizeEmail } from "@/modules/auth/users";
-import { sendMail } from "@/modules/forms/lib/notify";
-import { escapeHtml } from "@/modules/forms/lib/markdown";
-import { getGlobalSettings } from "@/modules/forms/lib/settings-store";
+import { emailReady } from "@/modules/email/lib/config";
+import { emailShell, escapeHtml } from "@/modules/email/lib/layout";
+import { sendEmail } from "@/modules/email/lib/send";
 import { cleanEmail, cleanText } from "@/modules/forms/lib/sanitize";
 import { getSettings } from "./settings-store";
 
 const PURPOSE = "classroom-signin";
-const TTL_MIN = 20;
+export const TTL_MIN = 20;
 export const STUDENT_HOME = "/school/my";
 
 export const studentNext = (next: string | null | undefined) => safeNext(next, STUDENT_HOME);
@@ -58,14 +58,29 @@ function tooMany(key: string, max: number): boolean {
 
 export type LinkResult = { ok: true } | { ok: false; error: string; status: number };
 
+export function signInLinkMail(o: { name: string; link: string }): { subject: string; html: string } {
+  const hello = o.name ? `Hello ${escapeHtml(o.name)},` : "Hello,";
+  return {
+    subject: `Your sign-in link for ${site.name}`,
+    html: emailShell({
+      eyebrow: "Sign in",
+      bodyHtml: `<p style="margin:0 0 12px">${hello}</p><p style="margin:0">Use the button to sign in. The link works for ${TTL_MIN} minutes. If you did not ask for it, ignore this email: nobody can sign in without it.</p>`,
+      cta: { label: "Sign in", url: o.link },
+    }),
+  };
+}
+
 /**
  * Sends the sign-in link. The answer is the same whether or not the address has an account, so the form cannot be used to
- * find out who is registered. A person with no account gets one when they open the link, if sign-up is open.
+ * find out who is registered. A send that fails is reported as a failure. A person with no account gets one when they open the link, if sign-up is open.
  */
 export async function sendSignInLink(input: { email: unknown; name?: unknown; next?: unknown; origin: string; ip: string }): Promise<LinkResult> {
   const email = normalizeEmail(cleanEmail(input.email));
   if (!email) return { ok: false, error: "Enter a valid email address.", status: 400 };
   if (tooMany(`e:${email}`, 5) || tooMany(`i:${input.ip}`, 20)) return { ok: false, error: "Too many links requested. Try again in an hour.", status: 429 };
+
+  // A missing email setup is the same for every address, so saying so reveals nothing about who has an account.
+  if (!(await emailReady())) return { ok: false, error: "Sign-in links are not available right now. Sign in with your password or Google.", status: 503 };
 
   const [settings, user] = await Promise.all([getSettings(), getUserByEmail(email)]);
   // Emailed links are for students only: staff and admin accounts sign in with a password or Google, so a mailbox alone never opens the admin.
@@ -75,16 +90,11 @@ export async function sendSignInLink(input: { email: unknown; name?: unknown; ne
   const name = cleanText(input.name, 120);
   const token = await makeToken(email, name || user?.name || "", studentNext(String(input.next ?? "")));
   const link = `${getBaseUrl(input.origin)}/api/school/auth/verify?token=${encodeURIComponent(token)}`;
-  const g = await getGlobalSettings();
-  const sentOk = await sendMail(
-    {
-      to: [email],
-      subject: `Your sign-in link for the ${site.name} School`,
-      html: `<p>Hello${name || user?.name ? ` ${escapeHtml(name || user?.name || "")}` : ""},</p><p>Open this link to sign in to the School. It works for ${TTL_MIN} minutes.</p><p><a href="${link}">Sign in to the School</a></p><p>If you did not ask for it, ignore this email. Nobody can sign in without it.</p>`,
-    },
-    g,
-  );
-  if (!sentOk && process.env.NODE_ENV !== "production") console.warn("[school] sign-in link (email not sent):", link);
+  const sent = await sendEmail({ to: [email], template: "school-sign-in-link", ...signInLinkMail({ name: name || user?.name || "", link }) });
+  if (!sent.ok) {
+    if (process.env.NODE_ENV !== "production") console.warn("[school] sign-in link (email not sent):", link);
+    return { ok: false, error: "We could not send the email. Try again in a few minutes, or sign in with your password or Google.", status: 502 };
+  }
   return { ok: true };
 }
 
