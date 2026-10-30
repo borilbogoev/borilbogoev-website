@@ -1,5 +1,8 @@
 import { z } from "zod";
 import { getDb, schema } from "@/db";
+import { getEmailConfig } from "@/modules/email/lib/config";
+import { inquiryMail } from "@/modules/email/lib/inquiry";
+import { sendEmail } from "@/modules/email/lib/send";
 
 export const runtime = "nodejs";
 
@@ -37,9 +40,9 @@ export async function POST(request: Request) {
   if (data.website || (data.elapsed !== undefined && data.elapsed < 1500)) return json({ ok: true });
 
   const db = getDb();
-  const resendKey = process.env.RESEND_API_KEY;
-  const to = process.env.INQUIRY_TO_EMAIL;
-  const emailReady = Boolean(resendKey && to);
+  const cfg = await getEmailConfig();
+  const to = cfg.adminTo.split(",").map((x) => x.trim()).filter(Boolean);
+  const emailReady = Boolean(cfg.apiKey && to.length);
 
   if (!db && !emailReady) {
     if (process.env.NODE_ENV !== "production") {
@@ -70,32 +73,8 @@ export async function POST(request: Request) {
 
   let emailed = false;
   if (emailReady) {
-    try {
-      const res = await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: { Authorization: `Bearer ${resendKey}`, "Content-Type": "application/json" },
-        body: JSON.stringify({
-          from: process.env.INQUIRY_FROM_EMAIL ?? "Website <onboarding@resend.dev>",
-          to: [to],
-          reply_to: data.email,
-          subject: `New inquiry: ${data.topic}${data.plan ? ` / ${data.plan}` : ""} from ${data.name}`,
-          text: [
-            `Topic: ${data.topic}`,
-            `Plan: ${data.plan || "not chosen"}`,
-            `Name: ${data.name}`,
-            `Email: ${data.email}`,
-            `Company: ${data.company || "-"}`,
-            `Page: ${data.page || "-"}`,
-            "",
-            data.message,
-          ].join("\n"),
-        }),
-      });
-      emailed = res.ok;
-      if (!res.ok) console.error("[inquiry] email failed with status", res.status);
-    } catch (error) {
-      console.error("[inquiry] email failed", error instanceof Error ? error.message : error);
-    }
+    const sent = await sendEmail({ to, template: "inquiry", replyTo: data.email, ...inquiryMail(data) });
+    emailed = sent.ok;
   }
 
   // Success when at least one channel kept the message.

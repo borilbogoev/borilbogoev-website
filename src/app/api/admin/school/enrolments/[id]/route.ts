@@ -1,5 +1,5 @@
 import { guarded, json } from "@/modules/auth/guard";
-import { deleteEnrolment, setEnrolment, type EnrolmentStatus } from "@/modules/school/lib/access";
+import { deleteEnrolment, getEnrolmentById, notifyAccessGranted, setEnrolment, type EnrolmentStatus } from "@/modules/school/lib/access";
 
 export const runtime = "nodejs";
 type Ctx = { params: Promise<{ id: string }> };
@@ -9,8 +9,13 @@ export async function PATCH(request: Request, ctx: Ctx) {
   return guarded(request, "school.enrol", async () => {
     const body = (await request.json().catch(() => ({}))) as { status?: string; note?: string };
     const status = ["pending", "active", "revoked"].includes(String(body.status)) ? (body.status as EnrolmentStatus) : undefined;
-    const e = await setEnrolment(Number((await ctx.params).id), { status, note: typeof body.note === "string" ? body.note : undefined });
-    return e ? json({ enrolment: e }, 200) : json({ error: "Enrolment not found." }, 404);
+    const id = Number((await ctx.params).id);
+    const before = await getEnrolmentById(id);
+    const e = await setEnrolment(id, { status, note: typeof body.note === "string" ? body.note : undefined });
+    if (!e) return json({ error: "Enrolment not found." }, 404);
+    // Opening a course that was not open tells the student, so they do not have to guess.
+    const mail = before && before.status !== "active" && e.status === "active" ? await notifyAccessGranted(e) : undefined;
+    return json({ enrolment: e, ...(mail ? { mail } : {}) }, 200);
   });
 }
 

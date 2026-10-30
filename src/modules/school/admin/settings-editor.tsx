@@ -40,7 +40,7 @@ export function SchoolSettingsEditor({ initial, bunnyKeySaved, currencies }: { i
         <div className="bbfa-field bbfa-field--wide">
           <Toggle label="Anyone can create a student account" checked={!!s.signup_open} onChange={(v) => set("signup_open", v ? 1 : 0)} help="Off: only people you add under Students can sign in." />
         </div>
-        <TextField label="Tell me by email when a student asks to pay" type="email" value={s.notify_to} onChange={(v) => set("notify_to", v)} placeholder="Default: the inquiry address" help="Needs email (Resend) to be set up, as for Forms." />
+        <TextField label="Tell me by email when a student asks to pay" type="email" value={s.notify_to} onChange={(v) => set("notify_to", v)} placeholder="Default: your address for notices" help="Needs the Resend key in Settings > Email. The student also gets the bank details by email." />
       </Card>
 
       <Card eyebrow="Payments" title="Bank transfer details" desc="Shown to a student who enrols in a paid course, together with their payment reference. Nothing is charged online.">

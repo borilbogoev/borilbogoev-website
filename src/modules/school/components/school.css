@@ -318,6 +318,101 @@
   max-width: 440px;
   margin-top: 32px;
 }
+/* Sign-in: two panels, "New here" in the brand red and "I have an account" in ink. */
+.cr-auth {
+  display: grid;
+  gap: 24px;
+  max-width: 920px;
+  margin-top: 32px;
+}
+.cr-auth__grid {
+  display: grid;
+  gap: 24px;
+}
+@media (min-width: 820px) {
+  .cr-auth__grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.cr-auth__card {
+  --accent: var(--ink);
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  padding: 36px 32px 32px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--surface);
+  overflow: hidden;
+}
+.cr-auth__card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 5px;
+  background: var(--accent);
+}
+.cr-auth__card--new {
+  --accent: var(--brand);
+}
+.cr-auth__sent {
+  max-width: 520px;
+  margin-top: 32px;
+  display: block;
+}
+.cr-auth__eyebrow {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.cr-auth__card--account .cr-auth__eyebrow {
+  color: var(--ink);
+}
+.cr-auth__card h2 {
+  margin: 0;
+}
+.cr-auth__lead {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--ink-muted);
+}
+.cr-auth__fine {
+  margin: 0;
+  font-size: 13px;
+  color: var(--ink-muted);
+}
+.cr-auth__switch {
+  justify-self: start;
+}
+.cr-auth__card--account .cr-link {
+  text-decoration-color: var(--ink);
+}
+.cr-auth__google {
+  display: grid;
+  gap: 16px;
+  justify-items: center;
+}
+.cr-auth__google .cr-or {
+  width: 100%;
+}
+.cr-auth__google .bb-btn {
+  min-width: 260px;
+}
+.cr-btn-ink {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--on-brand);
+  box-shadow: none;
+}
+.cr-btn-ink:hover:not(:disabled) {
+  background: #000;
+  border-color: #000;
+}
 .cr-form {
   display: grid;
   gap: 16px;

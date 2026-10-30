@@ -13,7 +13,7 @@ export default function SignInPage() {
         <h1 className="t-display-lg mt-3">
           Sign in<span className="accent">.</span>
         </h1>
-        <p className="t-subtitle mt-5 max-w-[48ch]">New or returning, enter your email and we send you a link. No password to remember.</p>
+        <p className="t-subtitle mt-5 max-w-[48ch]">New to the School, or coming back? Pick the side that fits.</p>
         <Suspense>
           <SignInForm googleEnabled={isGoogleConfigured()} />
         </Suspense>

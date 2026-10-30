@@ -5,7 +5,10 @@ import { usePathname } from "next/navigation";
 import "@/modules/forms/admin/admin.css";
 
 /** Subsections of Settings. Add a tab here when Settings gets a new subsection. */
-const TABS = [{ href: "/admin/settings/menus", label: "Menus" }];
+const TABS = [
+  { href: "/admin/settings/menus", label: "Menus" },
+  { href: "/admin/settings/email", label: "Email" },
+];
 
 export function SettingsTabs() {
   const path = usePathname();

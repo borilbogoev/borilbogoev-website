@@ -1,3 +1,4 @@
+import { emailReady } from "@/modules/email/lib/config";
 import { sql } from "drizzle-orm";
 import { db, rowsOf } from "@/db/use";
 import { requireUser } from "@/modules/auth/current";
@@ -28,7 +29,7 @@ export default async function FormsSettingsPage() {
   return (
     <>
       <PageHeader eyebrow="Configuration" title={<>Settings<span className="bbfa-dot">.</span></>} />
-      <GlobalSettingsEditor initial={settings} tables={tables} timeZones={timeZones} storageReady={storageConfigured()} emailReady={Boolean(process.env.RESEND_API_KEY)} />
+      <GlobalSettingsEditor initial={settings} tables={tables} timeZones={timeZones} storageReady={storageConfigured()} emailReady={await emailReady()} />
     </>
   );
 }

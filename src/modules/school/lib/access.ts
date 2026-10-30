@@ -5,11 +5,12 @@ import { schema } from "@/db";
 import { db, rowsOf } from "@/db/use";
 import { can } from "@/modules/auth/roles";
 import type { CurrentUser } from "@/modules/auth/current";
-import { sendMail } from "@/modules/forms/lib/notify";
-import { getGlobalSettings } from "@/modules/forms/lib/settings-store";
-import { escapeHtml } from "@/modules/forms/lib/markdown";
-import { site } from "@/content/site";
-import type { Course, LessonMeta } from "./courses";
+import { getUserById } from "@/modules/auth/users";
+import { getEmailConfig } from "@/modules/email/lib/config";
+import { sendEmail, type SendResult } from "@/modules/email/lib/send";
+import { type Course, getCourse, type LessonMeta } from "./courses";
+import { formatPrice } from "./course-settings";
+import { accessGrantedMail, paymentInstructionsMail, paymentRequestMail } from "./mails";
 import { getSettings } from "./settings-store";
 
 const { schoolEnrolments: enrolments } = schema;
@@ -70,27 +71,55 @@ export async function enrolSelf(user: CurrentUser, course: Course): Promise<Enro
     .onConflictDoNothing()
     .returning();
   const enrolment = row ? toEnrolment(row) : ((await getEnrolment(user.id, course.id)) as Enrolment);
-  if (row && paid) void notifyPending(user, course, enrolment);
+  if (row && paid) await notifyPending(user, course, enrolment); // awaited: a serverless function may stop as soon as it answers
   return { ok: true, enrolment, reference: paid ? paymentReference(enrolment) : null };
 }
 
+const priceOf = (e: Enrolment) => formatPrice(e.amountCents, e.currency);
+
+/** Two emails for a paid enrolment: the admin is told, and the student gets the bank details and the reference. Never throws. */
 async function notifyPending(user: CurrentUser, course: Course, e: Enrolment) {
   try {
-    const [g, cs] = await Promise.all([getGlobalSettings(), getSettings()]);
-    const to = cs.notify_to || process.env.INQUIRY_TO_EMAIL;
-    if (!to) return;
-    const price = `${e.currency} ${(e.amountCents / 100).toLocaleString("en-US")}`;
-    await sendMail(
-      {
-        to: [to],
-        subject: `School: ${user.name || user.email} wants to join ${course.title}`,
-        html: `<p><strong>${escapeHtml(user.name || user.email)}</strong> (${escapeHtml(user.email)}) enrolled in <strong>${escapeHtml(course.title)}</strong> and will pay ${escapeHtml(price)} by bank transfer.</p><p>Reference: <strong>${paymentReference(e)}</strong></p><p>When the transfer arrives, confirm it in <a href="${site.url}/admin/school/students">Admin &gt; School &gt; Students</a>.</p>`,
-      },
-      g,
+    const [cs, cfg] = await Promise.all([getSettings(), getEmailConfig()]);
+    const to = (cs.notify_to || cfg.adminTo).split(",").map((x) => x.trim()).filter(Boolean);
+    const jobs: Promise<SendResult>[] = [];
+    if (to.length) jobs.push(sendEmail({ to, template: "school-payment-request", ...paymentRequestMail({ studentName: user.name, studentEmail: user.email, courseTitle: course.title, price: priceOf(e), reference: paymentReference(e) }) }));
+    jobs.push(
+      sendEmail({
+        to: [user.email],
+        template: "school-payment-instructions",
+        ...paymentInstructionsMail({
+          studentName: user.name,
+          courseTitle: course.title,
+          price: priceOf(e),
+          reference: paymentReference(e),
+          bank: { beneficiary: cs.bank_beneficiary, bank: cs.bank_name, iban: cs.bank_iban, swift: cs.bank_swift, instructions: cs.bank_instructions },
+        }),
+      }),
     );
+    await Promise.allSettled(jobs);
   } catch (error) {
     console.error("[school] enrolment mail failed", error instanceof Error ? error.message : error);
   }
+}
+
+export type MailOutcome = { sent: boolean; error?: string };
+
+/** Tells a student their course is open. Used when an admin confirms a transfer or adds the student. */
+export async function notifyAccessGranted(e: Enrolment, opts: { newAccount?: boolean } = {}): Promise<MailOutcome> {
+  try {
+    const [user, course] = await Promise.all([getUserById(e.userId), getCourse(e.courseId)]);
+    if (!user || !course) return { sent: false, error: "Student or course not found." };
+    const r = await sendEmail({ to: [user.email], template: "school-access-granted", ...accessGrantedMail({ studentName: user.name ?? "", courseTitle: course.title, courseSlug: course.slug, newAccount: !!opts.newAccount }) });
+    return r.ok ? { sent: true } : { sent: false, error: r.error };
+  } catch (error) {
+    return { sent: false, error: error instanceof Error ? error.message : "Email failed." };
+  }
+}
+
+export async function getEnrolmentById(id: number): Promise<Enrolment | null> {
+  const [r] = await db().select().from(enrolments).where(eq(enrolments.id, id)).limit(1);
+  return r ? toEnrolment(r) : null;
 }
 
 /* -------------------------------------------------------------------------- */
