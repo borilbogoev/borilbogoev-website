@@ -399,3 +399,30 @@ test("categories, rich posts, pin, sort rules, unread, comments off", async () =
   await cats.deleteCategory(V.S, news.id);
   assert.ok((await posts.getPostRow(p3.id)) && (await posts.getPostRow(p3.id))!.categoryId === null);
 });
+
+test("rich post themes and featured media", async () => {
+  const comm = await admin.createCommunity(V.S, { slug: "themes", name: "Themes" });
+  const sS = await ctx.scopeById(V.S, comm.id);
+  const rid = await rich.createRich(V.S, { communityId: comm.id, title: "Looks" });
+  assert.equal((await rich.getRich(V.S, rid)).theme, "ink", "default theme");
+  const blocks = [{ type: "hero_image", settings: { headline: "x", image: { id: 1, url: "/first.webp" } } }];
+  await rich.saveRich(V.S, rid, { blocks, theme: "neon" });
+  assert.equal((await rich.getRich(V.S, rid)).theme, "ink", "an unknown theme is ignored");
+  await rich.saveRich(V.S, rid, { theme: "signal", status: "published" });
+  let card = (await posts.listFeed(sS, { sort: "new" })).items.find((x) => x.id === rid)!;
+  assert.equal(card.theme, "signal");
+  assert.equal(card.cover, "/first.webp", "no featured media: the first visual block");
+  assert.equal(card.coverVideo, false);
+  await rich.saveRich(V.S, rid, { theme: "frame", featured: { image: { url: "/featured.webp", width: 800, height: 600 }, video: "https://youtu.be/dQw4w9WgXcQ" } });
+  card = (await posts.listFeed(sS, { sort: "new" })).items.find((x) => x.id === rid)!;
+  assert.equal(card.theme, "frame");
+  assert.equal(card.cover, "/featured.webp");
+  assert.equal(card.coverVideo, true);
+  const f = (await rich.getRich(V.S, rid)).featured;
+  assert.equal(f.video, "https://youtu.be/dQw4w9WgXcQ");
+  await rich.saveRich(V.S, rid, { featured: { image: { url: "javascript:alert(1)" }, video: "https://evil.example/page" } });
+  const clean = (await rich.getRich(V.S, rid)).featured;
+  assert.equal(clean.image, undefined, "unsafe picture address dropped");
+  assert.equal(clean.video, undefined, "a link that is not a known video is dropped");
+  assert.equal((await rich.listRich(V.S, {})).find((r) => r.id === rid)?.theme, "frame");
+});

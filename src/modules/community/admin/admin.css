@@ -25,3 +25,21 @@
 .cm-adm-hl span { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--bbfa-soft, #fbeded); color: var(--bbfa-accent, #c72c2c); }
 .cm-rich-meta { max-width: none; margin: 8px 0; }
 .cm-rich-meta textarea { min-height: 56px; }
+
+/* theme picker and preview */
+.cm-themes { border: 0; margin: 0; padding: 0; }
+.cm-themes__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.cm-theme { display: grid; gap: 4px; align-content: start; padding: 10px; border: 1.5px solid var(--bbfa-line2, #e2e2e2); border-radius: 12px; background: #fff; cursor: pointer; }
+.cm-theme input { position: absolute; opacity: 0; pointer-events: none; }
+.cm-theme.is-on { border-color: var(--bbfa-ink, #1a1a1a); box-shadow: 0 0 0 2px var(--bbfa-ink, #1a1a1a); }
+.cm-theme:focus-within { outline: 2px solid var(--bbfa-accent, #c72c2c); outline-offset: 2px; }
+.cm-theme strong { font-size: 13px; }
+.cm-theme small { font-size: 11.5px; color: var(--bbfa-muted, #6b6b6b); line-height: 1.35; }
+.cm-theme__sw { display: grid; grid-template-columns: 1fr 34%; height: 54px; border-radius: 8px; overflow: hidden; border: 1px solid var(--bbfa-line2, #e2e2e2); }
+.cm-theme__sw i { display: block; }
+.cm-theme__sw--ink { background: #1a1a1a; border-left: 4px solid #c72c2c; } .cm-theme__sw--ink i:last-child { background: #6b6b6b; }
+.cm-theme__sw--paper { background: #fff; border: 2px solid #1a1a1a; grid-template-columns: 34% 1fr; } .cm-theme__sw--paper i:first-child { background: #ddd; order: -1; } .cm-theme__sw--paper i:last-child { background: #fff; }
+.cm-theme__sw--signal { background: #c72c2c; } .cm-theme__sw--signal i:last-child { background: #fff; margin: 6px; border-radius: 4px; }
+.cm-theme__sw--tint { background: #fbeded; grid-template-columns: 1fr; grid-template-rows: 55% 1fr; } .cm-theme__sw--tint i:first-child { background: #e8b9b9; order: 1; }
+.cm-theme__sw--frame { background: #efefef; border: 2px solid #1a1a1a; } .cm-theme__sw--frame i:last-child { background: #fff; margin: 6px; border: 2px solid #1a1a1a; border-radius: 4px; }
+.cm-preview { max-width: 760px; margin-top: 6px; }
