@@ -1,20 +1,21 @@
 import { requireUser } from "@/modules/auth/current";
-import { listUsers } from "@/modules/auth/users";
-import { UsersEditor } from "@/modules/forms/admin/users-editor";
+import { assignableRoles } from "@/modules/auth/roles";
+import { parseList, filterToParams } from "@/modules/users/lib/filter";
+import { filterOptions, listUsersPage } from "@/modules/users/server/query";
+import { UsersList } from "@/modules/users/admin/users-list";
 import { PageHeader } from "../header";
 
 export const metadata = { title: "Users" };
 
-export default async function UsersPage() {
+export default async function UsersPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const me = await requireUser("users.manage", "/admin/users");
-  const users = await listUsers();
+  const params = parseList(await searchParams);
+  const [list, options] = await Promise.all([listUsersPage(params), filterOptions()]);
+  const key = `${filterToParams(params.filter)}|${params.sort}|${params.dir}|${list.page}|${params.perPage}`;
   return (
     <>
       <PageHeader eyebrow="Access" title={<>Users<span className="bbfa-dot">.</span></>} />
-      <UsersEditor
-        me={{ id: me.id, role: me.role }}
-        users={users.map((u) => ({ id: u.id, email: u.email, name: u.name, role: u.role, status: u.status, lastLoginAt: u.lastLoginAt?.toISOString() ?? null, hasPassword: u.hasPassword }))}
-      />
+      <UsersList key={key} {...list} params={params} options={options} me={{ id: me.id, role: me.role }} roles={assignableRoles(me.role)} />
     </>
   );
 }

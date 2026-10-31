@@ -9,6 +9,8 @@ All notable changes to this project. Versions follow [Semantic Versioning](https
 - Header: the portrait replaces the About text link. Session 1 renamed. Sessions pricing tiers replaced by a free Deliverables list.
 
 ### Added
+- Users module: search, many filters, sort, pagination, checkboxes with select-all-matching, bulk actions (tags, courses, communities, ban, password reset, role, sign out, delete), user page with full edit, tags (migration `0009_users_tags`), CSV export with chosen columns.
+- Communities: the superadmin can delete a community and move its posts and comments to another one, or delete them.
 - Forms module (BB Forms, migrated from BB Forms WP): block builder, conversational and classic modes, conditional logic, responses inbox with CSV export, per-form dashboard, notifications, autoresponder, signed webhooks, file uploads (Vercel Blob), GDPR tools and retention.
 - Embed anywhere: `<FormEmbed id display="inline|modal">`, plus a standalone page per form at `/s/<slug>`. The two shared webinar links keep working.
 - Admin area at `/admin` with users and roles (owner, admin, editor, contributor, viewer), password and Google sign-in.

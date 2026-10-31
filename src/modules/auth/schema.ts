@@ -1,4 +1,4 @@
-import { pgTable, uuid, text, timestamp, integer, uniqueIndex } from "drizzle-orm/pg-core";
+import { pgTable, uuid, text, timestamp, integer, serial, uniqueIndex, index } from "drizzle-orm/pg-core";
 
 // People who can sign in: staff to /admin, everyone else to their own area at /account. An owner or admin creates accounts; students may also sign up when School sign-up is open.
 // `role` is one of the keys in ./roles.ts and is always read from here, never from the session cookie.
@@ -30,3 +30,27 @@ export const users = pgTable(
 );
 
 export type User = typeof users.$inferSelect;
+
+// Tags (also called groups or segments) to sort users: a nomenclature kept in Admin > Users > Tags. A user can have any number of tags.
+export const userTags = pgTable(
+  "user_tags",
+  {
+    id: serial("id").primaryKey(),
+    name: text("name").notNull(),
+    slug: text("slug").notNull(), // lowercase, unique; the stable handle in URLs and exports
+    description: text("description").notNull().default(""),
+    createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex("user_tags_slug_idx").on(t.slug)],
+);
+
+export const userTagMembers = pgTable(
+  "user_tag_members",
+  {
+    tagId: integer("tag_id").notNull().references(() => userTags.id, { onDelete: "cascade" }),
+    userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex("user_tag_members_pair_idx").on(t.tagId, t.userId), index("user_tag_members_user_idx").on(t.userId)],
+);

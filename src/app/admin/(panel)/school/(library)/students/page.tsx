@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { requireUser } from "@/modules/auth/current";
 import { can } from "@/modules/auth/roles";
 import { SchoolTabs } from "@/modules/school/admin/library-header";
@@ -52,7 +53,7 @@ export default async function StudentsPage({ searchParams }: { searchParams: Pro
         }))}
       />
       <p className="bbfa-muted" style={{ marginTop: 24 }}>
-        Students are users with the role Student. Change a role, disable an account or reset a password in <a href="/admin/users">Users</a>.
+        Students are users with the role Student. Change a role, disable an account or reset a password in <Link href="/admin/users">Users</Link>.
       </p>
     </>
   );
