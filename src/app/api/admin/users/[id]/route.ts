@@ -2,6 +2,11 @@ import { guarded, json } from "@/modules/auth/guard";
 import { MIN_PASSWORD_LENGTH } from "@/modules/auth/password";
 import { assignableRoles, canManageUser, isRole, type Role } from "@/modules/auth/roles";
 import { countOwners, deleteUser, getUserById, toPublic, updateUser } from "@/modules/auth/users";
+import { saveProfile, type ProfileInput } from "@/modules/account/lib/profile";
+import { cleanEmail } from "@/modules/forms/lib/sanitize";
+import { db } from "@/db/use";
+import { schema } from "@/db";
+import { eq, sql } from "drizzle-orm";
 
 export const runtime = "nodejs";
 type Ctx = { params: Promise<{ id: string }> };
@@ -13,7 +18,7 @@ export async function PATCH(request: Request, ctx: Ctx) {
     const isSelf = target.id === actor.id;
     if (!isSelf && !canManageUser(actor.role, target.role)) return json({ error: "You cannot change this user." }, 403);
 
-    const body = (await request.json().catch(() => ({}))) as { name?: string; role?: string; status?: string; password?: string };
+    const body = (await request.json().catch(() => ({}))) as { name?: string; role?: string; status?: string; password?: string; email?: string; profile?: ProfileInput; unlock?: boolean; signout?: boolean };
     const patch: Parameters<typeof updateUser>[1] = {};
     if (typeof body.name === "string") patch.name = body.name.slice(0, 120);
     if (body.role !== undefined) {
@@ -34,6 +39,20 @@ export async function PATCH(request: Request, ctx: Ctx) {
     if (target.role === "owner" && ((patch.role && patch.role !== "owner") || patch.status === "disabled") && (await countOwners(target.id)) === 0) {
       return json({ error: "There must be at least one active owner." }, 400);
     }
+    if (typeof body.email === "string" && body.email.trim().toLowerCase() !== target.email) {
+      const email = cleanEmail(body.email).toLowerCase();
+      if (!email) return json({ error: "Enter a valid email address." }, 400);
+      const [clash] = await db().select({ id: schema.users.id }).from(schema.users).where(eq(schema.users.email, email)).limit(1);
+      if (clash) return json({ error: "A user with this email already exists." }, 409);
+      await db().update(schema.users).set({ email, updatedAt: new Date() }).where(eq(schema.users.id, target.id));
+    }
+    // The whole profile (name, username, phone, company, job title, country, time zone, bio), validated like My Info.
+    if (body.profile && typeof body.profile === "object") {
+      const saved = await saveProfile(target.id, body.profile);
+      if (!saved.ok) return json({ error: saved.error }, 400);
+    }
+    if (body.unlock) await db().update(schema.users).set({ failedAttempts: 0, lockedUntil: null }).where(eq(schema.users.id, target.id));
+    if (body.signout) await db().update(schema.users).set({ sessionVersion: sql`${schema.users.sessionVersion} + 1` }).where(eq(schema.users.id, target.id));
     const updated = await updateUser(target.id, patch);
     return json({ user: updated ? toPublic(updated) : null }, 200);
   });

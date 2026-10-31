@@ -64,6 +64,13 @@
       "when": 1793288318796,
       "tag": "0008_community_rich_posts",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1793436712244,
+      "tag": "0009_users_tags",
+      "breakpoints": true
     }
   ]
 }

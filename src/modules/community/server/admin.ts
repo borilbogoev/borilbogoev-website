@@ -1,11 +1,11 @@
 // The control panel's data and actions. SuperAdmin does everything; a moderator only sees Members and Reports of their own communities.
 // Each function checks the actor itself (never trust the page that called it) and writes to community_admin_log.
-import { and, asc, count, desc, eq, gte, ilike, inArray, ne, or } from "drizzle-orm";
+import { and, asc, count, desc, eq, gte, ilike, inArray, ne, or, sql } from "drizzle-orm";
 import { schema } from "@/db";
 import { RESERVED_SLUGS, SORT_RULES, JOIN_MODES, VISIBILITY, COMMUNITY_STATUS, REPORT_ACTIONS, type ReportAction } from "../lib/constants";
 import { snippet } from "../lib/text";
 import { log } from "./audit";
-import { CommunityError, db, forbidden, invalid, isUniqueViolation, isUuid, notFound, unwrap } from "./core";
+import { CommunityError, db, forbidden, invalid, isUniqueViolation, isUuid, notFound, run, toId, unwrap } from "./core";
 import { getCommunityById, getMembership, memberState, communityState, scopeById, type CommunityRow, type Viewer } from "./context";
 import { canAssignModerators, canBan, canManageCommunities, canManageGlobal, canSeeReports } from "./permissions";
 import { clearMemberCounts, memberCounts } from "./communities";
@@ -128,6 +128,52 @@ export async function updateCommunity(viewer: Viewer, id: number, input: Communi
   const [row] = await db().update(communities).set(set).where(eq(communities.id, id)).returning();
   await log(viewer.user.id, "community.update", "community", id, { fields: Object.keys(set).filter((k) => k !== "updatedAt") });
   return row;
+}
+
+export type DeleteCommunityInput = { mode?: unknown; targetId?: unknown; confirm?: unknown };
+
+/**
+ * Deletes a community for good (SuperAdmin only). Its posts and comments either move to another community or go with it.
+ * The move is one SQL statement because the Neon HTTP driver has no interactive transactions. Members, categories and
+ * the community itself are removed by the foreign keys. The default community cannot be deleted.
+ */
+export async function deleteCommunity(viewer: Viewer, id: number, input: DeleteCommunityInput) {
+  unwrap(canManageCommunities(viewer.actor));
+  const c = await getCommunityById(id);
+  if (!c) throw notFound();
+  if (c.isDefault) throw invalid("Make another community the default before deleting this one.");
+  if (input.confirm !== c.slug) throw invalid("Type the address of the community to confirm.");
+  let moved: { posts: number; comments: number } | null = null;
+  if (input.mode === "transfer") {
+    const targetId = toId(input.targetId);
+    if (!targetId || targetId === id) throw invalid("Choose the community that receives the posts and comments.");
+    const target = await getCommunityById(targetId);
+    if (!target) throw invalid("That community does not exist.");
+    if (target.status === "archived") throw invalid("Choose an active community as the destination.");
+    const [row] = await run<{ posts: number; comments: number }>(sql`
+      WITH p AS (UPDATE community_posts SET community_id = ${targetId}, category_id = NULL WHERE community_id = ${id} RETURNING id),
+           c AS (UPDATE community_comments SET community_id = ${targetId} WHERE community_id = ${id} RETURNING id),
+           n AS (UPDATE community_notifications SET community_id = ${targetId} WHERE community_id = ${id} RETURNING id),
+           m AS (UPDATE community_mentions SET community_id = ${targetId} WHERE community_id = ${id} RETURNING id),
+           r AS (UPDATE community_reports SET community_id = ${targetId} WHERE community_id = ${id} RETURNING id)
+      SELECT (SELECT count(*) FROM p)::int AS posts, (SELECT count(*) FROM c)::int AS comments`);
+    moved = row ?? { posts: 0, comments: 0 };
+    // Authors keep posting rights in the new home: make sure the people who wrote the moved content are members.
+    await run(sql`
+      INSERT INTO community_members (community_id, user_id, role, status)
+      SELECT DISTINCT ${targetId}::int, a.author_id, 'member'::text, 'active'::text FROM (
+        SELECT author_id FROM community_posts WHERE community_id = ${targetId}
+        UNION SELECT author_id FROM community_comments WHERE community_id = ${targetId}) a
+      ON CONFLICT (community_id, user_id) DO NOTHING`);
+    await log(viewer.user.id, "community.delete", "community", id, { slug: c.slug, name: c.name, transferredTo: targetId, ...moved });
+  } else if (input.mode === "delete") {
+    await log(viewer.user.id, "community.delete", "community", id, { slug: c.slug, name: c.name, contentDeleted: true });
+  } else {
+    throw invalid("Choose whether to move or delete the posts and comments.");
+  }
+  await db().delete(communities).where(eq(communities.id, id));
+  clearMemberCounts();
+  return { moved };
 }
 
 /** Moves the default flag. The partial unique index allows one true row, so the old one is cleared first. */

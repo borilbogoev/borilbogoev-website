@@ -27,9 +27,53 @@ async function act(fn: () => Promise<unknown>, ok: string, then?: () => void): P
 
 export type CommunityRowData = { id: number; slug: string; name: string; visibility: string; joinMode: string; status: string; isDefault: boolean; members: number; posts: number };
 
+function DeleteCommunityDialog({ row, others, onClose, onDone }: { row: CommunityRowData; others: CommunityRowData[]; onClose: () => void; onDone: () => void }) {
+  const targets = others.filter((o) => o.status === "active");
+  const [mode, setMode] = useState<"transfer" | "delete">(targets.length ? "transfer" : "delete");
+  const [targetId, setTargetId] = useState<number | "">(targets.find((o) => o.isDefault)?.id ?? targets[0]?.id ?? "");
+  const [confirmText, setConfirmText] = useState("");
+  const [busy, setBusy] = useState(false);
+  const ready = confirmText === row.slug && (mode === "delete" || targetId !== "");
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setBusy(true);
+    const done = await act(() => request("DELETE", `/api/admin/community/communities/${row.id}`, { mode, targetId: mode === "transfer" ? targetId : undefined, confirm: confirmText }), "Community deleted.", onDone);
+    if (!done) setBusy(false);
+  }
+  return (
+    <div role="dialog" aria-modal="true" aria-label={`Delete ${row.name}`} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.45)", display: "grid", placeItems: "center", zIndex: 50, padding: 16 }}>
+      <form className="cm-adm-form" onSubmit={submit} style={{ background: "#fff", borderRadius: 16, padding: 24, width: "min(560px, 100%)", maxHeight: "90vh", overflow: "auto" }}>
+        <div>
+          <div className="bbfa-eyebrow">Delete community</div>
+          <h3 style={{ margin: "4px 0 0" }}>{row.name}</h3>
+          <p className="bbfa-muted" style={{ margin: "8px 0 0" }}>This removes the community for good: {row.members} members, {row.posts} posts. It cannot be undone. To keep it read only, archive it instead.</p>
+        </div>
+        <fieldset style={{ border: 0, padding: 0, margin: 0, display: "grid", gap: 10 }}>
+          <label className="cm-adm-check"><input type="radio" name="mode" checked={mode === "transfer"} disabled={!targets.length} onChange={() => setMode("transfer")} />Move all posts and comments to another community</label>
+          {mode === "transfer" ? (
+            <select value={targetId} onChange={(e) => setTargetId(Number(e.target.value))} aria-label="Destination community">
+              {targets.map((o) => <option key={o.id} value={o.id}>{o.name}</option>)}
+            </select>
+          ) : null}
+          <label className="cm-adm-check"><input type="radio" name="mode" checked={mode === "delete"} onChange={() => setMode("delete")} />Delete the posts and comments too</label>
+        </fieldset>
+        <label>
+          <span className="cm-adm-label">Type {row.slug} to confirm</span>
+          <input type="text" value={confirmText} onChange={(e) => setConfirmText(e.target.value)} autoComplete="off" />
+        </label>
+        <div className="cm-adm-actions" style={{ justifyContent: "flex-start" }}>
+          <button type="submit" className="bbfa-btn" disabled={!ready || busy}>{busy ? "Deleting..." : "Delete community"}</button>
+          <button type="button" className="bbfa-btn bbfa-btn--ghost" onClick={onClose}>Cancel</button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
 export function CommunitiesTable({ rows }: { rows: CommunityRowData[] }) {
   const router = useRouter();
   const refresh = () => router.refresh();
+  const [deleting, setDeleting] = useState<CommunityRowData | null>(null);
   const move = async (i: number, d: -1 | 1) => {
     const order = rows.map((r) => r.id);
     [order[i], order[i + d]] = [order[i + d], order[i]];
@@ -60,12 +104,14 @@ export function CommunitiesTable({ rows }: { rows: CommunityRowData[] }) {
                   <Link className="bbfa-btn bbfa-btn--ghost bbfa-btn--sm" href={`/admin/communities/${r.id}/members`}>Members</Link>
                   {!r.isDefault ? <button className="bbfa-btn bbfa-btn--ghost bbfa-btn--sm" onClick={() => act(() => patch(`/api/admin/community/communities/${r.id}`, { setDefault: true }), "Default community changed.", refresh)}>Make default</button> : null}
                   {!r.isDefault ? <button className="bbfa-btn bbfa-btn--ghost bbfa-btn--sm" onClick={() => act(() => patch(`/api/admin/community/communities/${r.id}`, { status: r.status === "archived" ? "active" : "archived" }), r.status === "archived" ? "Community restored." : "Community archived.", refresh)}>{r.status === "archived" ? "Unarchive" : "Archive"}</button> : null}
+                  {!r.isDefault ? <button className="bbfa-btn bbfa-btn--ghost bbfa-btn--sm is-danger" onClick={() => setDeleting(r)}>Delete</button> : null}
                 </div>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+      {deleting ? <DeleteCommunityDialog row={deleting} others={rows.filter((o) => o.id !== deleting.id)} onClose={() => setDeleting(null)} onDone={() => { setDeleting(null); refresh(); }} /> : null}
     </div>
   );
 }
