@@ -23,8 +23,10 @@
   .cm-nav { order: 0; width: auto; margin-left: 12px; }
 }
 
-/* page frame */
-.cm-main { padding: 24px 16px 80px; }
+/* page frame: the account menu on the left (from 900px), the page on the right */
+.cm-body .cm-main { padding: 24px 16px 80px; }
+@media (min-width: 900px) { .cm-body .cm-main { padding: 0 0 80px; } }
+.cm-body .ac-nav { top: 76px; }
 .cm-page { max-width: 760px; margin: 0 auto; }
 .cm-page--narrow { max-width: 680px; }
 .cm-head { margin-bottom: 20px; }
