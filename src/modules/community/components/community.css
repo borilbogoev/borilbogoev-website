@@ -296,7 +296,7 @@
 
 /* Tint: soft red, wide picture on top */
 .cm-rich--tint { --rb: #fbeded; --rf: var(--ink); --rm: var(--ink-muted); --rl: var(--brand-tint-line); --ra: var(--brand-text); --rbo: 1px solid var(--brand-tint-line); --rpb: var(--brand); --rpf: var(--on-brand); }
-.cm-rich--tint .cm-rich__cover { order: -1; aspect-ratio: 21 / 9; max-height: 240px; overflow: hidden; }
+.cm-rich--tint .cm-rich__cover { order: -1; width: 100%; aspect-ratio: 21 / 9; overflow: hidden; }
 .cm-rich--tint .cm-rich__chips li { background: var(--surface); }
 
 /* Frame: light grey, ink border, large title, the picture as a framed square */
