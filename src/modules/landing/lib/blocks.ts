@@ -2,6 +2,7 @@
 // the content blocks (Title, Text, Image, Divider, Spacer) are the Forms definitions themselves, extended with section controls.
 import { BLOCK_TYPES as FORM_BLOCKS, defaultsFor, mergeDefaults, sanitizeFor, type Control, type Settings } from "@/modules/forms/lib/blocks";
 import { cleanSlug } from "@/modules/forms/lib/sanitize";
+import { PUBLIC_PICKS, PUBLIC_RANGES, PUBLIC_SORTS } from "@/modules/community/lib/public";
 
 export type { Settings, Control };
 
@@ -33,13 +34,15 @@ export type LandingBlockType =
   | "countdown"
   | "session"
   | "embed"
+  | "community_featured"
+  | "community_feed"
   | "heading"
   | "text"
   | "image"
   | "divider"
   | "spacer";
 
-export type LandingGroup = "hero" | "conversion" | "content" | "media" | "proof" | "offer" | "layout";
+export type LandingGroup = "hero" | "conversion" | "content" | "media" | "proof" | "offer" | "community" | "layout";
 
 export const LANDING_GROUPS: Record<LandingGroup, string> = {
   hero: "Hero",
@@ -48,6 +51,7 @@ export const LANDING_GROUPS: Record<LandingGroup, string> = {
   media: "Media",
   proof: "Social proof",
   offer: "Offer",
+  community: "Community",
   layout: "Layout",
 };
 
@@ -576,6 +580,40 @@ export const LANDING_BLOCKS: Record<LandingBlockType, LandingBlockDef> = {
     ],
   },
   session: shared("session", "conversion", "A dated live event: a dark card with the date, time, details and a sign-up button.", section("surface")),
+  community_featured: {
+    label: "Featured post",
+    group: "community",
+    icon: "hero",
+    desc: "One post of a public community, shown with its own theme: the pinned, newest or most liked one, or a post you choose.",
+    controls: [
+      { key: "community_id", type: "community", label: "Community", default: 0 },
+      { key: "category_id", type: "community_category", label: "Category", default: 0 },
+      select("pick", "Which post", "pinned", { ...PUBLIC_PICKS }),
+      { key: "post_id", type: "community_post", label: "Post", default: 0, show_if: "pick=post" },
+      select("range", "Only posts from", "all", { ...PUBLIC_RANGES }),
+      ...head("", "", ""),
+      ...section("surface"),
+    ],
+  },
+  community_feed: {
+    label: "Posts feed",
+    group: "community",
+    icon: "list",
+    desc: "The latest posts of a public community, filtered by category and date, sorted your way. Each post keeps its own theme.",
+    controls: [
+      { key: "community_id", type: "community", label: "Community", default: 0 },
+      { key: "category_id", type: "community_category", label: "Category", default: 0 },
+      { key: "count", type: "number", label: "Number of posts", default: 6, min: 1, max: 24 },
+      select("sort", "Order", "new", { ...PUBLIC_SORTS }),
+      select("range", "Only posts from", "all", { ...PUBLIC_RANGES }),
+      toggle("pinned_first", "Pinned posts first", 1),
+      select("layout", "Layout", "list", { list: "One column", grid: "Two columns" }),
+      ...head("Latest", "From the community.", ""),
+      text("more_label", "Button label (optional)", ""),
+      url("more_url", "Button link", ""),
+      ...section("surface"),
+    ],
+  },
   embed: {
     label: "Embed",
     group: "media",

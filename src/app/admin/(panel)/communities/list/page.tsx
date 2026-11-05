@@ -13,7 +13,7 @@ export default async function CommunitiesList() {
   return (
     <>
       <AdminHead title="Communities" actions={<Link className="bbfa-btn" href="/admin/communities/new">+ New community</Link>} />
-      <CommunitiesTable rows={rows.map((r) => ({ id: r.id, slug: r.slug, name: r.name, visibility: r.visibility, joinMode: r.joinMode, status: r.status, isDefault: r.isDefault, members: r.members, posts: r.posts }))} />
+      <CommunitiesTable rows={rows.map((r) => ({ id: r.id, slug: r.slug, name: r.name, visibility: r.visibility, joinMode: r.joinMode, access: r.access, status: r.status, isDefault: r.isDefault, members: r.members, posts: r.posts }))} />
     </>
   );
 }

@@ -1413,3 +1413,27 @@
     display: none !important;
   }
 }
+
+/* Community blocks: cards of the posts of a public community (the card itself is styled by the Community snippet themes) */
+.lp-feed {
+  display: grid;
+  gap: 20px;
+}
+@media (min-width: 760px) {
+  .lp-feed--grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .lp-feed--grid .cm-rich.has-cover {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .lp-feed--grid .cm-rich .cm-rich__cover {
+    aspect-ratio: 16 / 9;
+    min-height: 0;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+  }
+}
+.lp-feed__more {
+  margin: 28px 0 0;
+}

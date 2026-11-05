@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState, type DragEvent } from "react";
 import { ControlField, ImageControl, type ControlCtx, type ImageValue } from "@/modules/forms/admin/controls";
 import { RichSnippet } from "../components/rich-snippet";
-import { highlightsOf, snippetCover, THEMES, THEME_LABELS, type Theme } from "../lib/rich";
+import { highlightsOf, RICH_EXCLUDED, snippetCover, THEMES, THEME_LABELS, type Theme } from "../lib/rich";
 import { api, ApiError, Icon, useConfirm, useToast } from "@/modules/forms/admin/ui";
 import type { Settings } from "@/modules/forms/lib/blocks";
 import { brandIssues, type BrandIssue } from "@/modules/landing/lib/brand";
@@ -212,12 +212,12 @@ export function RichPostBuilder({ postId, initial, communities, categories, form
           <div className="bbfa-eyebrow">Blocks</div>
           <p>Click to add below the selected block, or drag into the page.</p>
         </div>
-        {(Object.keys(LANDING_GROUPS) as (keyof typeof LANDING_GROUPS)[]).map((g) => (
+        {(Object.keys(LANDING_GROUPS) as (keyof typeof LANDING_GROUPS)[]).filter((g) => (Object.keys(LANDING_BLOCKS) as LandingBlockType[]).some((t) => LANDING_BLOCKS[t].group === g && !RICH_EXCLUDED.has(t))).map((g) => (
           <div key={g}>
             <div className="bbfa-palette__group">{LANDING_GROUPS[g]}</div>
             <div className="bbfa-palette__grid">
               {(Object.keys(LANDING_BLOCKS) as LandingBlockType[])
-                .filter((t) => LANDING_BLOCKS[t].group === g)
+                .filter((t) => LANDING_BLOCKS[t].group === g && !RICH_EXCLUDED.has(t))
                 .map((t) => (
                   <button
                     key={t}

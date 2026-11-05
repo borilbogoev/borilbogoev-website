@@ -4,7 +4,7 @@ import { listCategories } from "../server/categories";
 import { SORT_LABELS, type Sort } from "../lib/constants";
 import { listCommunities, memberCounts } from "../server/communities";
 import { communityState, memberState, type Scope } from "../server/context";
-import { canJoin, canLeave, canPost } from "../server/permissions";
+import { canComment, canJoin, canLeave, canPost } from "../server/permissions";
 import { t } from "../strings";
 import { CommunitySwitcher, JoinButton } from "./community-actions";
 import { Feed } from "./feed";
@@ -17,6 +17,21 @@ export function Banner({ children }: { children: React.ReactNode }) {
 /** Why the viewer cannot write here, as one sentence. Empty when they can. */
 export function writeBlock(scope: Scope): string {
   const d = canPost(scope.viewer.actor, memberState(scope.membership), communityState(scope.community), scope.settings);
+  if (d.ok) return "";
+  switch (d.code) {
+    case "suspended": return t.community.suspendedBanner;
+    case "archived": return t.community.archivedBanner;
+    case "paused": return t.community.pausedBanner;
+    case "banned": return t.community.bannedBanner;
+    case "not_member": return scope.community.joinMode === "closed" ? t.community.closedToPost : t.community.joinToPost;
+    case "forbidden": return scope.community.access === "public" ? t.community.publicReadOnly : "";
+    default: return "";
+  }
+}
+
+/** Why the viewer cannot comment here, as one sentence. Empty when they can. Public communities let any signed-in person comment. */
+export function commentBlock(scope: Scope): string {
+  const d = canComment(scope.viewer.actor, memberState(scope.membership), communityState(scope.community), scope.settings);
   if (d.ok) return "";
   switch (d.code) {
     case "suspended": return t.community.suspendedBanner;
@@ -60,6 +75,7 @@ export async function CommunityView({ scope, searchParams = {} }: { scope: Scope
               {t.community.members(counts.get(community.id) ?? 0)}
               {community.joinMode === "closed" ? ` · ${t.community.closed}` : ""}
               {community.visibility === "hidden" ? ` · ${t.community.hidden}` : ""}
+              {community.access === "public" ? ` · ${t.community.publicBadge}` : ""}
               {community.status === "archived" ? ` · ${t.community.archived}` : ""}
             </p>
           </div>

@@ -65,6 +65,13 @@ export const api = {
   feedUpdates: (slug: string, after: string, categoryId?: number | null, signal?: AbortSignal) => get<{ newCount: number; newestCursor: string | null }>(`/api/community/${slug}/posts/updates?after=${encodeURIComponent(after)}${categoryId ? `&categoryId=${categoryId}` : ""}`, signal),
   comments: (postId: number, cursor?: string | null) => get<Page<Comment>>(`/api/community/posts/${postId}/comments${cursor ? `?cursor=${encodeURIComponent(cursor)}` : ""}`),
   commentUpdates: (postId: number, after: string | null, signal?: AbortSignal) => get<{ items: Comment[]; people: People; commentCount: number }>(`/api/community/posts/${postId}/comments/updates${after ? `?after=${encodeURIComponent(after)}` : ""}`, signal),
+  /** Public communities: comments are readable without an account. Same shape as the signed-in calls. */
+  publicComments: (postId: number, q: { cursor?: string | null; after?: string | null }, signal?: AbortSignal) => {
+    const p = new URLSearchParams();
+    if (q.cursor) p.set("cursor", q.cursor);
+    if (q.after) p.set("after", q.after);
+    return get<Page<Comment> & { commentCount: number }>(`/api/public/community/posts/${postId}/comments${p.size ? `?${p}` : ""}`, signal);
+  },
   unreadNotifications: (signal?: AbortSignal) => get<{ count: number }>("/api/community/notifications/unread-count", signal),
   unreadConversations: (signal?: AbortSignal) => get<{ count: number }>("/api/community/conversations/unread-count", signal),
 };

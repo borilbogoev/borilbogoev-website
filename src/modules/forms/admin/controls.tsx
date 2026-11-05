@@ -11,6 +11,10 @@ export type ControlCtx = {
   uploadUrl: string;
   /** Forms that can be picked by a `form` control. */
   forms?: { id: number; title: string }[];
+  /** Public communities, their published categories and posts, for the `community*` controls. */
+  communities?: { id: number; name: string }[];
+  communityCategories?: { id: number; communityId: number; name: string }[];
+  communityPosts?: { id: number; communityId: number; title: string }[];
 };
 
 export type ImageValue = { id: number; url: string; width?: number; height?: number; variants?: { w: number; url: string }[] };
@@ -19,7 +23,11 @@ type Props = { control: Control; settings: Settings; set: (key: string, value: u
 
 /** One control of a block. Returns nothing for the controls only Forms knows (field_key, contact_fields, logic). */
 export function ControlField({ control: c, settings: s, set, ctx }: Props) {
-  if (c.show_if && !s[c.show_if]) return null;
+  if (c.show_if) {
+    // "key" shows when the key is on; "key=value" shows when it has that value.
+    const [k, want] = c.show_if.split("=");
+    if (want !== undefined ? String(s[k]) !== want : !s[k]) return null;
+  }
   const v = s[c.key];
   const hint = c.help ? <small>{c.help}</small> : null;
 
@@ -109,6 +117,55 @@ export function ControlField({ control: c, settings: s, set, ctx }: Props) {
           {hint ?? <small>Forms are built in the Forms module. Answers land in that form&apos;s responses.</small>}
         </div>
       );
+    case "community":
+      return (
+        <div className="bbfa-ctl">
+          <label className="bbfa-label">{c.label}</label>
+          <select value={String(v || 0)} onChange={(e) => { set(c.key, Number(e.target.value)); set("category_id", 0); set("post_id", 0); }}>
+            <option value="0">Choose a public community...</option>
+            {(ctx.communities ?? []).map((x) => (
+              <option key={x.id} value={x.id}>
+                {x.name}
+              </option>
+            ))}
+          </select>
+          {hint ?? <small>Only public communities are listed. Make a community public in Admin &gt; Communities.</small>}
+        </div>
+      );
+    case "community_category": {
+      const list = (ctx.communityCategories ?? []).filter((x) => x.communityId === Number(s.community_id));
+      return (
+        <div className="bbfa-ctl">
+          <label className="bbfa-label">{c.label}</label>
+          <select value={String(v || 0)} onChange={(e) => set(c.key, Number(e.target.value))} disabled={!Number(s.community_id)}>
+            <option value="0">Any category</option>
+            {list.map((x) => (
+              <option key={x.id} value={x.id}>
+                {x.name}
+              </option>
+            ))}
+          </select>
+          {hint ?? <small>Only published categories of that community.</small>}
+        </div>
+      );
+    }
+    case "community_post": {
+      const list = (ctx.communityPosts ?? []).filter((x) => x.communityId === Number(s.community_id));
+      return (
+        <div className="bbfa-ctl">
+          <label className="bbfa-label">{c.label}</label>
+          <select value={String(v || 0)} onChange={(e) => set(c.key, Number(e.target.value))} disabled={!Number(s.community_id)}>
+            <option value="0">Choose a post...</option>
+            {list.map((x) => (
+              <option key={x.id} value={x.id}>
+                {x.title} (#{x.id})
+              </option>
+            ))}
+          </select>
+          {hint ?? <small>Published posts of that community.</small>}
+        </div>
+      );
+    }
     case "items":
       return <ItemsControl control={c} items={(v as Settings[]) ?? []} ctx={ctx} onChange={(items) => set(c.key, items)} />;
   }
@@ -122,7 +179,7 @@ function blankItem(fields: Control[]): Settings {
   for (const f of fields) {
     if (f.type === "items") out[f.key] = [];
     else if (f.default !== undefined) out[f.key] = JSON.parse(JSON.stringify(f.default));
-    else out[f.key] = f.type === "toggle" || f.type === "number" || f.type === "form" ? 0 : f.type === "image" ? { id: 0, url: "" } : f.type === "options" ? [] : "";
+    else out[f.key] = f.type === "toggle" || f.type === "number" || f.type === "form" || f.type === "community" || f.type === "community_category" || f.type === "community_post" ? 0 : f.type === "image" ? { id: 0, url: "" } : f.type === "options" ? [] : "";
   }
   return out;
 }

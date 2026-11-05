@@ -38,6 +38,15 @@ A spec is:
 
 Rules for a spec: only the keys in `catalog` are kept; anything missing gets its default; block order is page order. Links are a site path, `#anchor`, `https://`, `mailto:` or `tel:` (anything else is dropped). The Form block needs `form_id`; give the block an `anchor` (the Form block's default is `form`) and point buttons at `#form`.
 
+## Community blocks
+
+Two blocks show posts of a **public community** (set it to Public in Admin > Communities first; see `docs/community/README.md`):
+
+- `community_featured`: `community_id`, `category_id` (0 = any), `pick` (`pinned`, `latest`, `top`, `post`), `post_id` (when `pick` is `post`), `range` (`all`, `7`, `30`, `90`, `365` days), plus eyebrow, heading and intro.
+- `community_feed`: `community_id`, `category_id`, `count` (1 to 24), `sort` (`new`, `top`, `discussed`), `range`, `pinned_first`, `layout` (`list`, `grid`), eyebrow, heading, intro, and an optional button (`more_label`, `more_url`).
+
+Use `npm run landing -- catalog community_feed` for the full list. Posts link to `/c/<community>/<id>`; each card keeps the theme the author gave the post.
+
 ## Copy rules (the brand check enforces most of them)
 
 Eyebrow then sentence-case heading. Short declarative sentences. No emoji, no exclamation marks, no long dashes (comma, colon or "to"), no hype words. Figures approximate with a tilde. Buttons in Title Case, two or three words, one red primary button per view. A heading that ends with a full stop gets the brand's red full stop. Photography greyscale. No second accent colour: the builder offers none on purpose.

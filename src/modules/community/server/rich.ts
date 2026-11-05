@@ -4,7 +4,7 @@ import { and, desc, eq, ne } from "drizzle-orm";
 import { schema } from "@/db";
 import { isLandingBlockType, sanitizeLandingBlock } from "@/modules/landing/lib/blocks";
 import { MAX_RICH_BLOCKS } from "../lib/constants";
-import { highlightsOf, isTheme, snippetCover, type Featured, type Highlight, type RichBlock, type Theme } from "../lib/rich";
+import { highlightsOf, isTheme, RICH_EXCLUDED, snippetCover, type Featured, type Highlight, type RichBlock, type Theme } from "../lib/rich";
 import { sanitizeFor } from "@/modules/forms/lib/blocks";
 import { cleanUrl } from "@/modules/forms/lib/sanitize";
 import { parseVideo } from "@/modules/landing/lib/media";
@@ -14,6 +14,7 @@ import { log } from "./audit";
 import { getCategory } from "./categories";
 import { getCommunityById, type Viewer } from "./context";
 import { canBuildRich } from "./permissions";
+import { refreshPublic } from "./refresh";
 
 const { communityPosts: P, communities: Co, communityCategories: K } = schema;
 
@@ -23,7 +24,7 @@ export function sanitizeBlocks(input: unknown): RichBlock[] {
   const out: RichBlock[] = [];
   for (const raw of input.slice(0, MAX_RICH_BLOCKS)) {
     const t = (raw as { type?: unknown })?.type;
-    if (!isLandingBlockType(t)) continue;
+    if (!isLandingBlockType(t) || RICH_EXCLUDED.has(t)) continue;
     out.push({ type: t, settings: sanitizeLandingBlock(t, (raw as { settings?: unknown }).settings) });
   }
   return out;
@@ -126,6 +127,8 @@ export async function saveRich(viewer: Viewer, id: number, input: RichInput): Pr
   }
   await db().update(P).set(set).where(eq(P.id, id));
   await log(viewer.user.id, wantStatus !== cur.status ? `rich.${wantStatus}` : "rich.save", "post", id);
+  const co = await getCommunityById(communityId);
+  refreshPublic(co ? { communitySlug: co.slug, postId: id } : undefined);
   return getRich(viewer, id);
 }
 

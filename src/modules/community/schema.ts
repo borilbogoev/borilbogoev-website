@@ -26,7 +26,8 @@ export const communities = pgTable(
     description: text("description"),
     iconUrl: text("icon_url"),
     coverUrl: text("cover_url"),
-    visibility: text("visibility").notNull().default("listed"), // listed | hidden
+    visibility: text("visibility").notNull().default("listed"), // listed | hidden (inside the signed-in area)
+    access: text("access").notNull().default("private"), // private (signed-in members only) | public (anyone reads the rich posts; members only comment)
     joinMode: text("join_mode").notNull().default("open"), // open | closed
     status: text("status").notNull().default("active"), // active | archived
     isDefault: boolean("is_default").notNull().default(false),

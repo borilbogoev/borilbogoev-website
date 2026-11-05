@@ -4,6 +4,9 @@ import { SessionCard } from "@/components/session-card";
 import { renderMarkdown } from "@/modules/forms/lib/markdown";
 import { embedAllowed, type LandingBlock, type Settings } from "../lib/blocks";
 import { parseAudio, parseVideo, ratioPadding } from "../lib/media";
+import { RichSnippet } from "@/modules/community/components/rich-snippet";
+import type { PublicPick, PublicRange, PublicSort } from "@/modules/community/lib/public";
+import { pickPublicPost, queryPublicPosts, type PublicPost } from "@/modules/community/server/public";
 import { Carousel, Countdown, LazyForm, VideoPlayer } from "./client";
 import { LIcon } from "./icons";
 
@@ -885,6 +888,61 @@ function SessionBlock({ b }: { b: LandingBlock }) {
 }
 
 /* -------------------------------------------------------------------------- */
+/* Community: posts of a public community. Read on the server when the page is built, so the page stays static. */
+
+const postDate = (iso: string) => new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+
+/** A post as a card, drawn with the theme the author chose for it. */
+function PostCard({ post }: { post: PublicPost }) {
+  return (
+    <RichSnippet
+      href={post.href}
+      data={{ title: post.title, excerpt: post.excerpt, theme: post.theme, cover: post.cover, coverVideo: post.coverVideo, highlights: post.highlights, pinned: post.pinned, categoryName: post.categoryName, commentCount: post.commentCount, commentsLocked: post.commentsLocked }}
+      time={<time className="cm-rich__time" dateTime={post.createdAt}>{postDate(post.createdAt)}</time>}
+    />
+  );
+}
+
+async function CommunityFeatured({ b }: { b: LandingBlock }) {
+  const s = b.settings;
+  const communityId = Number(s.community_id);
+  if (!communityId) return <Sec b={b}><p className="lp-note">Choose a public community in the block settings.</p></Sec>;
+  const post = await pickPublicPost({ communityId, categoryId: Number(s.category_id) || null, pick: s.pick as PublicPick, postId: Number(s.post_id) || null, range: s.range as PublicRange });
+  if (!post) return null;
+  return (
+    <Sec b={b} narrow>
+      <Head s={s} />
+      <div className="lp-feed">
+        <PostCard post={post} />
+      </div>
+    </Sec>
+  );
+}
+
+async function CommunityFeed({ b }: { b: LandingBlock }) {
+  const s = b.settings;
+  const communityId = Number(s.community_id);
+  if (!communityId) return <Sec b={b}><p className="lp-note">Choose a public community in the block settings.</p></Sec>;
+  const posts = await queryPublicPosts({ communityId, categoryId: Number(s.category_id) || null, range: s.range as PublicRange, sort: s.sort as PublicSort, pinnedFirst: !!s.pinned_first, limit: Number(s.count) || 6 });
+  if (!posts.length) return null;
+  return (
+    <Sec b={b}>
+      <Head s={s} />
+      <div className={`lp-feed${s.layout === "grid" ? " lp-feed--grid" : ""}`}>
+        {posts.map((p) => (
+          <PostCard key={p.id} post={p} />
+        ))}
+      </div>
+      {s.more_label && s.more_url ? (
+        <p className="lp-feed__more">
+          <Btn block={b} label={String(s.more_label)} href={String(s.more_url)} style="outline" icon="arrow" />
+        </p>
+      ) : null}
+    </Sec>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
 
 export function RenderBlock({ block, first }: { block: LandingBlock; first: boolean }) {
   switch (block.type) {
@@ -942,6 +1000,10 @@ export function RenderBlock({ block, first }: { block: LandingBlock; first: bool
       return <SessionBlock b={block} />;
     case "embed":
       return <Embed b={block} />;
+    case "community_featured":
+      return <CommunityFeatured b={block} />;
+    case "community_feed":
+      return <CommunityFeed b={block} />;
     case "heading":
       return <Heading b={block} />;
     case "text":

@@ -1,6 +1,9 @@
 // Rich posts: a post the SuperAdmin builds from the Landing Pages blocks. Pure helpers shared by the feed, the page and the admin.
 import { parseVideo } from "@/modules/landing/lib/media";
 
+/** Blocks that only make sense on a landing page: a post cannot list posts. */
+export const RICH_EXCLUDED: ReadonlySet<string> = new Set(["community_featured", "community_feed"]);
+
 export type RichBlock = { type: string; settings: Record<string, unknown> };
 
 /** Looks of the feed snippet. Each is a combination of brand colours and a layout, drawn only from brand tokens. */

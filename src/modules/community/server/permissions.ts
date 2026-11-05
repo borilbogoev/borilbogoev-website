@@ -3,7 +3,7 @@
 
 export type Actor = { id: string; superAdmin: boolean; suspended: boolean };
 export type MemberState = { role: "member" | "moderator"; status: "active" | "banned" } | null;
-export type CommunityState = { status: "active" | "archived"; visibility: "listed" | "hidden"; joinMode: "open" | "closed" };
+export type CommunityState = { status: "active" | "archived"; visibility: "listed" | "hidden"; joinMode: "open" | "closed"; access?: "private" | "public" };
 export type GlobalState = { postingPaused: boolean };
 
 export type Decision = { ok: true } | { ok: false; code: "signin" | "forbidden" | "not_found" | "read_only" | "paused" | "archived" | "banned" | "suspended" | "not_member" | "closed"; message: string };
@@ -17,10 +17,18 @@ const isMember = (m: MemberState) => !!m;
 const isActiveMember = (m: MemberState) => m?.status === "active";
 export const isModerator = (a: A, m: MemberState) => !!a && (a.superAdmin || (m?.role === "moderator" && m.status === "active"));
 
-/** Seeing that a community exists and reading it. Hidden communities answer "not found" to outsiders. */
+/** A public community: anyone reads its published rich posts; only the SuperAdmin posts; signed-in people comment. */
+export const isPublic = (c: Pick<CommunityState, "access">) => c.access === "public";
+
+/** Reading the public face of a community (its rich posts and their comments). No account needed. */
+export function canViewPublic(c: Pick<CommunityState, "access">): Decision {
+  return isPublic(c) ? yes : no("not_found", "Not found.");
+}
+
+/** Seeing that a community exists and reading it. Hidden communities answer "not found" to outsiders. A public community is open to every signed-in person. */
 export function canView(a: A, m: MemberState, c: CommunityState): Decision {
   if (!a) return no("signin", "Please sign in.");
-  if (a.superAdmin) return yes;
+  if (a.superAdmin || isPublic(c)) return yes;
   if (c.visibility === "hidden" && !isMember(m)) return no("not_found", "Not found.");
   return yes;
 }
@@ -48,11 +56,31 @@ function canWrite(a: A, m: MemberState, c: CommunityState, g: GlobalState, opts:
   return yes;
 }
 
-export const canPost = (a: A, m: MemberState, c: CommunityState, g: GlobalState) => canWrite(a, m, c, g, { paused: true });
-export const canComment = canPost;
+/** Posting: members of a private community. In a public community only the SuperAdmin publishes. */
+export function canPost(a: A, m: MemberState, c: CommunityState, g: GlobalState): Decision {
+  if (a && !a.superAdmin && isPublic(c)) return no("forbidden", "Only the author publishes in this community. You can comment on posts.");
+  return canWrite(a, m, c, g, { paused: true });
+}
 
-/** Liking: the same rules as writing, but allowed while posting is paused. */
-export const canReact = (a: A, m: MemberState, c: CommunityState, g: GlobalState) => canWrite(a, m, c, g, { paused: false });
+/**
+ * Commenting and liking. Private communities: members only. Public communities: any signed-in person who is not banned; an open
+ * community adds them as a member with their first comment, a closed one needs an existing membership.
+ */
+function canInteract(a: A, m: MemberState, c: CommunityState, g: GlobalState, paused: boolean): Decision {
+  if (!isPublic(c)) return canWrite(a, m, c, g, { paused });
+  if (!a) return no("signin", "Sign in to comment.");
+  if (a.suspended) return no("suspended", "Your Community access is read only.");
+  if (c.status === "archived") return no("archived", "This community is archived.");
+  if (paused && g.postingPaused) return no("paused", "Posting is paused.");
+  if (a.superAdmin) return yes;
+  if (m?.status === "banned") return no("banned", "You are banned from this community.");
+  if (!m && c.joinMode === "closed") return no("not_member", "This community is closed.");
+  return yes;
+}
+export const canComment = (a: A, m: MemberState, c: CommunityState, g: GlobalState) => canInteract(a, m, c, g, true);
+
+/** Liking: the same rules as commenting, but allowed while posting is paused. */
+export const canReact = (a: A, m: MemberState, c: CommunityState, g: GlobalState) => canInteract(a, m, c, g, false);
 
 /** Own posts and comments: editing or deleting. Authors only; the same read-only rules apply. */
 export function canEditOwn(a: A, m: MemberState, c: CommunityState, g: GlobalState, authorId: string): Decision {

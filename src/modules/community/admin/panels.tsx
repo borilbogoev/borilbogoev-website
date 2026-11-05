@@ -25,7 +25,7 @@ async function act(fn: () => Promise<unknown>, ok: string, then?: () => void): P
 
 // ------------------------------------------------------------------ communities
 
-export type CommunityRowData = { id: number; slug: string; name: string; visibility: string; joinMode: string; status: string; isDefault: boolean; members: number; posts: number };
+export type CommunityRowData = { id: number; slug: string; name: string; visibility: string; joinMode: string; access: string; status: string; isDefault: boolean; members: number; posts: number };
 
 function DeleteCommunityDialog({ row, others, onClose, onDone }: { row: CommunityRowData; others: CommunityRowData[]; onClose: () => void; onDone: () => void }) {
   const targets = others.filter((o) => o.status === "active");
@@ -83,7 +83,7 @@ export function CommunitiesTable({ rows }: { rows: CommunityRowData[] }) {
     <div className="bbfa-table-wrap cm-adm-wrap">
       <table className="bbfa-table">
         <thead>
-          <tr><th>Name</th><th>Address</th><th>Visibility</th><th>Join</th><th>Status</th><th className="num">Members</th><th className="num">Posts</th><th /></tr>
+          <tr><th>Name</th><th>Address</th><th>Visibility</th><th>Access</th><th>Join</th><th>Status</th><th className="num">Members</th><th className="num">Posts</th><th /></tr>
         </thead>
         <tbody>
           {rows.map((r, i) => (
@@ -91,6 +91,7 @@ export function CommunitiesTable({ rows }: { rows: CommunityRowData[] }) {
               <td><strong>{r.name}</strong> {r.isDefault ? <span className="bbfa-pill bbfa-pill--active">Default</span> : null}</td>
               <td><code>/community/{r.slug}</code></td>
               <td>{r.visibility}</td>
+              <td>{r.access === "public" ? <span className="bbfa-pill bbfa-pill--active">Public</span> : "Private"}</td>
               <td>{r.joinMode}</td>
               <td>{pill(r.status)}</td>
               <td className="num">{r.members}</td>
@@ -116,7 +117,7 @@ export function CommunitiesTable({ rows }: { rows: CommunityRowData[] }) {
   );
 }
 
-export type CommunityFormData = { id?: number; slug: string; name: string; description: string; iconUrl: string; coverUrl: string; visibility: string; joinMode: string; status: string; defaultSort: string };
+export type CommunityFormData = { id?: number; slug: string; name: string; description: string; iconUrl: string; coverUrl: string; visibility: string; joinMode: string; access: string; status: string; defaultSort: string };
 
 export function CommunityForm({ initial }: { initial: CommunityFormData }) {
   const router = useRouter();
@@ -173,6 +174,7 @@ export function CommunityForm({ initial }: { initial: CommunityFormData }) {
         <label><span className="cm-adm-label">Visibility</span><select value={v.visibility} onChange={(e) => set({ visibility: e.target.value })}><option value="listed">Listed: everyone can see it</option><option value="hidden">Hidden: only members see it</option></select></label>
         <label><span className="cm-adm-label">Join mode</span><select value={v.joinMode} onChange={(e) => set({ joinMode: e.target.value })}><option value="open">Open: anyone signed in can join</option><option value="closed">Closed: an admin adds members</option></select></label>
       </div>
+      <label><span className="cm-adm-label">Access</span><select value={v.access} onChange={(e) => set(e.target.value === "public" ? { access: "public", visibility: "listed" } : { access: "private" })}><option value="private">Private: lives in the signed-in Community, members only</option><option value="public">Public: anyone can read its rich posts (pages, Landing blocks); members only comment</option></select><small className="bbfa-muted">In a public community only you publish (rich posts). Signed-in people can comment; an open community adds them as members with their first comment. Draft and hidden posts stay private.</small></label>
       <label><span className="cm-adm-label">Sorting of the &ldquo;All&rdquo; feed</span><select value={v.defaultSort} onChange={(e) => set({ defaultSort: e.target.value })}>{SORT_RULES.map((r) => <option key={r} value={r}>{SORT_LABELS[r]}: {SORT_HELP[r].toLowerCase()}</option>)}</select><small className="bbfa-muted">Each category has its own rule on the Categories page. Members can still pick another order from the sort menu.</small></label>
       <label><span className="cm-adm-label">Status</span><select value={v.status} onChange={(e) => set({ status: e.target.value })}><option value="active">Active</option><option value="archived">Archived: read only</option></select></label>
       {error ? <p className="bbfa-login__error" role="alert">{error}</p> : null}

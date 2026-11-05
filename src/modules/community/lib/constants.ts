@@ -20,6 +20,7 @@ export const RESERVED_SLUGS = ["communities", "messages", "notifications", "post
 
 export const VISIBILITY = ["listed", "hidden"] as const;
 export const JOIN_MODES = ["open", "closed"] as const;
+export const ACCESS = ["private", "public"] as const;
 export const COMMUNITY_STATUS = ["active", "archived"] as const;
 export const CONTENT_STATUS = ["published", "hidden_by_mod", "deleted"] as const;
 export const REPORT_TARGETS = ["post", "comment", "message", "user"] as const;
@@ -39,6 +40,7 @@ export const MAX_RICH_BLOCKS = 60;
 
 export type Visibility = (typeof VISIBILITY)[number];
 export type JoinMode = (typeof JOIN_MODES)[number];
+export type Access = (typeof ACCESS)[number];
 export type CommunityStatus = (typeof COMMUNITY_STATUS)[number];
 export type ContentStatus = (typeof CONTENT_STATUS)[number];
 export type ReportTarget = (typeof REPORT_TARGETS)[number];

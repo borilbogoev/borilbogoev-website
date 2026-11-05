@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { CommentSection } from "@/modules/community/components/comments";
-import { Banner, writeBlock } from "@/modules/community/components/community-view";
+import { Banner, commentBlock } from "@/modules/community/components/community-view";
 import { RichBody } from "@/modules/community/components/rich-body";
 import { listCategories } from "@/modules/community/server/categories";
 import { PostCard } from "@/modules/community/components/post-card";
@@ -32,7 +32,7 @@ export default async function PostPage({ params }: Props) {
   if (scope.community.slug !== slug) redirect(`/community/${scope.community.slug}/post/${row.id}`);
   const found = await getPost(scope, row.id);
   if (!found) notFound();
-  const [comments, blocked, cats] = await Promise.all([listComments(scope, row.id, null), Promise.resolve(writeBlock(scope)), listCategories(scope.community.id, { all: viewer.actor.superAdmin }), markPostRead(viewer.user.id, row.id)]);
+  const [comments, blocked, cats] = await Promise.all([listComments(scope, row.id, null), Promise.resolve(commentBlock(scope)), listCategories(scope.community.id, { all: viewer.actor.superAdmin }), markPostRead(viewer.user.id, row.id)]);
   const rich = found.item.kind === "rich";
   const locked = found.item.commentsLocked;
   const person = me(viewer);

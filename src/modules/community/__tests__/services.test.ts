@@ -21,6 +21,7 @@ import * as coms from "../server/communities";
 import { setLike } from "../server/likes";
 import * as cats from "../server/categories";
 import * as rich from "../server/rich";
+import * as pub from "../server/public";
 import { clearSettingsCache } from "../server/settings";
 
 const ids = { A: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa", B: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb", M: "cccccccc-cccc-4ccc-8ccc-cccccccccccc", S: "dddddddd-dddd-4ddd-8ddd-dddddddddddd", X: "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee" };
@@ -425,4 +426,96 @@ test("rich post themes and featured media", async () => {
   assert.equal(clean.image, undefined, "unsafe picture address dropped");
   assert.equal(clean.video, undefined, "a link that is not a known video is dropped");
   assert.equal((await rich.listRich(V.S, {})).find((r) => r.id === rid)?.theme, "frame");
+});
+
+test("public communities: public reads, members comment, nothing private leaks", async () => {
+  const blog = await admin.createCommunity(V.S, { slug: "blog", name: "Blog", access: "public" });
+  assert.equal(blog.access, "public");
+  await assert.rejects(async () => admin.createCommunity(V.S, { slug: "bad-pub", name: "Bad", access: "public", visibility: "hidden" }), /has to be listed/);
+  await assert.rejects(async () => admin.updateCommunity(V.S, 1, { access: "public" }), /default community has to stay private/);
+  const news = await cats.createCategory(V.S, blog.id, { name: "News", status: "published" });
+  const tips = await cats.createCategory(V.S, blog.id, { name: "Tips", status: "published" });
+  await cats.createCategory(V.S, blog.id, { name: "Secret", status: "draft" });
+
+  const mk = async (title: string, o: { status?: "published" | "draft"; categoryId?: number } = {}) => {
+    const id = await rich.createRich(V.S, { communityId: blog.id, title, categoryId: o.categoryId });
+    await rich.saveRich(V.S, id, { title, excerpt: `About ${title}`, blocks: [{ type: "heading", settings: { text: title } }], status: o.status ?? "published" });
+    return id;
+  };
+  const a = await mk("Alpha", { categoryId: news.id });
+  const b = await mk("Beta", { categoryId: tips.id });
+  const c = await mk("Gamma", { categoryId: news.id });
+  const draft = await mk("Draft one", { status: "draft" });
+
+  // what the world sees: published rich posts of public communities only
+  const all = await pub.queryPublicPosts({ communityId: blog.id });
+  assert.deepEqual(all.map((x) => x.title), ["Gamma", "Beta", "Alpha"], "newest first, no draft");
+  assert.equal(all[0].href, `/c/blog/${c}`);
+  assert.equal((await pub.getPublicPost(draft)), null, "a draft is not public");
+  assert.equal((await pub.getPublicPost(a))?.blocks.length, 1);
+  assert.deepEqual((await pub.listPublicCommunities()).map((x) => x.slug), ["blog"], "private communities are not listed");
+  assert.deepEqual((await pub.listPublicCategories()).map((x) => x.name), ["News", "Tips"], "draft categories are not listed");
+
+  // a plain post (not rich) and a rich post in a private community never leave
+  const plain = (await posts.createPost(await ctx.scopeById(V.S, blog.id), { body: "a plain post" })).item;
+  assert.equal(await pub.getPublicPost(plain.id), null, "only rich posts are public");
+  assert.equal((await pub.queryPublicPosts({ communityId: blog.id })).length, 3);
+  const priv = await admin.createCommunity(V.S, { slug: "priv-room", name: "Private room" });
+  const pr = await rich.createRich(V.S, { communityId: priv.id, title: "Hidden away" });
+  await rich.saveRich(V.S, pr, { blocks: [{ type: "heading", settings: { text: "x" } }], status: "published" });
+  assert.equal(await pub.getPublicPost(pr), null, "a private community has no public face");
+  assert.equal((await pub.queryPublicPosts({ communityId: priv.id })).length, 0);
+
+  // filters: category, sort, limit, range, pinned first
+  assert.deepEqual((await pub.queryPublicPosts({ communityId: blog.id, categoryId: news.id })).map((x) => x.title), ["Gamma", "Alpha"]);
+  assert.equal((await pub.queryPublicPosts({ communityId: blog.id, limit: 2 })).length, 2);
+  assert.equal((await pub.queryPublicPosts({ communityId: blog.id, limit: 999 })).length, 3, "limit is clamped, not an error");
+  await setLike(V.A, "post", a, true);
+  await setLike(V.B, "post", a, true);
+  assert.equal((await pub.queryPublicPosts({ communityId: blog.id, sort: "top" }))[0].title, "Alpha");
+  await db().update(schema.communityPosts).set({ createdAt: new Date(Date.now() - 40 * 86_400_000) }).where(eq(schema.communityPosts.id, b));
+  assert.deepEqual((await pub.queryPublicPosts({ communityId: blog.id, range: "30" })).map((x) => x.title), ["Gamma", "Alpha"], "range drops older posts");
+  assert.equal((await pub.queryPublicPosts({ communityId: blog.id, range: "90" })).length, 3);
+  await posts.updatePostMeta(await ctx.scopeById(V.S, blog.id), (await posts.getPostRow(a))!, { pinned: true });
+  assert.equal((await pub.queryPublicPosts({ communityId: blog.id, pinnedFirst: true }))[0].title, "Alpha");
+  assert.equal((await pub.pickPublicPost({ communityId: blog.id, pick: "pinned" }))?.title, "Alpha");
+  assert.equal((await pub.pickPublicPost({ communityId: blog.id, pick: "latest" }))?.title, "Gamma");
+  assert.equal((await pub.pickPublicPost({ communityId: blog.id, pick: "post", postId: b }))?.title, "Beta");
+  assert.equal(await pub.pickPublicPost({ communityId: blog.id, pick: "post", postId: draft }), null, "a chosen draft shows nothing");
+  assert.equal(await pub.pickPublicPost({ communityId: blog.id, pick: "post", postId: pr }), null, "a chosen post of another community shows nothing");
+
+  // members cannot post here; the SuperAdmin can
+  await assert.rejects(async () => posts.createPost(await ctx.scopeBySlug(V.A, "blog"), { body: "my post" }), /Only the author publishes/);
+
+  // comments: a signed-in non-member comments and becomes a member; the world reads them
+  const sX = await ctx.scopeBySlug(V.X, "blog");
+  assert.equal(sX.membership, null);
+  const made = await comments.createComment(sX, a, { body: "Nice read" });
+  assert.equal(made.item.body, "Nice read");
+  assert.equal((sX.membership as ctx.MemberRow | null)?.status, "active", "joined with the first comment");
+  assert.equal((await db().select().from(schema.communityMembers).where(eq(schema.communityMembers.userId, ids.X))).some((m) => m.communityId === blog.id), true);
+  const seen = await pub.listPublicComments(a, null);
+  assert.equal(seen?.items.length, 1);
+  assert.equal(seen?.items[0].mine, false);
+  assert.equal(seen?.items[0].canDelete, false, "a visitor cannot manage anything");
+  assert.equal(seen?.commentCount, 1);
+  assert.equal(await pub.listPublicComments(draft, null), null);
+  assert.equal(await pub.listPublicComments(pr, null), null, "comments of a private community stay private");
+
+  // comments off, a banned member, and a closed community
+  await posts.updatePostMeta(await ctx.scopeById(V.S, blog.id), (await posts.getPostRow(b))!, { commentsLocked: true });
+  await assert.rejects(async () => comments.createComment(await ctx.scopeBySlug(V.A, "blog"), b, { body: "no" }), /turned off/);
+  await admin.banMember(V.S, blog.id, ids.X, "spam");
+  await assert.rejects(async () => comments.createComment(await ctx.scopeBySlug(V.X, "blog"), a, { body: "again" }), /banned/);
+  await admin.updateCommunity(V.S, blog.id, { joinMode: "closed" });
+  await assert.rejects(async () => comments.createComment(await ctx.scopeBySlug(V.B, "blog"), a, { body: "closed" }), /closed/);
+  await admin.addMember(V.S, blog.id, ids.B);
+  assert.ok((await comments.createComment(await ctx.scopeBySlug(V.B, "blog"), a, { body: "member of a closed one" })).item.id);
+
+  // turning the community private takes the public face away at once
+  await admin.updateCommunity(V.S, blog.id, { access: "private" });
+  assert.equal(await pub.getPublicPost(a), null);
+  assert.equal((await pub.queryPublicPosts({ communityId: blog.id })).length, 0);
+  assert.equal(await pub.listPublicComments(a, null), null);
+  assert.deepEqual(await pub.listPublicCommunities(), []);
 });
