@@ -46,7 +46,10 @@ export type ControlType =
   | "logic"
   | "url" // a link: site path, #anchor, http(s), mailto or tel (Landing Pages)
   | "items" // a repeating group of sub-controls, e.g. the cards of a grid (Landing Pages)
-  | "form"; // pick one of the forms of this module (Landing Pages)
+  | "form" // pick one of the forms of this module (Landing Pages)
+  | "community" // pick one of the public communities (Landing Pages)
+  | "community_category" // pick a category of the community chosen in the `community_id` control
+  | "community_post"; // pick one published post of the community chosen in the `community_id` control
 
 export type Control = {
   key: string;
@@ -548,7 +551,10 @@ export function sanitizeFor(controls: Control[], input: unknown): Settings {
       case "url":
         out[k] = cleanLink(v);
         break;
-      case "form": {
+      case "form":
+      case "community":
+      case "community_category":
+      case "community_post": {
         const n = Math.trunc(Number(v));
         out[k] = Number.isFinite(n) && n > 0 ? n : 0;
         break;

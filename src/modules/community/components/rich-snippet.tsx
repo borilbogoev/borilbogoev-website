@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import type { Highlight, Theme } from "../lib/rich";
 import { t } from "../strings";
 import { HighlightIcon } from "./highlight-icon";
+import "./rich-snippet.css";
 
 export type SnippetData = {
   title: string;

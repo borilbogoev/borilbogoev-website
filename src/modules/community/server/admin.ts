@@ -2,7 +2,7 @@
 // Each function checks the actor itself (never trust the page that called it) and writes to community_admin_log.
 import { and, asc, count, desc, eq, gte, ilike, inArray, ne, or, sql } from "drizzle-orm";
 import { schema } from "@/db";
-import { RESERVED_SLUGS, SORT_RULES, JOIN_MODES, VISIBILITY, COMMUNITY_STATUS, REPORT_ACTIONS, type ReportAction } from "../lib/constants";
+import { RESERVED_SLUGS, SORT_RULES, JOIN_MODES, ACCESS, VISIBILITY, COMMUNITY_STATUS, REPORT_ACTIONS, type ReportAction } from "../lib/constants";
 import { snippet } from "../lib/text";
 import { log } from "./audit";
 import { CommunityError, db, forbidden, invalid, isUniqueViolation, isUuid, notFound, run, toId, unwrap } from "./core";
@@ -13,6 +13,7 @@ import { clearSettingsCache, getSettings } from "./settings";
 import { getCommentRow, setCommentStatus } from "./comments";
 import { getPostRow, mediaFor, setPostStatus } from "./posts";
 import { suspendUser } from "./safety";
+import { refreshPublic } from "./refresh";
 
 const { communities, communityMembers: Mem, communityPosts: P, communityComments: C, communityReports: R, communitySettings: Set_, communityAdminLog: Log, communityMessages: Msg, users } = schema;
 
@@ -61,7 +62,7 @@ export async function listAdminCommunities(viewer: Viewer): Promise<AdminCommuni
   return rows.map((c) => ({ ...c, members: counts.get(c.id) ?? 0, posts: pc.get(c.id) ?? 0 }));
 }
 
-export type CommunityInput = { slug?: unknown; name?: unknown; description?: unknown; iconUrl?: unknown; coverUrl?: unknown; visibility?: unknown; joinMode?: unknown; status?: unknown; defaultSort?: unknown };
+export type CommunityInput = { slug?: unknown; name?: unknown; description?: unknown; iconUrl?: unknown; coverUrl?: unknown; visibility?: unknown; joinMode?: unknown; access?: unknown; status?: unknown; defaultSort?: unknown };
 
 const str = (v: unknown, max: number) => (typeof v === "string" ? v.trim().slice(0, max) : "");
 const oneOf = <T extends string>(v: unknown, list: readonly T[], fallback: T): T => (list.includes(v as T) ? (v as T) : fallback);
@@ -75,6 +76,7 @@ export async function createCommunity(viewer: Viewer, input: CommunityInput): Pr
   const slug = str(input.slug, 60).toLowerCase();
   const name = str(input.name, 80);
   if (!name) throw invalid("Give the community a name.");
+  if (oneOf(input.access, ACCESS, "private") === "public" && oneOf(input.visibility, VISIBILITY, "listed") === "hidden") throw invalid("A public community has to be listed.");
   if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug)) throw invalid("Use lowercase letters, numbers and hyphens in the address.");
   if ((RESERVED_SLUGS as readonly string[]).includes(slug)) throw new CommunityError(400, "That address is reserved.");
   try {
@@ -88,6 +90,7 @@ export async function createCommunity(viewer: Viewer, input: CommunityInput): Pr
         coverUrl: mediaUrl(input.coverUrl),
         visibility: oneOf(input.visibility, VISIBILITY, "listed"),
         joinMode: oneOf(input.joinMode, JOIN_MODES, "open"),
+        access: oneOf(input.access, ACCESS, "private"),
         status: oneOf(input.status, COMMUNITY_STATUS, "active"),
         createdBy: viewer.user.id,
         createdAt: new Date(),
@@ -119,14 +122,18 @@ export async function updateCommunity(viewer: Viewer, id: number, input: Communi
   if (input.visibility !== undefined) set.visibility = oneOf(input.visibility, VISIBILITY, c.visibility as "listed");
   if (input.defaultSort !== undefined && (SORT_RULES as readonly string[]).includes(input.defaultSort as string)) set.defaultSort = input.defaultSort as string;
   if (input.joinMode !== undefined) set.joinMode = oneOf(input.joinMode, JOIN_MODES, c.joinMode as "open");
+  if (input.access !== undefined) set.access = oneOf(input.access, ACCESS, c.access as "private");
   if (input.status !== undefined) {
     const status = oneOf(input.status, COMMUNITY_STATUS, c.status as "active");
     if (c.isDefault && status === "archived") throw invalid("Make another community the default before archiving this one.");
     set.status = status;
   }
   if (c.isDefault && set.visibility === "hidden") throw invalid("The default community has to stay listed.");
+  if (c.isDefault && set.access === "public") throw invalid("The default community has to stay private. Everyone is added to it.");
+  if ((set.access ?? c.access) === "public" && (set.visibility ?? c.visibility) === "hidden") throw invalid("A public community has to be listed.");
   const [row] = await db().update(communities).set(set).where(eq(communities.id, id)).returning();
   await log(viewer.user.id, "community.update", "community", id, { fields: Object.keys(set).filter((k) => k !== "updatedAt") });
+  refreshPublic();
   return row;
 }
 

@@ -4,7 +4,8 @@ import { LIMITS } from "../lib/constants";
 import { decodeCursor, encodeCursor } from "../lib/cursor";
 import { cleanBody } from "../lib/text";
 import { db, forbidden, invalid, isUniqueViolation, notFound, run } from "./core";
-import { communityState, memberState, type Scope } from "./context";
+import { communityState, getMembership, memberState, type Scope } from "./context";
+import { clearMemberCounts } from "./communities";
 import { dropMentionsFor, resolveMentions, writeMentions } from "./mentions";
 import { dropNotificationsFor } from "./notifications";
 import { canComment, canEditOwn, canModerateContent } from "./permissions";
@@ -12,7 +13,7 @@ import { loadPeopleFor, type People, type Person } from "./people";
 import { getPostRow, unwrap } from "./posts";
 import { checkRate } from "./rate";
 
-const { communityComments: C, communityPosts: P, communityNotifications: N, users } = schema;
+const { communityComments: C, communityPosts: P, communityNotifications: N, communityMembers: Mem, users } = schema;
 
 export type CommentDTO = {
   id: number;
@@ -93,6 +94,12 @@ export async function createComment(scope: Scope, postId: number, input: { body:
   const body = cleanBody(input.body);
   if (!body) throw invalid("Write something first.");
   if (body.length > LIMITS.commentBody) throw invalid(`That is too long. The limit is ${LIMITS.commentBody} characters.`);
+  // A public open community adds the person as a member with their first comment (the permission check above allowed it).
+  if (community.access === "public" && !scope.membership) {
+    await db().insert(Mem).values({ communityId: community.id, userId: viewer.user.id, role: "member", status: "active", joinedAt: new Date() }).onConflictDoNothing();
+    scope.membership = await getMembership(community.id, viewer.user.id);
+    clearMemberCounts();
+  }
   const requestId = typeof input.requestId === "string" && input.requestId.length <= 64 ? input.requestId : null;
 
   const existing = async () => {

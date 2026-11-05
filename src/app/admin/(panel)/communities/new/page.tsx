@@ -9,7 +9,7 @@ export default async function NewCommunity() {
   return (
     <>
       <AdminHead title="New community" />
-      <CommunityForm initial={{ slug: "", name: "", description: "", iconUrl: "", coverUrl: "", visibility: "listed", joinMode: "open", status: "active", defaultSort: "default" }} />
+      <CommunityForm initial={{ slug: "", name: "", description: "", iconUrl: "", coverUrl: "", visibility: "listed", joinMode: "open", access: "private", status: "active", defaultSort: "default" }} />
     </>
   );
 }

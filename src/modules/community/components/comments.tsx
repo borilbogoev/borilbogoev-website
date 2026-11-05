@@ -29,6 +29,7 @@ export function CommentSection({
   initialCount,
   canComment,
   blockedReason,
+  anonymous = false,
 }: {
   postId: number;
   communityId: number;
@@ -39,6 +40,8 @@ export function CommentSection({
   initialCount: number;
   canComment: boolean;
   blockedReason: string;
+  /** A visitor without an account on a public post: reads through the public endpoints, no likes, menus or polling of private data. */
+  anonymous?: boolean;
 }) {
   const [items, setItems] = useState<Row[]>(initial);
   const [people, setPeople] = useState<People>({ ...initialPeople, [me.id]: me });
@@ -61,7 +64,7 @@ export function CommentSection({
   usePolling(
     async (signal) => {
       if (next) return; // more pages to load first
-      const r = await api.commentUpdates(postId, seen.current, signal);
+      const r = anonymous ? await api.publicComments(postId, { after: seen.current }, signal) : await api.commentUpdates(postId, seen.current, signal);
       setCount(r.commentCount);
       const fresh = r.items.filter((c) => !items.some((x) => x.id === c.id));
       if (r.items.length) seen.current = r.items.filter((c) => !c.mine).at(-1)?.cursor ?? seen.current;
@@ -83,7 +86,7 @@ export function CommentSection({
     if (!next) return;
     setLoadingMore(true);
     try {
-      const r = await api.comments(postId, next);
+      const r = anonymous ? await api.publicComments(postId, { cursor: next }) : await api.comments(postId, next);
       setItems((cur) => merge(cur, r.items));
       setPeople((p) => ({ ...p, ...r.people }));
       seen.current = r.items.filter((c) => !c.mine).at(-1)?.cursor ?? seen.current;
@@ -128,7 +131,7 @@ export function CommentSection({
       {items.length === 0 ? <p className="cm-muted">{t.comment.none}</p> : null}
       <ol className="cm-comment-list">
         {items.map((c) => (
-          <CommentItem key={c.id} c={c} people={people} communityId={communityId} onRemoved={(id) => { setItems((cur) => cur.filter((x) => x.id !== id)); setCount((n) => Math.max(0, n - 1)); }} onChanged={(n) => setItems((cur) => cur.map((x) => (x.id === n.id ? n : x)))} />
+          <CommentItem key={c.id} c={c} people={people} communityId={communityId} readOnly={anonymous} onRemoved={(id) => { setItems((cur) => cur.filter((x) => x.id !== id)); setCount((n) => Math.max(0, n - 1)); }} onChanged={(n) => setItems((cur) => cur.map((x) => (x.id === n.id ? n : x)))} />
         ))}
       </ol>
       <div ref={endRef} />
@@ -182,7 +185,7 @@ function CommentComposer({ communityId, onSubmit }: { communityId: number; onSub
   );
 }
 
-function CommentItem({ c, people, communityId, onRemoved, onChanged }: { c: Row; people: People; communityId: number; onRemoved: (id: number) => void; onChanged: (c: Comment) => void }) {
+function CommentItem({ c, people, communityId, readOnly = false, onRemoved, onChanged }: { c: Row; people: People; communityId: number; readOnly?: boolean; onRemoved: (id: number) => void; onChanged: (c: Comment) => void }) {
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState<MentionValue>(emptyMention());
   const [busy, setBusy] = useState(false);
@@ -217,13 +220,13 @@ function CommentItem({ c, people, communityId, onRemoved, onChanged }: { c: Row;
       <Avatar name={author.name} url={author.avatarUrl} size={32} />
       <div className="cm-comment__main">
         <div className="cm-comment__head">
-          <Link href={`/community/u/${author.id}`} className="cm-author__name">{author.name}</Link>
+          {readOnly ? <span className="cm-author__name">{author.name}</span> : <Link href={`/community/u/${author.id}`} className="cm-author__name">{author.name}</Link>}
           <span className="cm-muted">
             <RelativeTime iso={c.createdAt} />
             {c.editedAt ? ` · ${t.post.edited}` : ""}
             {c.status === "hidden_by_mod" ? ` · ${t.comment.hidden}` : ""}
           </span>
-          {c.pending ? null : <Menu items={items} />}
+          {c.pending || readOnly ? null : <Menu items={items} />}
         </div>
         {editing ? (
           <div className="cm-edit">
@@ -237,7 +240,7 @@ function CommentItem({ c, people, communityId, onRemoved, onChanged }: { c: Row;
         ) : (
           <MentionText body={c.body} people={localPeople} />
         )}
-        {c.pending || editing ? null : <div className="cm-comment__foot"><LikeButton type="comment" id={c.id} liked={c.liked} count={c.likeCount} /></div>}
+        {c.pending || editing || readOnly ? null : <div className="cm-comment__foot"><LikeButton type="comment" id={c.id} liked={c.liked} count={c.likeCount} /></div>}
       </div>
       <ReportDialog target={report ? { type: "comment", id: c.id } : null} onClose={() => setReport(false)} />
     </li>

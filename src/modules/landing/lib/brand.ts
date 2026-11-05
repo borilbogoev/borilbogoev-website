@@ -72,6 +72,8 @@ export function brandIssues(blocks: LandingBlock[], settings: LandingSettings): 
       if (missing) add("info", `${name(b)}: ${missing} image${missing > 1 ? "s have" : " has"} no description (alt text).`, b);
     }
     if (b.type === "form" && !(Number(b.settings.form_id) > 0)) add("warn", "Form: choose which form to show.", b);
+    if ((b.type === "community_featured" || b.type === "community_feed") && !(Number(b.settings.community_id) > 0)) add("warn", `${b.type === "community_feed" ? "Posts feed" : "Featured post"}: choose a public community.`, b);
+    if (b.type === "community_featured" && b.settings.pick === "post" && !(Number(b.settings.post_id) > 0)) add("warn", "Featured post: choose which post to show.", b);
     if (b.type === "video" && !b.settings.url) add("warn", "Video: add the video link.", b);
     if (b.type === "countdown" && !b.settings.target) add("warn", "Countdown: set the date and time.", b);
   }

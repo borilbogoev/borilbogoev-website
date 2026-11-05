@@ -9,6 +9,7 @@ import { getCategory } from "./categories";
 import { communityState, memberState, type Scope } from "./context";
 import { dropMentionsFor, resolveMentions, writeMentions } from "./mentions";
 import { dropNotificationsFor } from "./notifications";
+import { refreshPublic } from "./refresh";
 import { canChangeCategory, canEditAnyPost, canEditOwn, canLockComments, canModerateContent, canPin, canPost } from "./permissions";
 import { loadPeopleFor, type People, type Person } from "./people";
 import { checkRate } from "./rate";
@@ -360,6 +361,7 @@ export async function updatePostMeta(scope: Scope, post: PostRow, meta: PostMeta
   }
   if (!Object.keys(set).length) return;
   await db().update(P).set({ ...set, updatedAt: new Date() }).where(eq(P.id, post.id));
+  refreshPublic({ communitySlug: community.slug, postId: post.id });
 }
 
 /** Soft delete (own post, or a moderator's delete) and moderator hide / unhide. Comments stay but are no longer listed. */
@@ -379,4 +381,5 @@ export async function setPostStatus(scope: Scope, post: PostRow, status: "delete
     await dropNotificationsFor({ postIds: [post.id] });
     await dropMentionsFor("post", [post.id]);
   }
+  refreshPublic({ communitySlug: community.slug, postId: post.id });
 }

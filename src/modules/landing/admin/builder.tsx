@@ -22,6 +22,9 @@ type Props = {
   initialBlocks: LandingBlock[];
   settings: LandingSettings;
   forms: { id: number; title: string }[];
+  communities: { id: number; name: string }[];
+  communityCategories: { id: number; communityId: number; name: string }[];
+  communityPosts: { id: number; communityId: number; title: string }[];
   canSave: boolean;
 };
 
@@ -33,7 +36,7 @@ const nextUid = () => ++uidCounter;
 /** Keys shown under "Layout" in the inspector, so the content controls stay short. */
 const LAYOUT_KEYS = new Set(["bg", "spacing", "anchor", "hide"]);
 
-export function LandingBuilder({ pageId, slug, siteUrl, initialTitle, initialStatus, initialBlocks, settings, forms, canSave }: Props) {
+export function LandingBuilder({ pageId, slug, siteUrl, initialTitle, initialStatus, initialBlocks, settings, forms, communities, communityCategories, communityPosts, canSave }: Props) {
   const toast = useToast();
   const confirm = useConfirm();
   const prep = (b: LandingBlock): EditBlock => ({ ...b, uid: nextUid() });
@@ -52,7 +55,7 @@ export function LandingBuilder({ pageId, slug, siteUrl, initialTitle, initialSta
 
   const touch = () => setDirty(true);
   const selected = blocks.find((b) => b.uid === sel) ?? null;
-  const ctx: ControlCtx = useMemo(() => ({ uploadUrl: "/api/admin/landing/media", forms }), [forms]);
+  const ctx: ControlCtx = useMemo(() => ({ uploadUrl: "/api/admin/landing/media", forms, communities, communityCategories, communityPosts }), [forms, communities, communityCategories, communityPosts]);
   const issues: BrandIssue[] = useMemo(() => brandIssues(blocks.map(({ id, type, settings: s }) => ({ id, type, settings: s })), settings), [blocks, settings]);
   const warns = issues.filter((i) => i.level === "warn").length;
 

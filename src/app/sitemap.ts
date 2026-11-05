@@ -5,6 +5,7 @@ import { SCHOOL_LISTED } from "@/modules/school/lib/listing";
 import { indexableCourses, listActiveCourses } from "@/modules/school/lib/courses";
 import { indexablePages } from "@/modules/landing/lib/pages";
 import { indexableDecks } from "@/modules/presentations/lib/presentations";
+import { listPublicPostLinks } from "@/modules/community/server/public";
 
 // Update `lastModified` when a page's content changes. Add new modules here as they are built.
 const updated = new Date("2026-10-19");
@@ -25,6 +26,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     if (SCHOOL_LISTED && (await listActiveCourses()).length) entries.push({ url: abs("/school"), lastModified: updated, changeFrequency: "weekly", priority: 0.7 });
     if (SCHOOL_LISTED) for (const c of await indexableCourses()) entries.push({ url: abs(`/school/${c.slug}`), lastModified: c.updatedAt, changeFrequency: "monthly", priority: 0.6 });
     for (const d of await indexableDecks()) entries.push({ url: abs(`/p/${d.slug}`), lastModified: d.updatedAt, changeFrequency: "monthly", priority: 0.5 });
+    for (const p of await listPublicPostLinks()) entries.push({ url: abs(p.href), lastModified: p.updatedAt, changeFrequency: "monthly", priority: 0.5 });
   } catch {
     // no database (a build without DATABASE_URL): the fixed pages are enough
   }

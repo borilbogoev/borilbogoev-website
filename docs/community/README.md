@@ -50,6 +50,25 @@ src/app/(community)/   thin pages          src/app/api/community/   member API  
 - **Post menu:** Edit (the author, or the SuperAdmin on any text post), Edit in the builder (rich posts), Copy link, Change category, Pin or Unpin, Turn comments off or on, Hide or Show again, Report, Ban author from this community, Delete.
 - **Migrations:** `drizzle/0008_community_rich_posts.sql` (categories, post columns, reads table, indexes, and a backfill of `last_activity_at`) and `drizzle/0009_community_snippet_themes.sql` (`theme` and `featured` on posts).
 
+## Public communities
+
+Each community has an **Access** setting (Admin > Communities > edit): **Private** (the default, how every community worked until now) or **Public**. The column is `community_communities.access` (migration `0011_community_public_access.sql`, additive, default `private`, so old code keeps working while it rolls out).
+
+| | Private | Public |
+|---|---|---|
+| Who reads | signed-in members (hidden ones: members only) | anyone, no account, for the **published rich posts** |
+| Who posts | members | the SuperAdmin only (rich posts); members cannot post |
+| Who comments | members | any signed-in person; an **open** community adds them as a member with their first comment, a **closed** one needs an existing membership; banned, suspended, paused and archived rules still apply |
+| Likes | members | same as comments |
+| Where it shows | `/community/<slug>` | also `/c/<slug>/<id>` and Landing Pages blocks |
+
+What leaves the server for a visitor is decided in one file, `server/public.ts`: only `kind = 'rich'`, `status = 'published'`, in a community with `access = 'public'`. Drafts, hidden or deleted posts, plain member posts and everything in private communities answer "not found". A public community must be **listed** and the default community cannot be public. Turning a community back to Private takes the public face away at once. Commenters' names and avatars are public on a public post.
+
+- **Public post page** `/c/<community>/<id>` (`src/app/(site)/c/...`): static and cached (`revalidate = 300`, no cookies). Title, date, the post's blocks, then `components/public-comments.tsx`, which runs in the browser: it asks `/api/public/community/me` who is looking, then loads the comments (`/api/public/community/posts/<id>/comments` for visitors, the member API for signed-in people). Visitors read and see "Sign in to comment"; signed-in people get the comment box. Comments are never part of the static HTML.
+- **Landing blocks** (group *Community*): **Featured post** (a community and optional category; the pinned, newest or most liked post, or a chosen one; optional date range) and **Posts feed** (community, category, number of posts 1 to 24, order newest / most liked / most discussed, date range, pinned first, one or two columns, optional button). Read from the database when the page is built, so the page stays static. Cards use the post's own theme (Ink, Paper, Signal, Tint, Frame). The category list is the "tag": published categories of the community. These blocks are not offered inside rich posts.
+- **Instant refresh:** publishing, saving, pinning, hiding or deleting a post, and changing a community, call `refreshPublic()` (`server/refresh.ts`), which revalidates every landing page and the post page. The 5 minute timer is the safety net.
+- **Migrate before you deploy:** `drizzle/0011` adds the column the new code selects, so run `npm run db:migrate` against production first, then merge.
+
 ## Data model
 
 ```mermaid

@@ -154,3 +154,32 @@ test("snippet cover: featured picture, featured video, then the first visual blo
   assert.equal(THEMES.length, 5);
   assert.ok(isTheme("signal") && !isTheme("neon"));
 });
+
+test("permissions: public communities", () => {
+  const pub = comm({ access: "public" });
+  const visitor = actor({ id: U2 });
+  // reading the public face needs no account; private communities have none
+  assert.equal(p.canViewPublic(pub).ok, true);
+  assert.equal(p.canViewPublic(comm()).ok, false);
+  assert.equal(p.canViewPublic(comm({ access: "private" })).ok, false);
+  // every signed-in person can see a public community, even one that is "hidden" by mistake
+  assert.equal(p.canView(visitor, null, comm({ access: "public", visibility: "hidden" })).ok, true);
+  assert.equal(p.canView(null, null, pub).ok, false, "the signed-in area still wants an account");
+  // only the SuperAdmin posts
+  assert.equal(p.canPost(actor(), member, pub, live).ok, false, "members do not post in a public community");
+  assert.equal(p.canPost(actor({ id: U2 }), mod, pub, live).ok, false, "moderators do not post either");
+  assert.equal(p.canPost(actor({ superAdmin: true }), null, pub, live).ok, true);
+  assert.equal(p.canPost(actor(), member, comm(), live).ok, true, "private communities are unchanged");
+  // any signed-in person comments; anonymous does not
+  assert.equal(p.canComment(visitor, null, pub, live).ok, true, "a non-member can comment (they are added with the first comment)");
+  assert.equal(p.canComment(visitor, member, pub, live).ok, true);
+  assert.equal(p.canComment(null, null, pub, live).ok, false, "anonymous cannot comment");
+  assert.equal(p.canComment(visitor, banned, pub, live).ok, false, "banned");
+  assert.equal(p.canComment(actor({ id: U2, suspended: true }), null, pub, live).ok, false, "suspended");
+  assert.equal(p.canComment(visitor, null, comm({ access: "public", status: "archived" }), live).ok, false, "archived");
+  assert.equal(p.canComment(visitor, null, pub, { postingPaused: true }).ok, false, "paused");
+  assert.equal(p.canComment(visitor, null, comm({ access: "public", joinMode: "closed" }), live).ok, false, "closed community needs a membership");
+  assert.equal(p.canComment(visitor, member, comm({ access: "public", joinMode: "closed" }), live).ok, true);
+  assert.equal(p.canComment(visitor, null, comm(), live).ok, false, "private: members only");
+  assert.equal(p.canReact(visitor, null, pub, { postingPaused: true }).ok, true, "likes work while posting is paused");
+});

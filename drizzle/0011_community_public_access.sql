@@ -1,0 +1,1 @@
+ALTER TABLE "community_communities" ADD COLUMN "access" text DEFAULT 'private' NOT NULL;

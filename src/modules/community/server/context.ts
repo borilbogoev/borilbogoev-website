@@ -24,7 +24,7 @@ export async function viewerFor(user: CurrentUser): Promise<Viewer> {
   return { user, actor: { id: user.id, superAdmin, suspended: await isSuspended(user.id) } };
 }
 
-export const communityState = (c: CommunityRow): CommunityState => ({ status: c.status as CommunityState["status"], visibility: c.visibility as CommunityState["visibility"], joinMode: c.joinMode as CommunityState["joinMode"] });
+export const communityState = (c: CommunityRow): CommunityState => ({ status: c.status as CommunityState["status"], visibility: c.visibility as CommunityState["visibility"], joinMode: c.joinMode as CommunityState["joinMode"], access: c.access === "public" ? "public" : "private" });
 export const memberState = (m: MemberRow | null | undefined): MemberState => (m ? { role: m.role as "member" | "moderator", status: m.status as "active" | "banned" } : null);
 
 export async function getCommunityBySlug(slug: string): Promise<CommunityRow | null> {
